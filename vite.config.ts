@@ -54,7 +54,12 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
+          {
+            urlPattern: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith('/api/'),
+            handler: 'NetworkOnly',
+          },
           {
             // Cache Unsplash 4K Wallpapers
             urlPattern: /^https:\/\/images\.unsplash\.com\/.*/i,

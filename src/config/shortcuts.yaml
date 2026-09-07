@@ -15,6 +15,16 @@
 
 version: 1
 
+# Private defaults returned only by the authenticated /api/config endpoint.
+settings:
+  birthDate: '1988-03-04'
+  city: 浦东新区
+  wallpaper: /wallpapers/default.jpg
+  wallpaperType: default
+  searchEngineId: bing
+  showRealWidgets: false
+  iconStyle: official
+
 # 桌面根节点布局（7 个专属分类文件夹 + 1 个设置管理入口 = 8 槽位完美对称）
 shortcuts:
   # 1. AI 智能工具

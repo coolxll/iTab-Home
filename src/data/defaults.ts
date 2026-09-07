@@ -1,4 +1,4 @@
-import type { SearchEngine, Shortcut } from '../types'
+import type { SearchEngine } from '../types'
 
 export const SEARCH_ENGINES: SearchEngine[] = [
   {
@@ -51,22 +51,3 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     placeholder: '在微博搜索热搜与讨论',
   },
 ]
-
-import YAML from 'yaml'
-import rawShortcutsYaml from '../config/shortcuts.yaml?raw'
-
-export { rawShortcutsYaml }
-
-export function parseShortcutsYaml(yamlContent: string): Shortcut[] {
-  try {
-    const data = YAML.parse(yamlContent)
-    if (data && Array.isArray(data.shortcuts)) {
-      return data.shortcuts
-    }
-  } catch (err) {
-    console.error('Failed to parse shortcuts YAML', err)
-  }
-  return []
-}
-
-export const DEFAULT_DESKTOP_SHORTCUTS: Shortcut[] = parseShortcutsYaml(rawShortcutsYaml)

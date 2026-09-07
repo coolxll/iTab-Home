@@ -2,12 +2,12 @@ import React from 'react'
 import { getDaysAlive } from '../utils/lunar'
 
 interface AnniversaryCardProps {
-  birthDate?: string
+  birthDate: string
   onClick?: () => void
 }
 
 export const AnniversaryCard: React.FC<AnniversaryCardProps> = ({
-  birthDate = '1988-03-04',
+  birthDate,
   onClick,
 }) => {
   const days = getDaysAlive(birthDate)

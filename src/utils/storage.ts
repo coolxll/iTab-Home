@@ -1,17 +1,24 @@
 import type { UserSettings } from '../types'
-import { DEFAULT_DESKTOP_SHORTCUTS } from '../data/defaults'
 
 const STORAGE_KEY = 'itab_home_settings_v11'
 
 export const DEFAULT_SETTINGS: UserSettings = {
-  birthDate: '1988-03-04',
-  city: '浦东新区',
+  birthDate: '',
+  city: '',
   wallpaper: '/wallpapers/default.jpg',
   wallpaperType: 'default',
   searchEngineId: 'bing',
   showRealWidgets: false,
-  shortcuts: DEFAULT_DESKTOP_SHORTCUTS,
+  shortcuts: [],
   iconStyle: 'official',
+}
+
+export function hasStoredSettings(): boolean {
+  try {
+    return localStorage.getItem(STORAGE_KEY) !== null
+  } catch {
+    return false
+  }
 }
 
 export function loadSettings(): UserSettings {
@@ -36,5 +43,13 @@ export function saveSettings(settings: UserSettings): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
   } catch (e) {
     console.error('Failed to save settings to localStorage', e)
+  }
+}
+
+export function clearSettings(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (e) {
+    console.error('Failed to clear settings from localStorage', e)
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HeaderClock } from './components/HeaderClock'
 import { SearchBar } from './components/SearchBar'
 import { CalendarCard } from './components/CalendarCard'
@@ -11,12 +11,14 @@ import { EditShortcutModal } from './components/EditShortcutModal'
 import { FolderModal } from './components/FolderModal'
 import { ContextMenu } from './components/ContextMenu'
 import { GuideModal } from './components/GuideModal'
-import { loadSettings, saveSettings } from './utils/storage'
+import { hasStoredSettings, loadSettings, saveSettings } from './utils/storage'
 import { SlidersHorizontal, Check, Plus } from 'lucide-react'
 import type { Shortcut, UserSettings } from './types'
 
 export const App: React.FC = () => {
   const [settings, setSettings] = useState<UserSettings>(loadSettings())
+  const [isAuthReady, setIsAuthReady] = useState(false)
+  const [startupError, setStartupError] = useState<string | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [addFolderTargetId, setAddFolderTargetId] = useState<string | null>(null)
@@ -34,6 +36,75 @@ export const App: React.FC = () => {
     isInFolder?: boolean
     folderId?: string
   } | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    const initialize = async () => {
+      const hasLocalSnapshot = hasStoredSettings()
+
+      try {
+        const sessionResponse = await fetch('/api/session', {
+          credentials: 'same-origin',
+          cache: 'no-store',
+        })
+
+        if (sessionResponse.status === 401) {
+          window.location.replace('/api/auth/login')
+          return
+        }
+
+        if (!sessionResponse.ok) {
+          throw new Error(`Session check failed (${sessionResponse.status})`)
+        }
+
+        if (!hasLocalSnapshot) {
+          const configResponse = await fetch('/api/config', {
+            credentials: 'same-origin',
+            cache: 'no-store',
+          })
+
+          if (configResponse.status === 401) {
+            window.location.replace('/api/auth/login')
+            return
+          }
+
+          if (!configResponse.ok) {
+            throw new Error(`Configuration load failed (${configResponse.status})`)
+          }
+
+          const data = await configResponse.json() as { settings?: UserSettings }
+          if (!data.settings) {
+            throw new Error('Configuration response is missing settings')
+          }
+
+          if (!cancelled) {
+            setSettings(data.settings)
+            saveSettings(data.settings)
+          }
+        }
+
+        if (!cancelled) setIsAuthReady(true)
+      } catch (error) {
+        if (cancelled) return
+
+        if (hasLocalSnapshot) {
+          // Trusted-device offline mode: use the last authenticated local snapshot.
+          setIsAuthReady(true)
+          return
+        }
+
+        console.error('Failed to initialize authenticated iTab session:', error)
+        setStartupError('无法验证登录状态，请检查网络后重试。')
+        setIsAuthReady(true)
+      }
+    }
+
+    void initialize()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const updateAndSaveShortcuts = (newShortcuts: Shortcut[]) => {
     const updated = { ...settings, shortcuts: newShortcuts }
@@ -328,6 +399,31 @@ export const App: React.FC = () => {
       )
       updateAndSaveShortcuts(nextShortcuts)
     }
+  }
+
+  if (!isAuthReady) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="text-sm text-white/60">正在验证登录状态…</div>
+      </div>
+    )
+  }
+
+  if (startupError) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-6">
+        <div className="text-center space-y-4">
+          <p className="text-sm text-white/70">{startupError}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm transition-colors"
+          >
+            重试
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
