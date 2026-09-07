@@ -31,7 +31,10 @@ export function getFaviconCandidates(url: string, localIcon?: string): string[] 
 
     const candidates: string[] = []
 
-    // 1. Direct favicon request by the client browser (with user's cookies & auth)
+    // 1. High-resolution official web app icon
+    candidates.push(`${origin}/apple-touch-icon.png`)
+
+    // 2. Direct site favicon
     candidates.push(`${origin}/favicon.ico`)
 
     if (isPrivateOrHomelab(hostname)) {
@@ -41,9 +44,8 @@ export function getFaviconCandidates(url: string, localIcon?: string): string[] 
         candidates.push(localIcon)
       }
     } else {
-      // For public domains, Google high-res 128px favicon is fast and crisp
-      candidates.push(`https://www.google.com/s2/favicons?domain=${hostname}&sz=128`)
-      candidates.push(`https://icons.duckduckgo.com/ip3/${hostname}.ico`)
+      // For public domains, Google high-res 128px favicon service is reliable
+      candidates.push(`https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(origin)}&size=128`)
       if (localIcon) {
         candidates.push(localIcon)
       }

@@ -43,6 +43,13 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     url: 'https://www.zhihu.com/search?type=content&q=',
     placeholder: '在知乎搜索感兴趣的讨论',
   },
+  {
+    id: 'weibo',
+    name: '微博',
+    icon: 'weibo',
+    url: 'https://s.weibo.com/weibo?q=',
+    placeholder: '在微博搜索热搜与讨论',
+  },
 ]
 
 export const DEFAULT_DESKTOP_SHORTCUTS: Shortcut[] = [

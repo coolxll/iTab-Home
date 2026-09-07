@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Settings, Puzzle, Lightbulb, Plus, Globe, X } from 'lucide-react'
+import { Settings, Lightbulb, Plus, Globe, X } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
@@ -30,6 +30,7 @@ export const IconItem: React.FC<IconItemProps> = ({
   const candidates = getFaviconCandidates(shortcut.url || '', shortcut.icon)
   const [candidateIndex, setCandidateIndex] = useState(0)
   const [imgError, setImgError] = useState(false)
+  const [imgLoaded, setImgLoaded] = useState(false)
   const [isDragOverTarget, setIsDragOverTarget] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
@@ -48,6 +49,7 @@ export const IconItem: React.FC<IconItemProps> = ({
   }
 
   const handleImgError = () => {
+    setImgLoaded(false)
     if (candidateIndex + 1 < candidates.length) {
       setCandidateIndex(candidateIndex + 1)
     } else {
@@ -87,76 +89,81 @@ export const IconItem: React.FC<IconItemProps> = ({
       )
     }
 
-    // 2. Built-in Special Tools
-    if (shortcut.id === 'settings') {
-      return (
-        <div className="w-full h-full bg-gradient-to-br from-zinc-600 to-zinc-800 flex items-center justify-center text-white">
-          <Settings className="w-6 h-6 animate-spin-slow" />
-        </div>
-      )
-    }
-    if (shortcut.id === 'guide') {
-      return (
-        <div className="w-full h-full bg-[#F59E0B] flex items-center justify-center text-white">
-          <Lightbulb className="w-6 h-6" />
-        </div>
-      )
-    }
-    if (shortcut.id === 'add-shortcut') {
-      return (
-        <div className="w-full h-full bg-[#0091FF] flex items-center justify-center text-white">
-          <Plus className="w-6 h-6" />
-        </div>
-      )
-    }
-    if (shortcut.id === 'chrome-apps') {
-      return (
-        <div className="w-full h-full bg-white flex items-center justify-center p-2.5">
-          <div className="grid grid-cols-3 gap-1 w-full h-full">
-            <span className="bg-[#EA4335] rounded-full" />
-            <span className="bg-[#4285F4] rounded-full" />
-            <span className="bg-[#FBBC05] rounded-full" />
-            <span className="bg-[#34A853] rounded-full" />
-            <span className="bg-[#EA4335] rounded-full" />
-            <span className="bg-[#4285F4] rounded-full" />
-            <span className="bg-[#FBBC05] rounded-full" />
-            <span className="bg-[#34A853] rounded-full" />
-            <span className="bg-[#4285F4] rounded-full" />
+    // 2. Built-in Special Tools (no external website)
+    if (shortcut.isSpecial) {
+      if (shortcut.id === 'settings') {
+        return (
+          <div className="w-full h-full bg-gradient-to-br from-zinc-600 via-zinc-700 to-zinc-800 flex items-center justify-center text-white">
+            <Settings className="w-6 h-6 animate-spin-slow" />
           </div>
-        </div>
-      )
-    }
-    if (shortcut.id === 'extensions') {
-      return (
-        <div className="w-full h-full bg-zinc-600 flex items-center justify-center text-white">
-          <Puzzle className="w-6 h-6" />
-        </div>
-      )
+        )
+      }
+      if (shortcut.id === 'guide') {
+        return (
+          <div className="w-full h-full bg-[#F59E0B] flex items-center justify-center text-white">
+            <Lightbulb className="w-6 h-6" />
+          </div>
+        )
+      }
+      if (shortcut.id === 'add-shortcut') {
+        return (
+          <div className="w-full h-full bg-[#0091FF] flex items-center justify-center text-white">
+            <Plus className="w-6 h-6" />
+          </div>
+        )
+      }
+      if (shortcut.icon) {
+        return <VectorIcon name={shortcut.icon} />
+      }
     }
 
-    // 3. Pixel-perfect Vector SVG Icon (100% Retina Sharp)
-    if (shortcut.icon) {
-      const vector = <VectorIcon name={shortcut.icon} />
-      if (vector) return vector
-    }
+    // 3. Official Web App Icon / Favicon from website (if available, use official one!)
+    const hasCandidate = Boolean(
+      shortcut.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
+    )
+    const fallbackVector = shortcut.icon ? <VectorIcon name={shortcut.icon} /> : null
+    const currentCandidate = hasCandidate ? candidates[candidateIndex] : null
+    const isAppleTouchIcon = currentCandidate?.includes('apple-touch-icon')
 
-    // 4. Dynamic Favicon Fetching directly from target address
-    if (!imgError && candidates.length > 0) {
+    if (hasCandidate && currentCandidate) {
       return (
         <div
           className={`w-full h-full ${
             shortcut.bgColor || 'bg-white'
-          } flex items-center justify-center p-2.5`}
+          } flex items-center justify-center relative overflow-hidden`}
         >
+          {/* Show vector icon underneath while official icon is loading or if failed */}
+          {!imgLoaded && fallbackVector && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              {fallbackVector}
+            </div>
+          )}
+
+          {/* Official site icon */}
           <img
-            src={candidates[candidateIndex]}
+            src={currentCandidate}
             alt={shortcut.title}
+            onLoad={(e) => {
+              const img = e.currentTarget
+              if (img.naturalWidth > 1 && img.naturalHeight > 1) {
+                setImgLoaded(true)
+              } else {
+                handleImgError()
+              }
+            }}
             onError={handleImgError}
-            className="w-full h-full object-contain drop-shadow-sm rounded"
+            className={`w-full h-full ${
+              isAppleTouchIcon ? 'object-cover' : 'object-contain p-2'
+            } transition-opacity duration-200 ${imgLoaded ? 'opacity-100 drop-shadow-xs' : 'opacity-0'}`}
             loading="lazy"
           />
         </div>
       )
+    }
+
+    // 4. Pixel-perfect Vector SVG Icon (100% Retina Sharp Fallback)
+    if (fallbackVector) {
+      return fallbackVector
     }
 
     // 5. Clean Fallback badge
