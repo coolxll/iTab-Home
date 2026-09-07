@@ -311,50 +311,45 @@ export const App: React.FC = () => {
         )}
 
         {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
-        <div className="w-full my-auto py-4 flex flex-col items-center">
-          {/* Top Bar for Desk Management */}
-          <div className="w-full max-w-[1060px] flex items-center justify-between mb-3 px-2">
-            <span className="text-xs font-semibold tracking-wider text-white/60 uppercase">
-              应用快捷方式与文件夹 ({settings.shortcuts.length})
-            </span>
-            <div className="flex items-center space-x-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setAddFolderTargetId(null)
-                  setIsAddOpen(true)
-                }}
-                className="flex items-center space-x-1 px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-white transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>添加</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsEditMode(!isEditMode)}
-                className={`flex items-center space-x-1 px-3 py-1 rounded-xl text-xs font-medium transition-all ${
-                  isEditMode
-                    ? 'bg-amber-500 text-white shadow-lg scale-105'
-                    : 'bg-white/10 hover:bg-white/20 text-white/80 hover:text-white'
-                }`}
-              >
-                {isEditMode ? (
-                  <>
-                    <Check className="w-3.5 h-3.5" />
-                    <span>完成</span>
-                  </>
-                ) : (
-                  <>
-                    <SlidersHorizontal className="w-3.5 h-3.5" />
-                    <span>整理/编辑</span>
-                  </>
-                )}
-              </button>
-            </div>
+        <div className="w-full my-auto py-2 flex flex-col items-center">
+          {/* Subtle management controls */}
+          <div className="w-full max-w-[1060px] flex items-center justify-end mb-2 px-4 space-x-2">
+            <button
+              type="button"
+              onClick={() => {
+                setAddFolderTargetId(null)
+                setIsAddOpen(true)
+              }}
+              className="flex items-center space-x-1 px-3 py-1 bg-black/30 hover:bg-black/50 backdrop-blur-md rounded-full text-xs text-white/80 hover:text-white transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>添加</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={`flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium backdrop-blur-md transition-all ${
+                isEditMode
+                  ? 'bg-amber-500 text-white shadow-lg scale-105'
+                  : 'bg-black/30 hover:bg-black/50 text-white/80 hover:text-white'
+              }`}
+            >
+              {isEditMode ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>完成</span>
+                </>
+              ) : (
+                <>
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  <span>整理/编辑</span>
+                </>
+              )}
+            </button>
           </div>
 
-          {/* Icon Grid: Responsive 8-10 Columns */}
-          <div className="w-full max-w-[1060px] grid grid-cols-5 sm:grid-cols-7 md:grid-cols-9 lg:grid-cols-10 gap-x-2 gap-y-4 items-start justify-items-center bg-black/20 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl">
+          {/* Icon Grid: Responsive, Floating seamlessly on wallpaper with zero container borders */}
+          <div className="w-full max-w-[1060px] grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 gap-x-3 gap-y-6 items-start justify-items-center px-2 py-4">
             {settings.shortcuts.map((shortcut) => {
               let handleSpecialClick: (() => void) | undefined
               if (shortcut.id === 'settings') {

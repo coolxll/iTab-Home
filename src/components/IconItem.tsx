@@ -62,26 +62,26 @@ export const IconItem: React.FC<IconItemProps> = ({
       const previews = children.slice(0, 4)
 
       return (
-        <div className="w-full h-full bg-white/20 hover:bg-white/25 backdrop-blur-xl border border-white/25 p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-colors">
+        <div className="w-full h-full bg-white/25 hover:bg-white/35 backdrop-blur-md p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-all rounded-[18px]">
           {previews.map((child, idx) => (
             <div
               key={idx}
-              className="w-full h-full rounded-md overflow-hidden bg-black/20 flex items-center justify-center p-0.5"
+              className="w-full h-full rounded-[6px] overflow-hidden flex items-center justify-center shadow-xs"
             >
               {child.icon ? (
-                <div className="w-full h-full scale-75 origin-center">
+                <div className="w-full h-full scale-90 origin-center flex items-center justify-center">
                   <VectorIcon name={child.icon} />
                 </div>
               ) : (
-                <span className="text-[8px] font-bold text-white/90">
+                <div className={`w-full h-full ${child.bgColor || 'bg-blue-600'} flex items-center justify-center text-[9px] font-bold text-white`}>
                   {child.title.slice(0, 1)}
-                </span>
+                </div>
               )}
             </div>
           ))}
           {/* Fill empty slots */}
           {Array.from({ length: Math.max(0, 4 - previews.length) }).map((_, idx) => (
-            <div key={`empty-${idx}`} className="w-full h-full rounded-md bg-white/5" />
+            <div key={`empty-${idx}`} className="w-full h-full rounded-[6px] bg-white/10" />
           ))}
         </div>
       )
@@ -212,17 +212,17 @@ export const IconItem: React.FC<IconItemProps> = ({
         </button>
       )}
 
-      {/* App Squircle */}
+      {/* App Squircle - 100% 一体化无边框设计 */}
       <div
-        className={`${squircleSize} rounded-2xl overflow-hidden shadow-md group-hover/icon:shadow-xl transition-all duration-300 ring-1 ring-white/10 group-hover/icon:ring-white/40 flex items-center justify-center relative bg-white/5 backdrop-blur-sm flex-shrink-0 ${
-          isDragOverTarget ? 'ring-4 ring-sky-400 scale-110' : ''
+        className={`${squircleSize} rounded-[18px] overflow-hidden shadow-[0_4px_14px_rgba(0,0,0,0.3)] group-hover/icon:shadow-[0_8px_25px_rgba(0,0,0,0.45)] group-hover/icon:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center relative flex-shrink-0 select-none ${
+          isDragOverTarget ? 'ring-2 ring-sky-400 scale-110 shadow-sky-500/30' : ''
         }`}
       >
         {renderContent()}
       </div>
 
       {/* Label under icon */}
-      <span className="mt-1 text-[11px] text-white/90 font-normal tracking-wide drop-shadow text-center w-full truncate px-0.5 leading-tight group-hover/icon:text-white transition-colors">
+      <span className="mt-1.5 text-[11px] text-white/95 font-normal tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] text-center w-full truncate px-0.5 leading-tight group-hover/icon:text-white transition-colors">
         {shortcut.title}
       </span>
     </div>

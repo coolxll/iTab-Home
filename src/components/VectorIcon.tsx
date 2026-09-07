@@ -142,8 +142,8 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name }) => {
       )
     case 'cloudflare':
       return (
-        <div className="w-full h-full bg-[#F38020] flex items-center justify-center text-white">
-          <svg className="w-7 h-7 fill-white" viewBox="0 0 24 24">
+        <div className="w-full h-full bg-white flex items-center justify-center p-2">
+          <svg className="w-full h-full fill-[#F38020]" viewBox="0 0 24 24">
             <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z" />
           </svg>
         </div>
@@ -245,8 +245,64 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name }) => {
       )
     case 'xiaohongshu':
       return (
-        <div className="w-full h-full bg-[#FF2442] flex items-center justify-center text-white font-bold text-xs p-1 select-none">
-          小红书
+        <div className="w-full h-full bg-[#FF2442] flex items-center justify-center text-white select-none">
+          <span className="font-sans font-black text-[13px] tracking-tight drop-shadow-sm">小红书</span>
+        </div>
+      )
+    case 'settings':
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-zinc-600 via-zinc-700 to-zinc-800 flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-none stroke-white stroke-2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </div>
+      )
+    case 'plus':
+      return (
+        <div className="w-full h-full bg-[#0091FF] flex items-center justify-center text-white">
+          <svg className="w-7 h-7 fill-none stroke-white stroke-[2.5]" viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </div>
+      )
+    case 'tinyauth':
+      return (
+        <div className="w-full h-full bg-[#2563EB] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-white drop-shadow-sm" viewBox="0 0 24 24">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3 0 1.12-.61 2.1-1.5 2.6V16h-3v-3.4c-.89-.5-1.5-1.48-1.5-2.6 0-1.66 1.34-3 3-3z" />
+          </svg>
+        </div>
+      )
+    case 'beszel':
+      return (
+        <div className="w-full h-full bg-[#0284C7] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-none stroke-white stroke-2" viewBox="0 0 24 24">
+            <path d="M3 12h4l3 8 4-16 3 8h4" />
+          </svg>
+        </div>
+      )
+    case 'komodo':
+      return (
+        <div className="w-full h-full bg-[#059669] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M4 6h16v3H4zm0 5h16v3H4zm0 5h16v3H4z" />
+          </svg>
+        </div>
+      )
+    case 'sublinkpro':
+      return (
+        <div className="w-full h-full bg-[#4F46E5] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+          </svg>
+        </div>
+      )
+    case '3x-ui':
+      return (
+        <div className="w-full h-full bg-[#0284C7] flex items-center justify-center text-white select-none">
+          <span className="font-mono font-black text-sm tracking-tighter">3X</span>
         </div>
       )
     default:

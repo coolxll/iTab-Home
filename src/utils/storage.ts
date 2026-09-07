@@ -1,7 +1,7 @@
 import type { UserSettings } from '../types'
 import { DEFAULT_DESKTOP_SHORTCUTS } from '../data/defaults'
 
-const STORAGE_KEY = 'itab_home_settings_v3'
+const STORAGE_KEY = 'itab_home_settings_v4'
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '1988-03-04',
@@ -9,7 +9,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   wallpaper: '/wallpapers/default.jpg',
   wallpaperType: 'default',
   searchEngineId: 'bing',
-  showRealWidgets: true,
+  showRealWidgets: false,
   shortcuts: DEFAULT_DESKTOP_SHORTCUTS,
 }
 
