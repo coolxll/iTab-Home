@@ -273,16 +273,17 @@ export const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden text-white font-sans selection:bg-sky-500 selection:text-white">
-      {/* Background Wallpaper */}
+      {/* Background Wallpaper - Crystal Sharp 4K */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-all duration-700 filter brightness-95"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 transition-opacity duration-500"
         style={{
           backgroundImage: `url('${settings.wallpaper}')`,
-          backgroundColor: '#1a1c23',
+          backgroundColor: '#0f172a',
+          transform: 'translateZ(0)',
         }}
       />
-      {/* Ambient background overlay */}
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-[1px] pointer-events-none z-0" />
+      {/* Ambient background overlay (strictly no blur so 4K wallpapers remain razor sharp) */}
+      <div className="fixed inset-0 bg-black/15 pointer-events-none z-0" />
 
       {/* Main Content Area */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 py-6 w-full max-w-[1160px] mx-auto">

@@ -92,7 +92,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                暗夜雪山星空
+                必应 4K 湖畔暮色
               </button>
               <button
                 type="button"
@@ -100,7 +100,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   setCurrent({
                     ...current,
                     wallpaperType: 'nature',
-                    wallpaper: '/wallpapers/yosemite.jpg',
+                    wallpaper: '/wallpapers/starry_mountain_4k.jpg',
                   })
                 }
                 className={`p-2 rounded-xl border text-center transition-all ${
@@ -109,7 +109,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                优胜美地暮色
+                暗夜雪山 4K
               </button>
               <button
                 type="button"
@@ -117,7 +117,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   setCurrent({
                     ...current,
                     wallpaperType: 'space',
-                    wallpaper: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2560&q=80',
+                    wallpaper: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=3840&q=95',
                   })
                 }
                 className={`p-2 rounded-xl border text-center transition-all ${
@@ -126,7 +126,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                深空地球星云
+                优胜美地 4K
               </button>
             </div>
             {/* Custom wallpaper input and local upload */}
