@@ -211,6 +211,21 @@ export const App: React.FC = () => {
     updateAndSaveShortcuts(next)
   }
 
+  // Reorder / move shortcut on desktop
+  const handleMoveShortcut = (id: string, direction: 'left' | 'right') => {
+    const idx = settings.shortcuts.findIndex((s) => s.id === id)
+    if (idx === -1) return
+    const targetIdx = direction === 'left' ? idx - 1 : idx + 1
+    if (targetIdx < 0 || targetIdx >= settings.shortcuts.length) return
+    // Do not reorder past special action buttons (settings / add)
+    if (settings.shortcuts[targetIdx].isSpecial) return
+
+    const next = [...settings.shortcuts]
+    const [moved] = next.splice(idx, 1)
+    next.splice(targetIdx, 0, moved)
+    updateAndSaveShortcuts(next)
+  }
+
   // Drag and Drop Handlers
   const handleDragStart = (e: React.DragEvent, shortcut: Shortcut) => {
     setDraggedItem(shortcut)
@@ -221,8 +236,8 @@ export const App: React.FC = () => {
     e.preventDefault()
     if (!draggedItem || draggedItem.id === targetShortcut.id) return
 
-    // Case 1: Drop onto a folder -> put inside that folder
-    if (targetShortcut.isFolder) {
+    // Case 1: Drop a standard item onto a folder -> put inside that folder
+    if (targetShortcut.isFolder && !draggedItem.isFolder) {
       const next = settings.shortcuts
         .filter((s) => s.id !== draggedItem.id) // Remove dragged from root
         .map((folder) => {
@@ -240,7 +255,13 @@ export const App: React.FC = () => {
     }
 
     // Case 2: Drop onto another standard item while holding Alt/Option or Shift -> Merge into a new folder!
-    if ((e.altKey || e.shiftKey) && !targetShortcut.isSpecial && !draggedItem.isSpecial) {
+    if (
+      (e.altKey || e.shiftKey) &&
+      !targetShortcut.isSpecial &&
+      !draggedItem.isSpecial &&
+      !targetShortcut.isFolder &&
+      !draggedItem.isFolder
+    ) {
       const newFolder: Shortcut = {
         id: `folder-${Date.now()}`,
         title: `${targetShortcut.title} 等`,
@@ -259,7 +280,7 @@ export const App: React.FC = () => {
       return
     }
 
-    // Case 3: Reorder positions (default when dragging icons to reorganize)
+    // Case 3: Reorder positions (default when dragging icons or folders to reorganize)
     const fromIdx = settings.shortcuts.findIndex((s) => s.id === draggedItem.id)
     const toIdx = settings.shortcuts.findIndex((s) => s.id === targetShortcut.id)
     if (fromIdx !== -1 && toIdx !== -1) {
@@ -374,6 +395,8 @@ export const App: React.FC = () => {
                     isEditMode={isEditMode}
                     onClick={handleSpecialClick}
                     onDelete={() => handleDeleteShortcut(shortcut.id)}
+                    onMoveLeft={() => handleMoveShortcut(shortcut.id, 'left')}
+                    onMoveRight={() => handleMoveShortcut(shortcut.id, 'right')}
                     onDragStart={handleDragStart}
                     onDrop={handleDropOnShortcut}
                     onContextMenu={(e, item) => {
@@ -461,6 +484,9 @@ export const App: React.FC = () => {
           shortcut={contextMenu.shortcut}
           isInFolder={contextMenu.isInFolder}
           availableFolders={settings.shortcuts.filter((s) => s.isFolder)}
+          onMove={(direction) => {
+            handleMoveShortcut(contextMenu.shortcut.id, direction)
+          }}
           onMoveToFolder={(folderId) => {
             handleMoveToFolder(folderId, contextMenu.shortcut.id)
           }}

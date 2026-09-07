@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Settings, Lightbulb, Plus, Globe, X } from 'lucide-react'
+import React, { useState, useRef } from 'react'
+import { Settings, Lightbulb, Plus, Globe, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
@@ -11,6 +11,8 @@ interface IconItemProps {
   isEditMode?: boolean
   onClick?: () => void
   onDelete?: () => void
+  onMoveLeft?: () => void
+  onMoveRight?: () => void
   onContextMenu?: (e: React.MouseEvent, shortcut: Shortcut) => void
   onDragStart?: (e: React.DragEvent, shortcut: Shortcut) => void
   onDragOver?: (e: React.DragEvent, shortcut: Shortcut) => void
@@ -23,6 +25,8 @@ export const IconItem: React.FC<IconItemProps> = ({
   isEditMode = false,
   onClick,
   onDelete,
+  onMoveLeft,
+  onMoveRight,
   onContextMenu,
   onDragStart,
   onDragOver,
@@ -33,6 +37,7 @@ export const IconItem: React.FC<IconItemProps> = ({
   const [imgError, setImgError] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
   const [isDragOverTarget, setIsDragOverTarget] = useState(false)
+  const dragCounter = useRef(0)
 
   const handleClick = (e: React.MouseEvent) => {
     if (isEditMode && onDelete && !shortcut.isSpecial) {
@@ -190,14 +195,27 @@ export const IconItem: React.FC<IconItemProps> = ({
     <div
       draggable={!shortcut.isSpecial}
       onDragStart={(e) => onDragStart?.(e, shortcut)}
+      onDragEnter={(e) => {
+        e.preventDefault()
+        dragCounter.current += 1
+        setIsDragOverTarget(true)
+      }}
       onDragOver={(e) => {
         e.preventDefault()
         setIsDragOverTarget(true)
         onDragOver?.(e, shortcut)
       }}
-      onDragLeave={() => setIsDragOverTarget(false)}
+      onDragLeave={(e) => {
+        e.preventDefault()
+        dragCounter.current -= 1
+        if (dragCounter.current <= 0) {
+          dragCounter.current = 0
+          setIsDragOverTarget(false)
+        }
+      }}
       onDrop={(e) => {
         e.preventDefault()
+        dragCounter.current = 0
         setIsDragOverTarget(false)
         onDrop?.(e, shortcut)
       }}
@@ -211,18 +229,52 @@ export const IconItem: React.FC<IconItemProps> = ({
       }`}
       title={shortcut.isFolder ? `文件夹: ${shortcut.title}` : `${shortcut.title} (${shortcut.url})`}
     >
-      {/* Delete badge in edit mode */}
+      {/* Action badges in edit mode */}
       {isEditMode && !shortcut.isSpecial && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete?.()
-          }}
-          className="absolute -top-1.5 -right-1 z-30 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90"
-        >
-          <X className="w-3 h-3 stroke-[3]" />
-        </button>
+        <>
+          {/* Delete badge */}
+          <button
+            type="button"
+            title="删除"
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete?.()
+            }}
+            className="absolute -top-1.5 -right-1 z-30 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90"
+          >
+            <X className="w-3 h-3 stroke-[3]" />
+          </button>
+
+          {/* Move left badge */}
+          {onMoveLeft && (
+            <button
+              type="button"
+              title="向前移动"
+              onClick={(e) => {
+                e.stopPropagation()
+                onMoveLeft()
+              }}
+              className="absolute -top-1.5 -left-1 z-30 w-5 h-5 bg-sky-600 hover:bg-sky-500 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90"
+            >
+              <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
+          )}
+
+          {/* Move right badge */}
+          {onMoveRight && (
+            <button
+              type="button"
+              title="向后移动"
+              onClick={(e) => {
+                e.stopPropagation()
+                onMoveRight()
+              }}
+              className="absolute -bottom-1 -right-1 z-30 w-5 h-5 bg-sky-600 hover:bg-sky-500 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90"
+            >
+              <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
+            </button>
+          )}
+        </>
       )}
 
       {/* App Squircle - 100% 一体化无边框设计 */}

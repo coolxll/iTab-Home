@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { ExternalLink, Edit3, Trash2, FolderMinus, FolderPlus } from 'lucide-react'
+import { ExternalLink, Edit3, Trash2, FolderMinus, FolderPlus, ArrowLeft, ArrowRight } from 'lucide-react'
 import type { Shortcut } from '../types'
 
 interface ContextMenuProps {
@@ -12,6 +12,7 @@ interface ContextMenuProps {
   onOpen: () => void
   onEdit: () => void
   onDelete: () => void
+  onMove?: (direction: 'left' | 'right') => void
   onMoveToFolder?: (folderId: string) => void
   onMoveOutOfFolder?: () => void
   onUngroupFolder?: () => void
@@ -27,6 +28,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onOpen,
   onEdit,
   onDelete,
+  onMove,
   onMoveToFolder,
   onMoveOutOfFolder,
   onUngroupFolder,
@@ -83,6 +85,35 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
           <Edit3 className="w-4 h-4 text-amber-400" />
           <span>{shortcut.isFolder ? '重命名文件夹' : '编辑图标'}</span>
         </button>
+      )}
+
+      {!shortcut.isSpecial && onMove && !isInFolder && (
+        <div className="flex border-y border-white/10 my-0.5">
+          <button
+            type="button"
+            onClick={() => {
+              onMove('left')
+              onClose()
+            }}
+            className="flex-1 flex items-center justify-center space-x-1.5 py-1.5 hover:bg-white/10 text-white/80 hover:text-white transition-colors border-r border-white/10"
+            title="向前移动一位"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-sky-400" />
+            <span className="text-[11px]">前移</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onMove('right')
+              onClose()
+            }}
+            className="flex-1 flex items-center justify-center space-x-1.5 py-1.5 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+            title="向后移动一位"
+          >
+            <span className="text-[11px]">后移</span>
+            <ArrowRight className="w-3.5 h-3.5 text-sky-400" />
+          </button>
+        </div>
       )}
 
       {isInFolder && onMoveOutOfFolder && (
