@@ -160,40 +160,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
           </div>
 
-          {/* Work countdown and salary stats */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Real widgets toggle */}
+          <div className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl">
             <div>
-              <label className="block text-xs font-semibold text-white/80 mb-1">下班目标时间</label>
-              <input
-                type="time"
-                value={current.offWorkTime}
-                onChange={(e) => setCurrent({ ...current, offWorkTime: e.target.value })}
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400"
-              />
+              <div className="text-xs font-semibold text-white/90">显示日历与纪念日小组件</div>
+              <div className="text-[11px] text-white/50">在桌面顶部显示实时万年历与出生/纪念日天数</div>
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-white/80 mb-1">天气所在城市</label>
+            <label className="relative inline-flex items-center cursor-pointer">
               <input
-                type="text"
-                value={current.city}
-                onChange={(e) => setCurrent({ ...current, city: e.target.value })}
-                placeholder="例如: 浦东新区"
-                className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400"
+                type="checkbox"
+                checked={current.showRealWidgets}
+                onChange={(e) => setCurrent({ ...current, showRealWidgets: e.target.checked })}
+                className="sr-only peer"
               />
-            </div>
-          </div>
-
-          {/* Salary ticker */}
-          <div>
-            <label className="block text-xs font-semibold text-white/80 mb-1">
-              月薪数值 (用于实时计算今天赚了多少钱 ¥)
+              <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
             </label>
-            <input
-              type="number"
-              value={current.monthlySalary}
-              onChange={(e) => setCurrent({ ...current, monthlySalary: Number(e.target.value) })}
-              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400"
-            />
           </div>
 
           {/* Backup and restore */}

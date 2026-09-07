@@ -13,6 +13,16 @@
   }
 }
 
+/* Wiggle animation for edit mode */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1.2deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.22s ease-in-out infinite alternate;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

@@ -1,25 +1,16 @@
 import type { UserSettings } from '../types'
-import {
-  DEFAULT_SHORTCUTS_TOP,
-  DEFAULT_SHORTCUTS_DOCK1,
-  DEFAULT_SHORTCUTS_DOCK2,
-} from '../data/defaults'
+import { DEFAULT_DESKTOP_SHORTCUTS } from '../data/defaults'
 
-const STORAGE_KEY = 'itab_home_settings_v2'
+const STORAGE_KEY = 'itab_home_settings_v3'
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '1988-03-04',
-  offWorkTime: '18:00',
-  workStartTime: '09:00',
-  monthlySalary: 20000,
-  workDaysPerMonth: 21.75,
   city: '浦东新区',
   wallpaper: '/wallpapers/default.jpg',
   wallpaperType: 'default',
   searchEngineId: 'bing',
-  shortcutsTop: DEFAULT_SHORTCUTS_TOP,
-  shortcutsDock1: DEFAULT_SHORTCUTS_DOCK1,
-  shortcutsDock2: DEFAULT_SHORTCUTS_DOCK2,
+  showRealWidgets: true,
+  shortcuts: DEFAULT_DESKTOP_SHORTCUTS,
 }
 
 export function loadSettings(): UserSettings {

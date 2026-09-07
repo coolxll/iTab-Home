@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
-import { X, Globe, FolderPlus } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { X } from 'lucide-react'
 import type { Shortcut } from '../types'
 
-interface AddShortcutModalProps {
+interface EditShortcutModalProps {
   isOpen: boolean
+  shortcut: Shortcut | null
   onClose: () => void
-  onAdd: (shortcut: Shortcut) => void
-  targetFolderId?: string | null
+  onSave: (updated: Shortcut) => void
 }
 
 const COLOR_OPTIONS = [
@@ -23,50 +23,36 @@ const COLOR_OPTIONS = [
   'bg-black',
 ]
 
-export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
+export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
   isOpen,
+  shortcut,
   onClose,
-  onAdd,
-  targetFolderId,
+  onSave,
 }) => {
-  const [activeTab, setActiveTab] = useState<'link' | 'folder'>('link')
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0])
 
-  if (!isOpen) return null
+  useEffect(() => {
+    if (shortcut) {
+      setTitle(shortcut.title)
+      setUrl(shortcut.url || '')
+      setSelectedColor(shortcut.bgColor || COLOR_OPTIONS[0])
+    }
+  }, [shortcut])
+
+  if (!isOpen || !shortcut) return null
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
 
-    if (activeTab === 'folder') {
-      const newFolder: Shortcut = {
-        id: `folder-${Date.now()}`,
-        title: title.trim(),
-        isFolder: true,
-        bgColor: selectedColor,
-        children: [],
-      }
-      onAdd(newFolder)
-    } else {
-      if (!url.trim()) return
-      let finalUrl = url.trim()
-      if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
-        finalUrl = `https://${finalUrl}`
-      }
-
-      const newShortcut: Shortcut = {
-        id: `custom-${Date.now()}`,
-        title: title.trim(),
-        url: finalUrl,
-        bgColor: selectedColor,
-      }
-      onAdd(newShortcut)
-    }
-
-    setTitle('')
-    setUrl('')
+    onSave({
+      ...shortcut,
+      title: title.trim(),
+      url: shortcut.isFolder ? undefined : url.trim(),
+      bgColor: selectedColor,
+    })
     onClose()
   }
 
@@ -75,7 +61,7 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
       <div className="w-full max-w-md bg-zinc-900/95 border border-white/20 rounded-2xl shadow-2xl p-6 text-white backdrop-blur-2xl">
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
           <h3 className="text-base font-semibold">
-            {targetFolderId ? '添加到文件夹' : '添加快捷方式'}
+            {shortcut.isFolder ? '编辑文件夹' : '编辑网页快捷方式'}
           </h3>
           <button
             onClick={onClose}
@@ -85,52 +71,19 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
           </button>
         </div>
 
-        {/* Tab switcher (only when adding to main desktop) */}
-        {!targetFolderId && (
-          <div className="grid grid-cols-2 gap-2 mt-4 bg-white/5 p-1 rounded-xl border border-white/10">
-            <button
-              type="button"
-              onClick={() => setActiveTab('link')}
-              className={`flex items-center justify-center space-x-2 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeTab === 'link'
-                  ? 'bg-sky-500 text-white shadow'
-                  : 'text-white/60 hover:text-white'
-              }`}
-            >
-              <Globe className="w-4 h-4" />
-              <span>添加网页图标</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('folder')}
-              className={`flex items-center justify-center space-x-2 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeTab === 'folder'
-                  ? 'bg-indigo-500 text-white shadow'
-                  : 'text-white/60 hover:text-white'
-              }`}
-            >
-              <FolderPlus className="w-4 h-4" />
-              <span>新建文件夹</span>
-            </button>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-1">
-              {activeTab === 'folder' ? '文件夹名称' : '名称'}
-            </label>
+            <label className="block text-xs font-medium text-white/70 mb-1">名称</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={activeTab === 'folder' ? '例如: 常用开发、影音媒体' : '例如: 个人博客、Proxmox'}
               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 text-sm focus:outline-none focus:border-sky-400"
             />
           </div>
 
-          {activeTab === 'link' && (
+          {!shortcut.isFolder && (
             <div>
               <label className="block text-xs font-medium text-white/70 mb-1">网址 (URL)</label>
               <input
@@ -145,7 +98,7 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
           )}
 
           <div>
-            <label className="block text-xs font-medium text-white/70 mb-2">背景色彩</label>
+            <label className="block text-xs font-medium text-white/70 mb-2">图标背景色</label>
             <div className="flex items-center space-x-2 flex-wrap gap-y-2">
               {COLOR_OPTIONS.map((c) => (
                 <button
@@ -172,7 +125,7 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
               type="submit"
               className="px-4 py-2 text-sm bg-sky-500 hover:bg-sky-400 text-white font-medium rounded-xl shadow-lg transition-colors"
             >
-              确定创建
+              保存修改
             </button>
           </div>
         </form>

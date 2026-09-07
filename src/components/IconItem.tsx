@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Settings, Puzzle, Lightbulb, Plus, Globe } from 'lucide-react'
+import { Settings, Puzzle, Lightbulb, Plus, Globe, X } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
@@ -7,15 +7,38 @@ import { VectorIcon } from './VectorIcon'
 interface IconItemProps {
   shortcut: Shortcut
   size?: 'normal' | 'large'
+  isEditMode?: boolean
   onClick?: () => void
+  onDelete?: () => void
+  onContextMenu?: (e: React.MouseEvent, shortcut: Shortcut) => void
+  onDragStart?: (e: React.DragEvent, shortcut: Shortcut) => void
+  onDragOver?: (e: React.DragEvent, shortcut: Shortcut) => void
+  onDrop?: (e: React.DragEvent, shortcut: Shortcut) => void
 }
 
-export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', onClick }) => {
-  const candidates = getFaviconCandidates(shortcut.url, shortcut.icon)
+export const IconItem: React.FC<IconItemProps> = ({
+  shortcut,
+  size = 'normal',
+  isEditMode = false,
+  onClick,
+  onDelete,
+  onContextMenu,
+  onDragStart,
+  onDragOver,
+  onDrop,
+}) => {
+  const candidates = getFaviconCandidates(shortcut.url || '', shortcut.icon)
   const [candidateIndex, setCandidateIndex] = useState(0)
   const [imgError, setImgError] = useState(false)
+  const [isDragOverTarget, setIsDragOverTarget] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
+    if (isEditMode && onDelete && !shortcut.isSpecial) {
+      e.stopPropagation()
+      onDelete()
+      return
+    }
+
     if (shortcut.isSpecial || onClick) {
       e.preventDefault()
       onClick?.()
@@ -33,7 +56,38 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
   }
 
   const renderContent = () => {
-    // 1. Built-in Special Tools
+    // 1. Folder representation (2x2 mini grid preview of children icons)
+    if (shortcut.isFolder) {
+      const children = shortcut.children || []
+      const previews = children.slice(0, 4)
+
+      return (
+        <div className="w-full h-full bg-white/20 hover:bg-white/25 backdrop-blur-xl border border-white/25 p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-colors">
+          {previews.map((child, idx) => (
+            <div
+              key={idx}
+              className="w-full h-full rounded-md overflow-hidden bg-black/20 flex items-center justify-center p-0.5"
+            >
+              {child.icon ? (
+                <div className="w-full h-full scale-75 origin-center">
+                  <VectorIcon name={child.icon} />
+                </div>
+              ) : (
+                <span className="text-[8px] font-bold text-white/90">
+                  {child.title.slice(0, 1)}
+                </span>
+              )}
+            </div>
+          ))}
+          {/* Fill empty slots */}
+          {Array.from({ length: Math.max(0, 4 - previews.length) }).map((_, idx) => (
+            <div key={`empty-${idx}`} className="w-full h-full rounded-md bg-white/5" />
+          ))}
+        </div>
+      )
+    }
+
+    // 2. Built-in Special Tools
     if (shortcut.id === 'settings') {
       return (
         <div className="w-full h-full bg-gradient-to-br from-zinc-600 to-zinc-800 flex items-center justify-center text-white">
@@ -80,13 +134,13 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
       )
     }
 
-    // 2. Pixel-perfect Vector SVG Icon (100% Retina Sharp)
+    // 3. Pixel-perfect Vector SVG Icon (100% Retina Sharp)
     if (shortcut.icon) {
       const vector = <VectorIcon name={shortcut.icon} />
       if (vector) return vector
     }
 
-    // 3. Dynamic Favicon Fetching directly from target address
+    // 4. Dynamic Favicon Fetching directly from target address
     if (!imgError && candidates.length > 0) {
       return (
         <div
@@ -105,7 +159,7 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
       )
     }
 
-    // 4. Clean Fallback badge
+    // 5. Clean Fallback badge
     return (
       <div
         className={`w-full h-full ${
@@ -121,13 +175,48 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
 
   return (
     <div
+      draggable={!shortcut.isSpecial}
+      onDragStart={(e) => onDragStart?.(e, shortcut)}
+      onDragOver={(e) => {
+        e.preventDefault()
+        setIsDragOverTarget(true)
+        onDragOver?.(e, shortcut)
+      }}
+      onDragLeave={() => setIsDragOverTarget(false)}
+      onDrop={(e) => {
+        e.preventDefault()
+        setIsDragOverTarget(false)
+        onDrop?.(e, shortcut)
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        onContextMenu?.(e, shortcut)
+      }}
       onClick={handleClick}
-      className="flex flex-col items-center justify-start w-full group/icon cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95"
-      title={`${shortcut.title} (${shortcut.url})`}
+      className={`relative flex flex-col items-center justify-start w-full group/icon cursor-pointer select-none transition-all duration-200 ${
+        isEditMode && !shortcut.isSpecial ? 'animate-wiggle' : 'hover:scale-105 active:scale-95'
+      }`}
+      title={shortcut.isFolder ? `文件夹: ${shortcut.title}` : `${shortcut.title} (${shortcut.url})`}
     >
+      {/* Delete badge in edit mode */}
+      {isEditMode && !shortcut.isSpecial && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete?.()
+          }}
+          className="absolute -top-1.5 -right-1 z-30 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90"
+        >
+          <X className="w-3 h-3 stroke-[3]" />
+        </button>
+      )}
+
       {/* App Squircle */}
       <div
-        className={`${squircleSize} rounded-2xl overflow-hidden shadow-md group-hover/icon:shadow-xl transition-all duration-300 ring-1 ring-white/10 group-hover/icon:ring-white/40 flex items-center justify-center relative bg-white/5 backdrop-blur-sm flex-shrink-0`}
+        className={`${squircleSize} rounded-2xl overflow-hidden shadow-md group-hover/icon:shadow-xl transition-all duration-300 ring-1 ring-white/10 group-hover/icon:ring-white/40 flex items-center justify-center relative bg-white/5 backdrop-blur-sm flex-shrink-0 ${
+          isDragOverTarget ? 'ring-4 ring-sky-400 scale-110' : ''
+        }`}
       >
         {renderContent()}
       </div>
