@@ -40,7 +40,7 @@
 
 1. 将当前项目初始化并推送到你的 GitHub：
    ```bash
-   cd /Users/lynn/workspace/iTab-Home
+   cd /Users/lynn/workspace/projects/iTab-Home
    git init -b main
    git add .
    git commit -m "feat: initial commit for iTab-Home"
@@ -56,7 +56,7 @@
 
 ```bash
 # 进入目录
-cd /Users/lynn/workspace/iTab-Home
+cd /Users/lynn/workspace/projects/iTab-Home
 
 # 安装依赖
 pnpm install
