@@ -92,45 +92,45 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                高清动漫壁纸
+                暗夜雪山星空
               </button>
               <button
                 type="button"
                 onClick={() =>
                   setCurrent({
                     ...current,
-                    wallpaperType: 'original',
-                    wallpaper: '/wallpapers/original_screenshot.png',
+                    wallpaperType: 'nature',
+                    wallpaper: '/wallpapers/yosemite.jpg',
                   })
                 }
                 className={`p-2 rounded-xl border text-center transition-all ${
-                  current.wallpaperType === 'original'
+                  current.wallpaperType === 'nature'
                     ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                原图截图背景
+                优胜美地暮色
               </button>
               <button
                 type="button"
                 onClick={() =>
                   setCurrent({
                     ...current,
-                    wallpaperType: 'bing',
-                    wallpaper: 'https://bing.biturl.top/?resolution=1920&format=image&index=0&mkt=zh-CN',
+                    wallpaperType: 'space',
+                    wallpaper: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2560&q=80',
                   })
                 }
                 className={`p-2 rounded-xl border text-center transition-all ${
-                  current.wallpaperType === 'bing'
+                  current.wallpaperType === 'space'
                     ? 'border-sky-400 bg-sky-500/20 text-white font-medium'
                     : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
                 }`}
               >
-                必应每日壁纸
+                深空地球星云
               </button>
             </div>
-            {/* Custom wallpaper input */}
-            <div className="mt-2">
+            {/* Custom wallpaper input and local upload */}
+            <div className="mt-2.5 flex items-center space-x-2">
               <input
                 type="text"
                 value={current.wallpaper}
@@ -141,9 +141,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     wallpaper: e.target.value,
                   })
                 }
-                placeholder="或输入自定义图片 URL..."
-                className="w-full px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 text-xs focus:outline-none focus:border-sky-400"
+                placeholder="输入自定义图片 URL..."
+                className="flex-1 px-3 py-1.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 text-xs focus:outline-none focus:border-sky-400"
               />
+              <label className="flex items-center space-x-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-white/90 transition-colors cursor-pointer flex-shrink-0">
+                <span>上传本地</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    const reader = new FileReader()
+                    reader.onload = (ev) => {
+                      if (ev.target?.result) {
+                        setCurrent({
+                          ...current,
+                          wallpaperType: 'custom',
+                          wallpaper: ev.target.result as string,
+                        })
+                      }
+                    }
+                    reader.readAsDataURL(file)
+                  }}
+                  className="hidden"
+                />
+              </label>
             </div>
           </div>
 

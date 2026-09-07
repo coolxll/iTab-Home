@@ -22,7 +22,7 @@ export interface UserSettings {
   birthDate: string // YYYY-MM-DD
   city: string
   wallpaper: string
-  wallpaperType: 'default' | 'original' | 'bing' | 'custom'
+  wallpaperType: 'default' | 'nature' | 'space' | 'bing' | 'custom'
   searchEngineId: string
   showRealWidgets: boolean // Toggle Calendar & Anniversary widgets
   shortcuts: Shortcut[] // Unified desktop shortcuts & folders
