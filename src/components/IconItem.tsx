@@ -3,7 +3,7 @@ import { Settings, Lightbulb, Plus, Globe, X, ChevronLeft, ChevronRight } from '
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
-import { hasVectorIcon } from '../utils/vectorIcons'
+import { hasVectorIcon, inferVectorIcon } from '../utils/vectorIcons'
 
 interface IconItemProps {
   shortcut: Shortcut
@@ -39,7 +39,8 @@ export const IconItem: React.FC<IconItemProps> = ({
       ? shortcut.iconStyle
       : globalIconStyle
 
-  const candidates = getFaviconCandidates(shortcut.url || '', shortcut.icon)
+  const effectiveIcon = shortcut.icon || inferVectorIcon(shortcut.title, shortcut.url)
+  const candidates = getFaviconCandidates(shortcut.url || '', effectiveIcon)
   const [candidateIndex, setCandidateIndex] = useState(0)
   const [imgError, setImgError] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
@@ -81,6 +82,7 @@ export const IconItem: React.FC<IconItemProps> = ({
           {previews.map((child, idx) => {
             const childVariant =
               child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : effectiveVariant
+            const childEffectiveIcon = child.icon || inferVectorIcon(child.title, child.url)
 
             return (
               <div
@@ -94,8 +96,8 @@ export const IconItem: React.FC<IconItemProps> = ({
                     transformOrigin: 'top left',
                   }}
                 >
-                  {child.icon ? (
-                    <VectorIcon name={child.icon} variant={childVariant} />
+                  {childEffectiveIcon && hasVectorIcon(childEffectiveIcon) ? (
+                    <VectorIcon name={childEffectiveIcon} variant={childVariant} />
                   ) : (
                     <div
                       className={`w-full h-full ${
@@ -154,7 +156,10 @@ export const IconItem: React.FC<IconItemProps> = ({
     const hasCandidate = Boolean(
       shortcut.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
     )
-    const fallbackVector = shortcut.icon ? <VectorIcon name={shortcut.icon} variant={effectiveVariant} /> : null
+    const fallbackVector =
+      effectiveIcon && hasVectorIcon(effectiveIcon)
+        ? <VectorIcon name={effectiveIcon} variant={effectiveVariant} />
+        : null
     const currentCandidate = hasCandidate ? candidates[candidateIndex] : null
     const isAppleTouchIcon = currentCandidate?.includes('apple-touch-icon')
 

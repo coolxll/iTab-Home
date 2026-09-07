@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, Globe, Sparkles } from 'lucide-react'
 import type { Shortcut } from '../types'
+import { VectorIcon } from './VectorIcon'
+import { hasVectorIcon, inferVectorIcon, POPULAR_ICON_OPTIONS } from '../utils/vectorIcons'
 
 interface EditShortcutModalProps {
   isOpen: boolean
@@ -33,6 +35,7 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
   const [url, setUrl] = useState('')
   const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0])
   const [iconStyle, setIconStyle] = useState<'auto' | 'official' | 'optimized'>('auto')
+  const [customIcon, setCustomIcon] = useState<string>('')
 
   useEffect(() => {
     if (shortcut) {
@@ -40,10 +43,14 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
       setUrl(shortcut.url || '')
       setSelectedColor(shortcut.bgColor || COLOR_OPTIONS[0])
       setIconStyle(shortcut.iconStyle || 'auto')
+      setCustomIcon(shortcut.icon || '')
     }
   }, [shortcut])
 
   if (!isOpen || !shortcut) return null
+
+  const inferredIcon = inferVectorIcon(title, url)
+  const effectiveIcon = customIcon || inferredIcon
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,6 +60,7 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
       ...shortcut,
       title: title.trim(),
       url: shortcut.isFolder ? undefined : url.trim(),
+      icon: effectiveIcon || undefined,
       bgColor: selectedColor,
       iconStyle,
     })
@@ -97,6 +105,78 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                 placeholder="https://..."
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 text-sm focus:outline-none focus:border-sky-400"
               />
+            </div>
+          )}
+
+          {!shortcut.isFolder && (
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-medium text-white/70 flex items-center space-x-1">
+                  <span>图标与预览</span>
+                </label>
+                {effectiveIcon && (
+                  <span className="text-[11px] text-sky-400 font-normal flex items-center space-x-1">
+                    <Sparkles className="w-3 h-3" />
+                    <span>{customIcon ? `已选: ${effectiveIcon}` : `已自动匹配: ${effectiveIcon}`}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Real-time Preview card */}
+              <div className="flex items-center space-x-3 p-2.5 bg-white/5 border border-white/10 rounded-xl mb-2.5">
+                <div className="w-11 h-11 rounded-[16px] overflow-hidden flex items-center justify-center bg-white/10 flex-shrink-0 shadow-sm border border-white/10">
+                  {effectiveIcon && hasVectorIcon(effectiveIcon) ? (
+                    <VectorIcon name={effectiveIcon} variant={iconStyle === 'optimized' ? 'optimized' : 'official'} />
+                  ) : (
+                    <div className={`w-full h-full ${selectedColor} flex items-center justify-center text-white font-bold text-xs`}>
+                      {title ? title.slice(0, 2) : <Globe className="w-5 h-5 text-white/70" />}
+                    </div>
+                  )}
+                </div>
+                <div className="text-xs text-white/60 leading-relaxed">
+                  {effectiveIcon ? (
+                    <p className="text-white/90">
+                      已绑定 <span className="text-sky-300 font-semibold">{effectiveIcon}</span> 官方矢量/高清图标，不受内网或网络阻断影响。
+                    </p>
+                  ) : (
+                    <p>
+                      未绑定内置图标，系统将尝试探测并展示该网址的原生 Favicon。
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Popular quick selector chips */}
+              <div className="mb-2">
+                <div className="text-[11px] text-white/50 mb-1.5">切换或重设内置图标：</div>
+                <div className="flex items-center gap-1.5 flex-wrap max-h-24 overflow-y-auto pr-1">
+                  <button
+                    type="button"
+                    onClick={() => setCustomIcon('')}
+                    className={`px-2 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+                      !customIcon
+                        ? 'border-sky-400 bg-sky-500/20 text-sky-300 shadow-xs'
+                        : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                    }`}
+                  >
+                    ✨ 智能识别
+                  </button>
+                  {POPULAR_ICON_OPTIONS.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setCustomIcon(item.id)}
+                      className={`px-2 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+                        customIcon === item.id
+                          ? 'border-sky-400 bg-sky-500/20 text-sky-300 shadow-xs'
+                          : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
