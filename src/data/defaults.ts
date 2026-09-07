@@ -129,7 +129,7 @@ export const DEFAULT_SHORTCUTS_TOP: Shortcut[] = [
   { id: 'extensions', title: '扩展管理', url: 'chrome://extensions', icon: 'extensions', bgColor: 'bg-zinc-600' },
 ]
 
-// Dock Row 1 (Public Services)
+// Dock Row 1 (Public Services - Favicon fetched directly from target URL / Google CDN)
 export const DEFAULT_SHORTCUTS_DOCK1: Shortcut[] = [
   { id: 'v2ex', title: 'V2EX', url: 'https://www.v2ex.com', bgColor: 'bg-[#1F1F1F]' },
   { id: 'feedly', title: 'Feedly', url: 'https://feedly.com', bgColor: 'bg-[#2BB24C]' },
@@ -147,18 +147,18 @@ export const DEFAULT_SHORTCUTS_DOCK1: Shortcut[] = [
   { id: 'nga', title: 'NGA玩家社区', url: 'https://bbs.nga.cn', bgColor: 'bg-[#3A220F]' },
 ]
 
-// Dock Row 2 (Homelab & Cloud Services, aligned with TinyAuth / homelab-infra)
+// Dock Row 2 (Homelab & Cloud Services, pixel-perfect authentic badges from screenshot)
 export const DEFAULT_SHORTCUTS_DOCK2: Shortcut[] = [
   { id: 'github', title: 'GitHub', url: 'https://github.com', bgColor: 'bg-black' },
   { id: 'chatgpt', title: 'ChatGPT', url: 'https://chatgpt.com', bgColor: 'bg-[#10A37F]' },
-  { id: 'homepage', title: 'Homepage', url: 'https://nav.229929605.xyz', bgColor: 'bg-[#3B82F6]' },
-  { id: 'cloudflare', title: 'Cloudflare - ...', url: 'https://dash.cloudflare.com', bgColor: 'bg-[#F38020]' },
-  { id: 'rn-proxy', title: 'RN PROXY API', url: 'https://cpa.229929605.xyz/management.html', icon: '/icons/cliproxyapi.png', bgColor: 'bg-[#FF8800]' },
-  { id: 'cpa-keeper', title: 'CPA Keeper', url: 'https://cpa.229929605.xyz/keeper/', icon: '/icons/cpa-usage-keeper.svg', bgColor: 'bg-[#FF9900]' },
-  { id: 'cli-proxy', title: 'CLI Proxy API', url: 'https://claude.229929605.xyz/management.html', icon: '/icons/cliproxyapi.png', bgColor: 'bg-[#E11D48]' },
-  { id: 'cpa-usage', title: 'CPA USAGE ...', url: 'https://claude.229929605.xyz/keeper/', icon: '/icons/cpa-usage-keeper.svg', bgColor: 'bg-[#EF4444]' },
-  { id: 'codex-usage', title: 'Codex Usage', url: 'https://cpa.229929605.xyz/keeper/', icon: '/icons/cpa-usage-keeper.svg', bgColor: 'bg-[#EA580C]' },
-  { id: 'linuxdo', title: 'Linux.do', url: 'https://linux.do', bgColor: 'bg-black' },
+  { id: 'homepage', title: 'Homepage', url: 'https://nav.229929605.xyz', icon: 'homepage', bgColor: 'bg-[#3B82F6]' },
+  { id: 'cloudflare', title: 'Cloudflare - ...', url: 'https://dash.cloudflare.com', icon: 'cloudflare', bgColor: 'bg-[#F38020]' },
+  { id: 'rn-proxy', title: 'RN PROXY API', url: 'https://cpa.229929605.xyz/management.html', icon: 'rn-proxy', bgColor: 'bg-[#FF8800]' },
+  { id: 'cpa-keeper', title: 'CPA Keeper', url: 'https://cpa.229929605.xyz/keeper/', icon: 'cpa-keeper', bgColor: 'bg-[#FF9900]' },
+  { id: 'cli-proxy', title: 'CLI Proxy API', url: 'https://claude.229929605.xyz/management.html', icon: 'cli-proxy', bgColor: 'bg-[#E11D48]' },
+  { id: 'cpa-usage', title: 'CPA USAGE ...', url: 'https://claude.229929605.xyz/keeper/', icon: 'cpa-usage', bgColor: 'bg-[#EF4444]' },
+  { id: 'codex-usage', title: 'Codex Usage', url: 'https://cpa.229929605.xyz/keeper/', icon: 'codex-usage', bgColor: 'bg-[#EA580C]' },
+  { id: 'linuxdo', title: 'Linux.do', url: 'https://linux.do', icon: 'linuxdo', bgColor: 'bg-black' },
   { id: 'tinyauth', title: 'TinyAuth SSO', url: 'https://auth.229929605.xyz', bgColor: 'bg-blue-600' },
   { id: 'add-shortcut', title: '添加图标', url: '#add', icon: 'plus', bgColor: 'bg-[#0091FF]', isSpecial: true },
 ]

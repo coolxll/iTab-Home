@@ -5,7 +5,7 @@ import {
   DEFAULT_SHORTCUTS_DOCK2,
 } from '../data/defaults'
 
-const STORAGE_KEY = 'itab_home_settings_v1'
+const STORAGE_KEY = 'itab_home_settings_v2'
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '1988-03-04',

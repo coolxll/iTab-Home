@@ -12,7 +12,7 @@ interface IconItemProps {
 export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', onClick }) => {
   const candidates = getFaviconCandidates(shortcut.url, shortcut.icon)
   const [candidateIndex, setCandidateIndex] = useState(0)
-  const [imgError, setImgError] = useState(candidates.length === 0)
+  const [imgError, setImgError] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
     if (shortcut.isSpecial || onClick) {
@@ -32,7 +32,7 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
   }
 
   const renderContent = () => {
-    // 1. Built-in special tools
+    // 1. Built-in Special Tools
     if (shortcut.id === 'settings') {
       return (
         <div className="w-full h-full bg-gradient-to-br from-zinc-600 to-zinc-800 flex items-center justify-center text-white">
@@ -79,10 +79,83 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
       )
     }
 
-    // 2. Direct Favicon from Target Address (with multi-tier fallback)
+    // 2. High-fidelity Homelab & Specific Platform Brand Badges
+    if (shortcut.icon === 'homepage') {
+      return (
+        <div className="w-full h-full bg-[#3B82F6] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+          </svg>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'rn-proxy') {
+      return (
+        <div className="w-full h-full bg-[#FF8800] flex items-center justify-center p-2">
+          <img
+            src="/icons/cliproxyapi.png"
+            alt="RN PROXY"
+            className="w-full h-full object-contain"
+            onError={() => {}}
+          />
+        </div>
+      )
+    }
+    if (shortcut.icon === 'cpa-keeper') {
+      return (
+        <div className="w-full h-full bg-[#FF9900] flex items-center justify-center select-none">
+          <span className="text-white font-black text-[12px] tracking-tight">Keeper</span>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'cli-proxy') {
+      return (
+        <div className="w-full h-full bg-[#E11D48] flex items-center justify-center select-none">
+          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+            <span className="text-[#E11D48] font-black text-[11px]">CPA</span>
+          </div>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'cpa-usage') {
+      return (
+        <div className="w-full h-full bg-[#EF4444] flex items-center justify-center select-none">
+          <span className="text-white font-black text-[11px] tracking-tight">USAGE</span>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'codex-usage') {
+      return (
+        <div className="w-full h-full bg-[#EA580C] flex items-center justify-center select-none">
+          <span className="text-white font-black text-[11px] tracking-tight">Codex</span>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'cloudflare') {
+      return (
+        <div className="w-full h-full bg-[#F38020] flex items-center justify-center text-white">
+          <span className="text-xl">☁️</span>
+        </div>
+      )
+    }
+    if (shortcut.icon === 'linuxdo') {
+      return (
+        <div className="w-full h-full bg-black flex items-center justify-center text-white select-none">
+          <div className="w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-black text-xs font-black">
+            🐧
+          </div>
+        </div>
+      )
+    }
+
+    // 3. Dynamic Favicon Fetching directly from target address
     if (!imgError && candidates.length > 0) {
       return (
-        <div className={`w-full h-full ${shortcut.bgColor || 'bg-white'} flex items-center justify-center p-2`}>
+        <div
+          className={`w-full h-full ${
+            shortcut.bgColor || 'bg-white'
+          } flex items-center justify-center p-2`}
+        >
           <img
             src={candidates[candidateIndex]}
             alt={shortcut.title}
@@ -94,18 +167,14 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
       )
     }
 
-    // 3. Fallback when all favicon endpoints are unreachable
+    // 4. Clean Fallback badge
     return (
       <div
         className={`w-full h-full ${
           shortcut.bgColor || 'bg-gradient-to-br from-blue-500 to-indigo-600'
         } flex items-center justify-center text-white font-bold text-sm select-none shadow-inner`}
       >
-        {shortcut.title ? (
-          shortcut.title.slice(0, 2)
-        ) : (
-          <Globe className="w-5 h-5 text-white/80" />
-        )}
+        {shortcut.title ? shortcut.title.slice(0, 2) : <Globe className="w-5 h-5 text-white/80" />}
       </div>
     )
   }
