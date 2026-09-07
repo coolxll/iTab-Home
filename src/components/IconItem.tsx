@@ -3,6 +3,7 @@ import { Settings, Lightbulb, Plus, Globe, X } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
+import { hasVectorIcon } from '../utils/vectorIcons'
 
 interface IconItemProps {
   shortcut: Shortcut
@@ -117,7 +118,12 @@ export const IconItem: React.FC<IconItemProps> = ({
       }
     }
 
-    // 3. Official Web App Icon / Favicon from website (if available, use official one!)
+    // 3. Known / Curated Official Vector Icons (100% 一体化, Retina sharp, official brand asset, NO outer/inner frames!)
+    if (shortcut.icon && hasVectorIcon(shortcut.icon)) {
+      return <VectorIcon name={shortcut.icon} />
+    }
+
+    // 4. Custom Website Favicon / Apple-Touch-Icon (for custom URLs added by user)
     const hasCandidate = Boolean(
       shortcut.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
     )
