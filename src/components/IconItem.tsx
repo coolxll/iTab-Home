@@ -71,35 +71,47 @@ export const IconItem: React.FC<IconItemProps> = ({
   }
 
   const renderContent = () => {
-    // 1. Folder representation (2x2 mini grid preview of children icons)
+    // 1. Folder representation (2x2 mini grid preview of children icons with true proportional downscaling)
     if (shortcut.isFolder) {
       const children = shortcut.children || []
       const previews = children.slice(0, 4)
 
       return (
-        <div className="w-full h-full bg-white/25 hover:bg-white/35 backdrop-blur-md p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-all rounded-[18px]">
-          {previews.map((child, idx) => (
-            <div
-              key={idx}
-              className="w-full h-full rounded-[6px] overflow-hidden flex items-center justify-center shadow-xs"
-            >
-              {child.icon ? (
-                <div className="w-full h-full scale-90 origin-center flex items-center justify-center">
-                  <VectorIcon
-                    name={child.icon}
-                    variant={child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : effectiveVariant}
-                  />
+        <div className="w-full h-full bg-white/20 hover:bg-white/30 backdrop-blur-md p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-all rounded-[18px]">
+          {previews.map((child, idx) => {
+            const childVariant =
+              child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : effectiveVariant
+
+            return (
+              <div
+                key={child.id || idx}
+                className="w-4 h-4 rounded-[4px] overflow-hidden relative shadow-[0_1px_2px_rgba(0,0,0,0.25)] bg-white/10 flex-shrink-0"
+              >
+                <div
+                  className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+                  style={{
+                    transform: 'scale(0.3333333)',
+                    transformOrigin: 'top left',
+                  }}
+                >
+                  {child.icon ? (
+                    <VectorIcon name={child.icon} variant={childVariant} />
+                  ) : (
+                    <div
+                      className={`w-full h-full ${
+                        child.bgColor || 'bg-blue-600'
+                      } flex items-center justify-center text-lg font-bold text-white`}
+                    >
+                      {child.title ? child.title.slice(0, 2) : '•'}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className={`w-full h-full ${child.bgColor || 'bg-blue-600'} flex items-center justify-center text-[9px] font-bold text-white`}>
-                  {child.title.slice(0, 1)}
-                </div>
-              )}
-            </div>
-          ))}
+              </div>
+            )
+          })}
           {/* Fill empty slots */}
           {Array.from({ length: Math.max(0, 4 - previews.length) }).map((_, idx) => (
-            <div key={`empty-${idx}`} className="w-full h-full rounded-[6px] bg-white/10" />
+            <div key={`empty-${idx}`} className="w-4 h-4 rounded-[4px] bg-white/10" />
           ))}
         </div>
       )
