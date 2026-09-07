@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { X, RotateCcw, Download, Upload } from 'lucide-react'
 import type { UserSettings } from '../types'
 import { DEFAULT_SETTINGS } from '../utils/storage'
+import YAML from 'yaml'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -33,11 +34,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   }
 
-  const handleExport = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(current, null, 2))
+  const handleExport = (format: 'json' | 'yaml' = 'json') => {
+    let dataStr = ''
+    let filename = ''
+    if (format === 'yaml') {
+      const yamlData = {
+        version: 1,
+        shortcuts: current.shortcuts,
+      }
+      dataStr = 'data:text/yaml;charset=utf-8,' + encodeURIComponent(YAML.stringify(yamlData))
+      filename = `shortcuts-${Date.now()}.yaml`
+    } else {
+      dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(current, null, 2))
+      filename = `itab-settings-${Date.now()}.json`
+    }
+
     const downloadAnchor = document.createElement('a')
     downloadAnchor.setAttribute('href', dataStr)
-    downloadAnchor.setAttribute('download', `itab-settings-${Date.now()}.json`)
+    downloadAnchor.setAttribute('download', filename)
     document.body.appendChild(downloadAnchor)
     downloadAnchor.click()
     downloadAnchor.remove()
@@ -48,12 +62,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     if (!file) return
     const reader = new FileReader()
     reader.onload = (event) => {
+      const content = event.target?.result as string
       try {
-        const parsed = JSON.parse(event.target?.result as string)
-        setCurrent({ ...DEFAULT_SETTINGS, ...parsed })
-        alert('配置导入成功！点击保存即可应用。')
+        // Try parsing YAML first (which also handles JSON)
+        const parsed = YAML.parse(content)
+        if (parsed && Array.isArray(parsed.shortcuts)) {
+          setCurrent({ ...current, shortcuts: parsed.shortcuts })
+          alert('shortcuts.yaml 图标布局导入成功！点击保存即可生效。')
+        } else if (parsed && typeof parsed === 'object') {
+          setCurrent({ ...DEFAULT_SETTINGS, ...parsed })
+          alert('配置导入成功！点击保存即可生效。')
+        } else {
+          throw new Error('Invalid format')
+        }
       } catch {
-        alert('文件解析失败，请确保是有效的 JSON 配置文件。')
+        alert('文件解析失败，请确保是有效的 JSON 或 YAML 配置文件。')
       }
     }
     reader.readAsText(file)
@@ -245,24 +268,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Backup and restore */}
           <div className="pt-2 border-t border-white/10">
             <label className="block text-xs font-semibold text-white/80 mb-2">备份与重置</label>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={handleExport}
+                onClick={() => handleExport('json')}
                 className="flex items-center space-x-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-white/90 transition-colors"
+                title="导出完整首选项为 JSON"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>导出配置</span>
+                <span>导出 JSON</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport('yaml')}
+                className="flex items-center space-x-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-white/90 transition-colors"
+                title="导出桌面与文件夹布局为 shortcuts.yaml"
+              >
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+                <span>导出 YAML</span>
               </button>
               <label className="flex items-center space-x-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs text-white/90 transition-colors cursor-pointer">
                 <Upload className="w-3.5 h-3.5" />
-                <span>导入配置</span>
-                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
+                <span>导入 (JSON/YAML)</span>
+                <input type="file" accept=".json,.yaml,.yml" onChange={handleImport} className="hidden" />
               </label>
               <button
                 type="button"
                 onClick={handleReset}
                 className="flex items-center space-x-1 px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-xl text-xs transition-colors ml-auto"
+                title="重置为 shortcuts.yaml 官方默认布局"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>重置为默认</span>

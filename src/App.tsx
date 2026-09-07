@@ -416,8 +416,8 @@ export const App: React.FC = () => {
             </button>
           </div>
 
-          {/* Icon Grid: Responsive, Floating seamlessly on wallpaper with zero container borders */}
-          <div className="w-full max-w-[1060px] grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 gap-x-3 gap-y-6 items-start justify-items-center px-2 py-4">
+          {/* Icon Grid: Responsive 8-column layout (perfect 1 row on desktop, 2 rows of 4 on mobile) */}
+          <div className="w-full max-w-[920px] grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 lg:grid-cols-8 gap-x-3 sm:gap-x-4 gap-y-6 items-start justify-items-center px-2 py-4">
             {settings.shortcuts.map((shortcut) => {
               let handleSpecialClick: (() => void) | undefined
               if (shortcut.id === 'settings') {

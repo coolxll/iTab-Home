@@ -523,6 +523,186 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
         </div>
       )
 
+    case 'claude':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#D97757]">
+            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0V3.5A1.5 1.5 0 0 1 12 2zm0 13.9a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0v-3.1a1.5 1.5 0 0 1 1.5-1.5zm10-4.4a1.5 1.5 0 0 1-1.5 1.5h-3.1a1.5 1.5 0 0 1 0-3h3.1A1.5 1.5 0 0 1 22 11.5zm-13.9 0a1.5 1.5 0 0 1-1.5 1.5H3.5a1.5 1.5 0 0 1 0-3h3.1a1.5 1.5 0 0 1 1.5 1.5zm10.97-6.97a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm-9.8 9.8a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm9.8 2.12a1.5 1.5 0 0 1-2.12 0l-2.19-2.19a1.5 1.5 0 0 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12zM6.85 6.85a1.5 1.5 0 0 1-2.12 0L2.54 4.66a1.5 1.5 0 1 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12z" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-[#CC785C] flex items-center justify-center p-2 text-white">
+          <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+            <path d="M12 2a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0V3.5A1.5 1.5 0 0 1 12 2zm0 13.9a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0v-3.1a1.5 1.5 0 0 1 1.5-1.5zm10-4.4a1.5 1.5 0 0 1-1.5 1.5h-3.1a1.5 1.5 0 0 1 0-3h3.1A1.5 1.5 0 0 1 22 11.5zm-13.9 0a1.5 1.5 0 0 1-1.5 1.5H3.5a1.5 1.5 0 0 1 0-3h3.1a1.5 1.5 0 0 1 1.5 1.5zm10.97-6.97a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm-9.8 9.8a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm9.8 2.12a1.5 1.5 0 0 1-2.12 0l-2.19-2.19a1.5 1.5 0 0 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12zM6.85 6.85a1.5 1.5 0 0 1-2.12 0L2.54 4.66a1.5 1.5 0 1 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12z" />
+          </svg>
+        </div>
+      )
+
+    case 'deepseek':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#4D6BFE]">
+            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+              <path d="M18.8 6.5C16.5 4.3 13 3.8 10 5.2c-2.3 1.1-4 3.2-4.6 5.6-.6 2.4-.1 5 1.3 7l-2.1 2.1c-.4.4-.1 1.1.5 1.1h4.2c3.5 0 6.8-1.7 8.8-4.6 2-2.9 2-6.7.7-9.9zm-4.3 4c-.7 0-1.2-.5-1.2-1.2s.5-1.2 1.2-1.2 1.2.5 1.2 1.2-.5 1.2-1.2 1.2z" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-[#4D6BFE] to-[#2B4BF2] flex items-center justify-center p-2 text-white">
+          <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+            <path d="M18.8 6.5C16.5 4.3 13 3.8 10 5.2c-2.3 1.1-4 3.2-4.6 5.6-.6 2.4-.1 5 1.3 7l-2.1 2.1c-.4.4-.1 1.1.5 1.1h4.2c3.5 0 6.8-1.7 8.8-4.6 2-2.9 2-6.7.7-9.9zm-4.3 4c-.7 0-1.2-.5-1.2-1.2s.5-1.2 1.2-1.2 1.2.5 1.2 1.2-.5 1.2-1.2 1.2z" />
+          </svg>
+        </div>
+      )
+
+    case 'kimi':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+            <div className="w-full h-full bg-[#18181B] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none tracking-tighter relative shadow-xs">
+              <span>K</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] absolute top-2 right-2.5"></span>
+            </div>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-[#18181B] to-[#0A0A0C] flex items-center justify-center text-white font-black text-2xl select-none tracking-tighter relative">
+          <span>K</span>
+          <span className="w-2 h-2 rounded-full bg-[#00E5FF] absolute top-2.5 right-3"></span>
+        </div>
+      )
+
+    case 'qwen':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#615CED]">
+            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2L3 9v6l9 7 9-7V9l-9-7zm0 3.8l6 4.7v3.9l-6 4.7-6-4.7v-3.9l6-4.7z" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-[#615CED] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M12 2L3 9v6l9 7 9-7V9l-9-7zm0 3.8l6 4.7v3.9l-6 4.7-6-4.7v-3.9l6-4.7z" />
+          </svg>
+        </div>
+      )
+
+    case 'perplexity':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#20808D]">
+            <svg className="w-7 h-7 fill-none stroke-current stroke-[2.2] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+              <path d="M12 3v18M6 7l12 10M6 17L18 7M3 12h18" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-[#20808D] flex items-center justify-center text-white">
+          <svg className="w-6 h-6 fill-none stroke-current stroke-[2.2] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+            <path d="M12 3v18M6 7l12 10M6 17L18 7M3 12h18" />
+          </svg>
+        </div>
+      )
+
+    case 'google':
+      return (
+        <div className="w-full h-full bg-white flex items-center justify-center p-2">
+          <svg className="w-7 h-7" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" />
+            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.44 7.33 24 12 24z" />
+            <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z" />
+            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.27 2.56 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+          </svg>
+        </div>
+      )
+
+    case 'google-drive':
+      return (
+        <div className="w-full h-full bg-white flex items-center justify-center p-2">
+          <svg className="w-7 h-7" viewBox="0 0 87.3 78">
+            <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+            <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44c-.8 1.4-1.2 2.95-1.2 4.5h27.5z" fill="#00ac47"/>
+            <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+            <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+            <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+            <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+          </svg>
+        </div>
+      )
+
+    case 'chrome-store':
+      return (
+        <div className="w-full h-full bg-white flex items-center justify-center p-2">
+          <svg className="w-7 h-7" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#EA4335" />
+            <path d="M12 2a10 10 0 0 1 8.66 15L12 12H2.05A10 10 0 0 1 12 2z" fill="#EA4335" />
+            <path d="M20.66 17A10 10 0 0 1 7.34 21.66L12 12l8.66 5z" fill="#34A853" />
+            <path d="M7.34 21.66A10 10 0 0 1 2.05 12H12l-4.66 9.66z" fill="#FBBC05" />
+            <circle cx="12" cy="12" r="4.5" fill="#FFFFFF" />
+            <circle cx="12" cy="12" r="3.5" fill="#4285F4" />
+          </svg>
+        </div>
+      )
+
+    case 'vercel':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-black flex items-center justify-center text-white">
+            <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+              <path d="M12 3L22 20H2L12 3Z" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-white border border-white/10">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M12 3L22 20H2L12 3Z" />
+          </svg>
+        </div>
+      )
+
+    case 'xueqiu':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+            <div className="w-full h-full bg-[#2985F7] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none shadow-xs">
+              雪
+            </div>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-gradient-to-tr from-[#1E88E5] to-[#42A5F5] flex items-center justify-center text-white font-black text-2xl select-none">
+          雪
+        </div>
+      )
+
+    case 'manmanbuy':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+            <div className="w-full h-full bg-[#FF4438] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none shadow-xs">
+              慢
+            </div>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-gradient-to-tr from-[#FF5252] to-[#FF7A45] flex items-center justify-center text-white font-black text-2xl select-none">
+          慢
+        </div>
+      )
+
     default:
       return null
   }

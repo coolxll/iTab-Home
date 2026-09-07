@@ -38,6 +38,17 @@ export const KNOWN_VECTOR_ICONS = new Set([
   'komodo',
   'sublinkpro',
   '3x-ui',
+  'claude',
+  'deepseek',
+  'kimi',
+  'qwen',
+  'perplexity',
+  'google',
+  'google-drive',
+  'chrome-store',
+  'vercel',
+  'xueqiu',
+  'manmanbuy',
 ])
 
 export function hasVectorIcon(name?: string): boolean {
