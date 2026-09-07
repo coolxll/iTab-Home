@@ -659,32 +659,28 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
     case 'xueqiu':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
-            <div className="w-full h-full bg-[#2985F7] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none shadow-xs">
-              雪
-            </div>
+          <div className="w-full h-full bg-white flex items-center justify-center overflow-hidden">
+            <img src="/icons/xueqiu.png" alt="雪球" className="w-full h-full object-cover" />
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-gradient-to-tr from-[#1E88E5] to-[#42A5F5] flex items-center justify-center text-white font-black text-2xl select-none">
-          雪
+        <div className="w-full h-full bg-[#1855B8] flex items-center justify-center overflow-hidden">
+          <img src="/icons/xueqiu.png" alt="雪球" className="w-full h-full object-cover" />
         </div>
       )
 
     case 'manmanbuy':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
-            <div className="w-full h-full bg-[#FF4438] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none shadow-xs">
-              慢
-            </div>
+          <div className="w-full h-full bg-white flex items-center justify-center overflow-hidden">
+            <img src="/icons/manmanbuy.png" alt="慢慢买" className="w-full h-full object-cover" />
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-gradient-to-tr from-[#FF5252] to-[#FF7A45] flex items-center justify-center text-white font-black text-2xl select-none">
-          慢
+        <div className="w-full h-full bg-[#FF4438] flex items-center justify-center overflow-hidden">
+          <img src="/icons/manmanbuy.png" alt="慢慢买" className="w-full h-full object-cover" />
         </div>
       )
 
