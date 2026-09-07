@@ -63,11 +63,16 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
       )
 
     case 'metaso':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-[#2055FF] flex items-center justify-center overflow-hidden">
+            <img src="/icons/metaso.png" alt="秘塔AI" className="w-full h-full object-cover scale-[1.15]" />
+          </div>
+        )
+      }
       return (
-        <div className="w-full h-full bg-[#2955FF] flex items-center justify-center text-white font-bold select-none">
-          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zm0 8.5L4.5 7 12 3.5 19.5 7 12 10.5zm-8 4.5l8 4 8-4v3l-8 4-8-4v-3z" />
-          </svg>
+        <div className="w-full h-full bg-[#2955FF] flex items-center justify-center p-1.5">
+          <img src="/icons/metaso.png" alt="秘塔AI" className="w-full h-full object-contain scale-110" />
         </div>
       )
 
@@ -522,10 +527,8 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
     case 'claude':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#D97757]">
-            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0V3.5A1.5 1.5 0 0 1 12 2zm0 13.9a1.5 1.5 0 0 1 1.5 1.5v3.1a1.5 1.5 0 0 1-3 0v-3.1a1.5 1.5 0 0 1 1.5-1.5zm10-4.4a1.5 1.5 0 0 1-1.5 1.5h-3.1a1.5 1.5 0 0 1 0-3h3.1A1.5 1.5 0 0 1 22 11.5zm-13.9 0a1.5 1.5 0 0 1-1.5 1.5H3.5a1.5 1.5 0 0 1 0-3h3.1a1.5 1.5 0 0 1 1.5 1.5zm10.97-6.97a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm-9.8 9.8a1.5 1.5 0 0 1 0 2.12l-2.19 2.19a1.5 1.5 0 1 1-2.12-2.12l2.19-2.19a1.5 1.5 0 0 1 2.12 0zm9.8 2.12a1.5 1.5 0 0 1-2.12 0l-2.19-2.19a1.5 1.5 0 0 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12zM6.85 6.85a1.5 1.5 0 0 1-2.12 0L2.54 4.66a1.5 1.5 0 1 1 2.12-2.12l2.19 2.19a1.5 1.5 0 0 1 0 2.12z" />
-            </svg>
+          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+            <img src="/icons/claude.png" alt="Claude" className="w-full h-full object-cover" />
           </div>
         )
       }
@@ -540,29 +543,22 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
     case 'deepseek':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#4D6BFE]">
-            <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-              <path d="M18.8 6.5C16.5 4.3 13 3.8 10 5.2c-2.3 1.1-4 3.2-4.6 5.6-.6 2.4-.1 5 1.3 7l-2.1 2.1c-.4.4-.1 1.1.5 1.1h4.2c3.5 0 6.8-1.7 8.8-4.6 2-2.9 2-6.7.7-9.9zm-4.3 4c-.7 0-1.2-.5-1.2-1.2s.5-1.2 1.2-1.2 1.2.5 1.2 1.2-.5 1.2-1.2 1.2z" />
-            </svg>
+          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+            <img src="/icons/deepseek.png" alt="DeepSeek" className="w-full h-full object-contain" />
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-gradient-to-br from-[#4D6BFE] to-[#2B4BF2] flex items-center justify-center p-2 text-white">
-          <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-            <path d="M18.8 6.5C16.5 4.3 13 3.8 10 5.2c-2.3 1.1-4 3.2-4.6 5.6-.6 2.4-.1 5 1.3 7l-2.1 2.1c-.4.4-.1 1.1.5 1.1h4.2c3.5 0 6.8-1.7 8.8-4.6 2-2.9 2-6.7.7-9.9zm-4.3 4c-.7 0-1.2-.5-1.2-1.2s.5-1.2 1.2-1.2 1.2.5 1.2 1.2-.5 1.2-1.2 1.2z" />
-          </svg>
+        <div className="w-full h-full bg-gradient-to-br from-[#4D6BFE] to-[#2B4BF2] flex items-center justify-center p-1.5 text-white">
+          <img src="/icons/deepseek.png" alt="DeepSeek" className="w-full h-full object-contain brightness-0 invert" />
         </div>
       )
 
     case 'kimi':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
-            <div className="w-full h-full bg-[#18181B] rounded-[14px] flex items-center justify-center text-white font-black text-xl select-none tracking-tighter relative shadow-xs">
-              <span>K</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] absolute top-2 right-2.5"></span>
-            </div>
+          <div className="w-full h-full flex items-center justify-center overflow-hidden">
+            <img src="/icons/kimi.png" alt="Kimi" className="w-full h-full object-cover" />
           </div>
         )
       }
@@ -595,15 +591,13 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
     case 'perplexity':
       if (variant === 'official') {
         return (
-          <div className="w-full h-full bg-white flex items-center justify-center p-2 text-[#20808D]">
-            <svg className="w-7 h-7 fill-none stroke-current stroke-[2.2] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
-              <path d="M12 3v18M6 7l12 10M6 17L18 7M3 12h18" />
-            </svg>
+          <div className="w-full h-full bg-black flex items-center justify-center overflow-hidden">
+            <img src="/icons/perplexity.png" alt="Perplexity" className="w-full h-full object-cover scale-[1.05]" />
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-[#20808D] flex items-center justify-center text-white">
+        <div className="w-full h-full bg-[#20808D] flex items-center justify-center text-white p-2">
           <svg className="w-6 h-6 fill-none stroke-current stroke-[2.2] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
             <path d="M12 3v18M6 7l12 10M6 17L18 7M3 12h18" />
           </svg>
