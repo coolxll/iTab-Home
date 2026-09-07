@@ -165,11 +165,16 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
       )
 
     case 'aistudio':
-      return (
-        <div className="w-full h-full bg-black flex items-center justify-center text-white">
-          <div className="w-6 h-6 border-2 border-white rounded flex items-center justify-center font-mono font-bold text-xs">
-            S
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2">
+            <img src="/icons/aistudio.png" alt="Google AI Studio" className="w-full h-full object-contain" />
           </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-[#1F1F1F] flex items-center justify-center p-2">
+          <img src="/icons/aistudio.png" alt="Google AI Studio" className="w-full h-full object-contain" />
         </div>
       )
 
@@ -274,16 +279,16 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
       if (variant === 'official') {
         return (
           <div className="w-full h-full bg-white flex items-center justify-center p-2">
-            <svg className="w-full h-full fill-[#F38020]" viewBox="0 0 24 24">
-              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z" />
+            <svg className="w-7 h-7 fill-[#F38020]" viewBox="0 0 24 24">
+              <path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727" />
             </svg>
           </div>
         )
       }
       return (
         <div className="w-full h-full bg-[#F38020] flex items-center justify-center p-2 text-white">
-          <svg className="w-full h-full fill-white" viewBox="0 0 24 24">
-            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z" />
+          <svg className="w-7 h-7 fill-white" viewBox="0 0 24 24">
+            <path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727" />
           </svg>
         </div>
       )
@@ -302,31 +307,29 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
 
     case 'cpa-keeper':
       return (
-        <div className="w-full h-full bg-[#FF9900] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[11px] tracking-tight">Keeper</span>
+        <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+          <img src="/icons/cpa-usage-keeper.png" alt="CPA Keeper" className="w-full h-full object-contain" />
         </div>
       )
 
     case 'cli-proxy':
       return (
-        <div className="w-full h-full bg-[#E11D48] flex items-center justify-center select-none">
-          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-            <span className="text-[#E11D48] font-black text-[10px]">CPA</span>
-          </div>
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <img src="/icons/cliproxyapi.png" alt="CLI Proxy API" className="w-full h-full object-cover scale-[1.05]" />
         </div>
       )
 
     case 'cpa-usage':
       return (
-        <div className="w-full h-full bg-[#EF4444] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[10px] tracking-tight">USAGE</span>
+        <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+          <img src="/icons/cpa-usage-keeper.png" alt="CPA Usage" className="w-full h-full object-contain" />
         </div>
       )
 
     case 'codex-usage':
       return (
-        <div className="w-full h-full bg-[#EA580C] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[10px] tracking-tight">Codex</span>
+        <div className="w-full h-full bg-zinc-900 flex items-center justify-center p-2">
+          <img src="/icons/cpa-usage-keeper.png" alt="Codex Usage" className="w-full h-full object-contain" />
         </div>
       )
 
@@ -510,10 +513,8 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
 
     case 'sublinkpro':
       return (
-        <div className="w-full h-full bg-[#4F46E5] flex items-center justify-center text-white">
-          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-            <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
-          </svg>
+        <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+          <img src="/icons/sublinkpro.png" alt="SublinkPro" className="w-full h-full object-contain" />
         </div>
       )
 
@@ -632,15 +633,8 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
 
     case 'chrome-store':
       return (
-        <div className="w-full h-full bg-white flex items-center justify-center p-2">
-          <svg className="w-7 h-7" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" fill="#EA4335" />
-            <path d="M12 2a10 10 0 0 1 8.66 15L12 12H2.05A10 10 0 0 1 12 2z" fill="#EA4335" />
-            <path d="M20.66 17A10 10 0 0 1 7.34 21.66L12 12l8.66 5z" fill="#34A853" />
-            <path d="M7.34 21.66A10 10 0 0 1 2.05 12H12l-4.66 9.66z" fill="#FBBC05" />
-            <circle cx="12" cy="12" r="4.5" fill="#FFFFFF" />
-            <circle cx="12" cy="12" r="3.5" fill="#4285F4" />
-          </svg>
+        <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+          <img src="/icons/chrome-store.png" alt="Chrome 网上应用店" className="w-full h-full object-contain" />
         </div>
       )
 
