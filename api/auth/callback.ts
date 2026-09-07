@@ -61,12 +61,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const isSecure = protocol === 'https'
 
   // Exchange code for token
+  const userAgent =
+    (req.headers['user-agent'] as string) ||
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+
   let tokenData: TokenResponse
   try {
     const tokenRes = await fetch(TINYAUTH_ENDPOINTS.token, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': userAgent,
       },
       body: new URLSearchParams({
         grant_type: 'authorization_code',
@@ -80,7 +86,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!tokenRes.ok) {
       const errorText = await tokenRes.text()
       console.error('TinyAuth token exchange failed:', tokenRes.status, errorText)
-      res.status(502).send('Token exchange failed')
+      res.status(502).send(`Token exchange failed (${tokenRes.status})`)
       return
     }
 
@@ -97,6 +103,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const userRes = await fetch(TINYAUTH_ENDPOINTS.userinfo, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': userAgent,
       },
     })
 
