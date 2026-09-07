@@ -2,9 +2,9 @@ import React from 'react'
 
 export const MovieCard: React.FC = () => {
   return (
-    <div className="flex flex-col items-center group">
+    <div className="flex flex-col items-center w-full group">
       {/* Card container with poster background */}
-      <div className="relative w-36 h-36 rounded-2xl p-2.5 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card border border-white/10">
+      <div className="relative w-full h-[140px] rounded-2xl p-2.5 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card border border-white/10">
         {/* Background poster image with dark gradient */}
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-110"

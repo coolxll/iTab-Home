@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Settings, Puzzle, Lightbulb, Plus, Globe } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { getFaviconCandidates } from '../utils/favicon'
+import { VectorIcon } from './VectorIcon'
 
 interface IconItemProps {
   shortcut: Shortcut
@@ -79,73 +80,10 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
       )
     }
 
-    // 2. High-fidelity Homelab & Specific Platform Brand Badges
-    if (shortcut.icon === 'homepage') {
-      return (
-        <div className="w-full h-full bg-[#3B82F6] flex items-center justify-center text-white">
-          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-          </svg>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'rn-proxy') {
-      return (
-        <div className="w-full h-full bg-[#FF8800] flex items-center justify-center p-2">
-          <img
-            src="/icons/cliproxyapi.png"
-            alt="RN PROXY"
-            className="w-full h-full object-contain"
-            onError={() => {}}
-          />
-        </div>
-      )
-    }
-    if (shortcut.icon === 'cpa-keeper') {
-      return (
-        <div className="w-full h-full bg-[#FF9900] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[12px] tracking-tight">Keeper</span>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'cli-proxy') {
-      return (
-        <div className="w-full h-full bg-[#E11D48] flex items-center justify-center select-none">
-          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-            <span className="text-[#E11D48] font-black text-[11px]">CPA</span>
-          </div>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'cpa-usage') {
-      return (
-        <div className="w-full h-full bg-[#EF4444] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[11px] tracking-tight">USAGE</span>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'codex-usage') {
-      return (
-        <div className="w-full h-full bg-[#EA580C] flex items-center justify-center select-none">
-          <span className="text-white font-black text-[11px] tracking-tight">Codex</span>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'cloudflare') {
-      return (
-        <div className="w-full h-full bg-[#F38020] flex items-center justify-center text-white">
-          <span className="text-xl">☁️</span>
-        </div>
-      )
-    }
-    if (shortcut.icon === 'linuxdo') {
-      return (
-        <div className="w-full h-full bg-black flex items-center justify-center text-white select-none">
-          <div className="w-7 h-7 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center text-black text-xs font-black">
-            🐧
-          </div>
-        </div>
-      )
+    // 2. Pixel-perfect Vector SVG Icon (100% Retina Sharp)
+    if (shortcut.icon) {
+      const vector = <VectorIcon name={shortcut.icon} />
+      if (vector) return vector
     }
 
     // 3. Dynamic Favicon Fetching directly from target address
@@ -154,7 +92,7 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
         <div
           className={`w-full h-full ${
             shortcut.bgColor || 'bg-white'
-          } flex items-center justify-center p-2`}
+          } flex items-center justify-center p-2.5`}
         >
           <img
             src={candidates[candidateIndex]}
@@ -184,18 +122,18 @@ export const IconItem: React.FC<IconItemProps> = ({ shortcut, size = 'normal', o
   return (
     <div
       onClick={handleClick}
-      className="flex flex-col items-center group/icon cursor-pointer select-none transition-transform duration-200 hover:scale-110 active:scale-95"
+      className="flex flex-col items-center justify-start w-full group/icon cursor-pointer select-none transition-transform duration-200 hover:scale-105 active:scale-95"
       title={`${shortcut.title} (${shortcut.url})`}
     >
       {/* App Squircle */}
       <div
-        className={`${squircleSize} rounded-2xl overflow-hidden shadow-md group-hover/icon:shadow-xl transition-all duration-300 ring-1 ring-white/10 group-hover/icon:ring-white/40 flex items-center justify-center relative bg-white/5 backdrop-blur-sm`}
+        className={`${squircleSize} rounded-2xl overflow-hidden shadow-md group-hover/icon:shadow-xl transition-all duration-300 ring-1 ring-white/10 group-hover/icon:ring-white/40 flex items-center justify-center relative bg-white/5 backdrop-blur-sm flex-shrink-0`}
       >
         {renderContent()}
       </div>
 
       {/* Label under icon */}
-      <span className="mt-1 text-[11px] text-white/90 font-normal tracking-wide drop-shadow text-center max-w-[68px] truncate group-hover/icon:text-white transition-colors">
+      <span className="mt-1 text-[11px] text-white/90 font-normal tracking-wide drop-shadow text-center w-full truncate px-0.5 leading-tight group-hover/icon:text-white transition-colors">
         {shortcut.title}
       </span>
     </div>

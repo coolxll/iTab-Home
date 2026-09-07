@@ -18,9 +18,9 @@ export const CalendarCard: React.FC = () => {
   const lunar = getLunarDateString(now)
 
   return (
-    <div className="flex flex-col items-center group">
+    <div className="flex flex-col items-center w-full group">
       {/* Tear-off desk calendar container */}
-      <div className="w-36 h-36 rounded-2xl bg-white shadow-xl flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer">
+      <div className="w-full h-[140px] rounded-2xl bg-white shadow-xl flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer">
         {/* Top red header banner */}
         <div className="bg-[#FF4D4F] py-1.5 px-3 text-white text-center shadow-sm">
           <span className="text-xs font-semibold tracking-wider">{year}年{month}月</span>
@@ -28,7 +28,7 @@ export const CalendarCard: React.FC = () => {
 
         {/* Large center day number */}
         <div className="flex items-center justify-center flex-1">
-          <span className="text-5xl font-bold text-zinc-800 tracking-tighter">
+          <span className="text-5xl font-bold text-zinc-800 tracking-tighter font-sans">
             {date}
           </span>
         </div>

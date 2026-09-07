@@ -61,9 +61,9 @@ export const App: React.FC = () => {
       <div className="fixed inset-0 bg-black/15 backdrop-blur-[1px] pointer-events-none z-0" />
 
       {/* Main Content Area */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 py-6 w-full max-w-7xl mx-auto">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 py-5 w-full max-w-[1140px] mx-auto">
         {/* Top Header Section: Clock & Search */}
-        <div className="w-full flex flex-col items-center pt-2 md:pt-4 space-y-4">
+        <div className="w-full flex flex-col items-center pt-1 md:pt-3 space-y-3.5">
           <HeaderClock />
           <SearchBar
             currentEngineId={settings.searchEngineId}
@@ -71,37 +71,51 @@ export const App: React.FC = () => {
           />
         </div>
 
-        {/* Center Widgets Matrix */}
-        <div className="my-auto py-6 flex flex-col items-center justify-center space-y-4 w-full">
-          {/* Row 1: Weather, Holiday, Stock, Hot Search, Anniversary */}
-          <div className="flex flex-wrap items-start justify-center gap-3 w-full">
-            <WeatherCard city={settings.city} />
-            <HolidayCard />
-            <StockCard />
-            <HotSearchCard />
-            <AnniversaryCard
-              birthDate={settings.birthDate}
-              onClick={() => setIsSettingsOpen(true)}
-            />
+        {/* Center Widgets Matrix: Strictly Aligned 7-Column Grid */}
+        <div className="my-auto py-4 flex flex-col items-center justify-center space-y-3 w-full max-w-[1060px] mx-auto">
+          {/* Row 1: Exactly 7 Columns (2 + 1 + 1 + 2 + 1) */}
+          <div className="grid grid-cols-7 gap-3 w-full items-start">
+            <div className="col-span-2">
+              <WeatherCard city={settings.city} />
+            </div>
+            <div className="col-span-1">
+              <HolidayCard />
+            </div>
+            <div className="col-span-1">
+              <StockCard />
+            </div>
+            <div className="col-span-2">
+              <HotSearchCard />
+            </div>
+            <div className="col-span-1">
+              <AnniversaryCard
+                birthDate={settings.birthDate}
+                onClick={() => setIsSettingsOpen(true)}
+              />
+            </div>
           </div>
 
-          {/* Row 2: Calendar, Work Countdown, Movie Calendar, 6x2 App Grid */}
-          <div className="flex flex-wrap items-start justify-center gap-3 w-full">
-            <CalendarCard />
-            <WorkCountdownCard
-              offWorkTime={settings.offWorkTime}
-              monthlySalary={settings.monthlySalary}
-              workDaysPerMonth={settings.workDaysPerMonth}
-            />
-            <MovieCard />
-            <div className="flex flex-col items-center">
-              <div className="h-36 flex items-center justify-center px-1">
-                <AppGrid
-                  shortcuts={settings.shortcutsTop}
-                  onOpenSettings={() => setIsSettingsOpen(true)}
-                  onOpenGuide={() => setIsGuideOpen(true)}
-                />
-              </div>
+          {/* Row 2: Exactly 7 Columns (1 + 2 + 1 + 3) */}
+          <div className="grid grid-cols-7 gap-3 w-full items-start">
+            <div className="col-span-1">
+              <CalendarCard />
+            </div>
+            <div className="col-span-2">
+              <WorkCountdownCard
+                offWorkTime={settings.offWorkTime}
+                monthlySalary={settings.monthlySalary}
+                workDaysPerMonth={settings.workDaysPerMonth}
+              />
+            </div>
+            <div className="col-span-1">
+              <MovieCard />
+            </div>
+            <div className="col-span-3">
+              <AppGrid
+                shortcuts={settings.shortcutsTop}
+                onOpenSettings={() => setIsSettingsOpen(true)}
+                onOpenGuide={() => setIsGuideOpen(true)}
+              />
             </div>
           </div>
         </div>

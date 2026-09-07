@@ -10,7 +10,7 @@ interface AppGridProps {
 
 export const AppGrid: React.FC<AppGridProps> = ({ shortcuts, onOpenSettings, onOpenGuide }) => {
   return (
-    <div className="grid grid-cols-6 gap-x-3 gap-y-2 items-start justify-items-center">
+    <div className="w-full h-[140px] grid grid-cols-6 grid-rows-2 gap-x-2 gap-y-1.5 items-center justify-items-center">
       {shortcuts.map((shortcut) => {
         let handleClick: (() => void) | undefined
         if (shortcut.id === 'settings') {
@@ -20,12 +20,13 @@ export const AppGrid: React.FC<AppGridProps> = ({ shortcuts, onOpenSettings, onO
         }
 
         return (
-          <IconItem
-            key={shortcut.id}
-            shortcut={shortcut}
-            size="large"
-            onClick={handleClick}
-          />
+          <div key={shortcut.id} className="w-full flex justify-center">
+            <IconItem
+              shortcut={shortcut}
+              size="normal"
+              onClick={handleClick}
+            />
+          </div>
         )
       })}
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 interface WorkCountdownCardProps {
-  offWorkTime?: string // e.g. "18:00"
+  offWorkTime?: string
   monthlySalary?: number
   workDaysPerMonth?: number
 }
@@ -20,13 +20,11 @@ export const WorkCountdownCard: React.FC<WorkCountdownCardProps> = ({
       const now = new Date()
       const [targetH, targetM] = offWorkTime.split(':').map(Number)
 
-      // Target off-work date today
       const target = new Date(now)
       target.setHours(targetH, targetM, 0, 0)
 
       let diff = target.getTime() - now.getTime()
       if (diff <= 0) {
-        // Already passed off-work time
         setCountdown('00:00:00')
       } else {
         const totalSeconds = Math.floor(diff / 1000)
@@ -38,14 +36,10 @@ export const WorkCountdownCard: React.FC<WorkCountdownCardProps> = ({
         )
       }
 
-      // Calculate days to Friday
-      const currentDay = now.getDay() // 0 is Sun, 1 is Mon, 5 is Fri
+      const currentDay = now.getDay()
       const diffToFriday = currentDay <= 5 ? 5 - currentDay : 7 - currentDay + 5
       setDaysToFriday(diffToFriday)
 
-      // Calculate salary earned today
-      // Standard 8 hours workday = 28,800 seconds
-      // Work day start 09:00
       const workStart = new Date(now)
       workStart.setHours(9, 0, 0, 0)
       const dailySalary = monthlySalary / workDaysPerMonth
@@ -65,9 +59,9 @@ export const WorkCountdownCard: React.FC<WorkCountdownCardProps> = ({
   }, [offWorkTime, monthlySalary, workDaysPerMonth])
 
   return (
-    <div className="flex flex-col items-center group">
+    <div className="flex flex-col items-center w-full group">
       {/* Card container */}
-      <div className="w-64 h-36 rounded-2xl bg-white shadow-xl p-3 flex justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer relative">
+      <div className="w-full h-[140px] rounded-2xl bg-white shadow-xl p-3 flex justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer relative">
         {/* Left side content */}
         <div className="flex flex-col justify-between flex-1 z-10 mr-1">
           <div>
@@ -93,7 +87,7 @@ export const WorkCountdownCard: React.FC<WorkCountdownCardProps> = ({
             </div>
             <div className="bg-zinc-50 rounded-lg p-1 text-center flex flex-col justify-center overflow-hidden">
               <span className="text-[9px] text-zinc-400 truncate">今天赚了</span>
-              <span className="text-[9px] font-semibold text-amber-600 truncate">
+              <span className="text-[9px] font-semibold text-amber-600 truncate font-mono">
                 {earnedToday}¥
               </span>
             </div>

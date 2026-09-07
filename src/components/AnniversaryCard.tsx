@@ -13,11 +13,11 @@ export const AnniversaryCard: React.FC<AnniversaryCardProps> = ({
   const days = getDaysAlive(birthDate)
 
   return (
-    <div className="flex flex-col items-center group">
+    <div className="flex flex-col items-center w-full group">
       {/* Card container with moon background */}
       <div
         onClick={onClick}
-        className="relative w-36 h-36 rounded-2xl p-3.5 bg-black/60 backdrop-blur-xl border border-white/10 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card"
+        className="relative w-full h-[140px] rounded-2xl p-3.5 bg-black/60 backdrop-blur-xl border border-white/10 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card"
       >
         {/* Moon image background with atmospheric glow */}
         <div
