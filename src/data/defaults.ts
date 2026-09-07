@@ -56,7 +56,7 @@ export const DEFAULT_DESKTOP_SHORTCUTS: Shortcut[] = [
   // High-frequency Standalone Apps (Pinned on desktop for instant 1-click access)
   { id: 'xiaohongshu', title: '小红书', url: 'https://www.xiaohongshu.com', icon: 'xiaohongshu', bgColor: 'bg-[#FF2442]' },
   { id: 'weibo', title: '新浪微博', url: 'https://weibo.com', icon: 'weibo', bgColor: 'bg-[#E6162D]' },
-  { id: 'chatgpt', title: 'ChatGPT', url: 'https://chatgpt.com', icon: 'chatgpt', bgColor: 'bg-[#10A37F]' },
+  { id: 'chatgpt', title: 'ChatGPT', url: 'https://chatgpt.com', icon: 'chatgpt', bgColor: 'bg-white' },
   { id: 'github', title: 'GitHub', url: 'https://github.com', icon: 'github', bgColor: 'bg-black' },
 
   // Folder 1: 社交资讯 (B站, YouTube, 知乎, Twitter, 豆瓣)
