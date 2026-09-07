@@ -170,6 +170,48 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Desktop Icon Style Option: Official vs Optimized */}
+          <div>
+            <label className="block text-xs font-semibold text-white/80 mb-2">桌面图标风格</label>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <button
+                type="button"
+                onClick={() => setCurrent({ ...current, iconStyle: 'official' })}
+                className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 ${
+                  current.iconStyle !== 'optimized'
+                    ? 'border-sky-400 bg-sky-500/20 text-white shadow-lg ring-1 ring-sky-400/40'
+                    : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <span className="text-base">🏛️</span>
+                  <div className="font-semibold text-white">官方品牌版 (推荐)</div>
+                </div>
+                <div className="text-[11px] text-white/60 leading-relaxed">
+                  呈现各网站与应用的官方原厂 Logo 与标准真彩图标（如 Google Workspace 现代多彩 M 标、黑白 ChatGPT、官方彩绘小电视等）。
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrent({ ...current, iconStyle: 'optimized' })}
+                className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 ${
+                  current.iconStyle === 'optimized'
+                    ? 'border-sky-400 bg-sky-500/20 text-white shadow-lg ring-1 ring-sky-400/40'
+                    : 'border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <span className="text-base">🎨</span>
+                  <div className="font-semibold text-white">精修优化版</div>
+                </div>
+                <div className="text-[11px] text-white/60 leading-relaxed">
+                  纯色全幅底色 + 极简纯白矢量，一体化无白框，专为桌面极简美化打造，风格整齐划一。
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Anniversary date */}
           <div>
             <label className="block text-xs font-semibold text-white/80 mb-1">

@@ -32,12 +32,14 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0])
+  const [iconStyle, setIconStyle] = useState<'auto' | 'official' | 'optimized'>('auto')
 
   useEffect(() => {
     if (shortcut) {
       setTitle(shortcut.title)
       setUrl(shortcut.url || '')
       setSelectedColor(shortcut.bgColor || COLOR_OPTIONS[0])
+      setIconStyle(shortcut.iconStyle || 'auto')
     }
   }, [shortcut])
 
@@ -52,6 +54,7 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
       title: title.trim(),
       url: shortcut.isFolder ? undefined : url.trim(),
       bgColor: selectedColor,
+      iconStyle,
     })
     onClose()
   }
@@ -94,6 +97,47 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                 placeholder="https://..."
                 className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 text-sm focus:outline-none focus:border-sky-400"
               />
+            </div>
+          )}
+
+          {!shortcut.isFolder && (
+            <div>
+              <label className="block text-xs font-medium text-white/70 mb-1.5">图标风格版本</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIconStyle('auto')}
+                  className={`py-1.5 px-2 rounded-xl text-xs font-medium border transition-all ${
+                    iconStyle === 'auto'
+                      ? 'border-sky-400 bg-sky-500/20 text-white shadow-xs'
+                      : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                  }`}
+                >
+                  跟随全局
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIconStyle('official')}
+                  className={`py-1.5 px-2 rounded-xl text-xs font-medium border transition-all ${
+                    iconStyle === 'official'
+                      ? 'border-sky-400 bg-sky-500/20 text-white shadow-xs'
+                      : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                  }`}
+                >
+                  🏛️ 官方版
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIconStyle('optimized')}
+                  className={`py-1.5 px-2 rounded-xl text-xs font-medium border transition-all ${
+                    iconStyle === 'optimized'
+                      ? 'border-sky-400 bg-sky-500/20 text-white shadow-xs'
+                      : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                  }`}
+                >
+                  🎨 优化版
+                </button>
+              </div>
             </div>
           )}
 

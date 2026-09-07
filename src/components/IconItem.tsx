@@ -8,6 +8,7 @@ import { hasVectorIcon } from '../utils/vectorIcons'
 interface IconItemProps {
   shortcut: Shortcut
   size?: 'normal' | 'large'
+  globalIconStyle?: 'official' | 'optimized'
   isEditMode?: boolean
   onClick?: () => void
   onDelete?: () => void
@@ -22,6 +23,7 @@ interface IconItemProps {
 export const IconItem: React.FC<IconItemProps> = ({
   shortcut,
   size = 'normal',
+  globalIconStyle = 'official',
   isEditMode = false,
   onClick,
   onDelete,
@@ -32,6 +34,11 @@ export const IconItem: React.FC<IconItemProps> = ({
   onDragOver,
   onDrop,
 }) => {
+  const effectiveVariant: 'official' | 'optimized' =
+    shortcut.iconStyle && shortcut.iconStyle !== 'auto'
+      ? shortcut.iconStyle
+      : globalIconStyle
+
   const candidates = getFaviconCandidates(shortcut.url || '', shortcut.icon)
   const [candidateIndex, setCandidateIndex] = useState(0)
   const [imgError, setImgError] = useState(false)
@@ -78,7 +85,10 @@ export const IconItem: React.FC<IconItemProps> = ({
             >
               {child.icon ? (
                 <div className="w-full h-full scale-90 origin-center flex items-center justify-center">
-                  <VectorIcon name={child.icon} />
+                  <VectorIcon
+                    name={child.icon}
+                    variant={child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : effectiveVariant}
+                  />
                 </div>
               ) : (
                 <div className={`w-full h-full ${child.bgColor || 'bg-blue-600'} flex items-center justify-center text-[9px] font-bold text-white`}>
@@ -119,20 +129,20 @@ export const IconItem: React.FC<IconItemProps> = ({
         )
       }
       if (shortcut.icon) {
-        return <VectorIcon name={shortcut.icon} />
+        return <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
       }
     }
 
-    // 3. Known / Curated Official Vector Icons (100% 一体化, Retina sharp, official brand asset, NO outer/inner frames!)
+    // 3. Known / Curated Vector Icons (Official brand vs Optimized seamless)
     if (shortcut.icon && hasVectorIcon(shortcut.icon)) {
-      return <VectorIcon name={shortcut.icon} />
+      return <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
     }
 
     // 4. Custom Website Favicon / Apple-Touch-Icon (for custom URLs added by user)
     const hasCandidate = Boolean(
       shortcut.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
     )
-    const fallbackVector = shortcut.icon ? <VectorIcon name={shortcut.icon} /> : null
+    const fallbackVector = shortcut.icon ? <VectorIcon name={shortcut.icon} variant={effectiveVariant} /> : null
     const currentCandidate = hasCandidate ? candidates[candidateIndex] : null
     const isAppleTouchIcon = currentCandidate?.includes('apple-touch-icon')
 

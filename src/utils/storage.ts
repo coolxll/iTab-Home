@@ -1,7 +1,7 @@
 import type { UserSettings } from '../types'
 import { DEFAULT_DESKTOP_SHORTCUTS } from '../data/defaults'
 
-const STORAGE_KEY = 'itab_home_settings_v9'
+const STORAGE_KEY = 'itab_home_settings_v10'
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '1988-03-04',
@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   searchEngineId: 'bing',
   showRealWidgets: false,
   shortcuts: DEFAULT_DESKTOP_SHORTCUTS,
+  iconStyle: 'official',
 }
 
 export function loadSettings(): UserSettings {

@@ -7,6 +7,7 @@ interface FolderModalProps {
   isOpen: boolean
   folder: Shortcut | null
   isEditMode: boolean
+  globalIconStyle?: 'official' | 'optimized'
   onClose: () => void
   onUpdateFolderTitle: (folderId: string, newTitle: string) => void
   onDeleteInsideFolder: (folderId: string, shortcutId: string) => void
@@ -18,6 +19,7 @@ export const FolderModal: React.FC<FolderModalProps> = ({
   isOpen,
   folder,
   isEditMode,
+  globalIconStyle = 'official',
   onClose,
   onUpdateFolderTitle,
   onDeleteInsideFolder,
@@ -111,6 +113,7 @@ export const FolderModal: React.FC<FolderModalProps> = ({
               <IconItem
                 shortcut={item}
                 size="large"
+                globalIconStyle={globalIconStyle}
                 isEditMode={isEditMode}
                 onDelete={() => onDeleteInsideFolder(folder.id, item.id)}
               />

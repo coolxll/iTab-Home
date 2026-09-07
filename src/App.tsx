@@ -292,6 +292,44 @@ export const App: React.FC = () => {
     setDraggedItem(null)
   }
 
+  const handleToggleGlobalIconStyle = () => {
+    const nextStyle = settings.iconStyle === 'optimized' ? 'official' : 'optimized'
+    handleUpdateSettings({ ...settings, iconStyle: nextStyle })
+  }
+
+  const handleToggleShortcutIconStyle = (target: Shortcut, isInFolder?: boolean, folderId?: string) => {
+    const currentStyle = target.iconStyle && target.iconStyle !== 'auto'
+      ? target.iconStyle
+      : (settings.iconStyle || 'official')
+    const nextStyle: 'official' | 'optimized' = currentStyle === 'official' ? 'optimized' : 'official'
+
+    if (isInFolder && folderId) {
+      const nextShortcuts = settings.shortcuts.map((item) => {
+        if (item.id === folderId && item.isFolder) {
+          const nextChildren = (item.children || []).map((c) =>
+            c.id === target.id ? { ...c, iconStyle: nextStyle } : c
+          )
+          return { ...item, children: nextChildren }
+        }
+        return item
+      })
+      updateAndSaveShortcuts(nextShortcuts)
+      if (activeFolder && activeFolder.id === folderId) {
+        setActiveFolder({
+          ...activeFolder,
+          children: (activeFolder.children || []).map((c) =>
+            c.id === target.id ? { ...c, iconStyle: nextStyle } : c
+          ),
+        })
+      }
+    } else {
+      const nextShortcuts = settings.shortcuts.map((s) =>
+        s.id === target.id ? { ...s, iconStyle: nextStyle } : s
+      )
+      updateAndSaveShortcuts(nextShortcuts)
+    }
+  }
+
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden text-white font-sans selection:bg-sky-500 selection:text-white">
       {/* Background Wallpaper - Crystal Sharp 4K */}
@@ -336,6 +374,14 @@ export const App: React.FC = () => {
         <div className="w-full my-auto py-2 flex flex-col items-center">
           {/* Subtle management controls */}
           <div className="w-full max-w-[1060px] flex items-center justify-end mb-2 px-4 space-x-2">
+            <button
+              type="button"
+              onClick={handleToggleGlobalIconStyle}
+              className="flex items-center space-x-1 px-3 py-1 bg-black/30 hover:bg-black/50 backdrop-blur-md rounded-full text-xs text-white/80 hover:text-white transition-all border border-white/10 hover:border-white/20 shadow-xs cursor-pointer"
+              title="点击快速切换桌面图标风格（官方品牌版 / 精修优化版）"
+            >
+              <span>{settings.iconStyle === 'optimized' ? '🎨 优化版' : '🏛️ 官方版'}</span>
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -392,6 +438,7 @@ export const App: React.FC = () => {
                   <IconItem
                     shortcut={shortcut}
                     size="large"
+                    globalIconStyle={settings.iconStyle}
                     isEditMode={isEditMode}
                     onClick={handleSpecialClick}
                     onDelete={() => handleDeleteShortcut(shortcut.id)}
@@ -423,6 +470,7 @@ export const App: React.FC = () => {
         isOpen={!!activeFolder}
         folder={activeFolder}
         isEditMode={isEditMode}
+        globalIconStyle={settings.iconStyle}
         onClose={() => setActiveFolder(null)}
         onUpdateFolderTitle={handleUpdateFolderTitle}
         onDeleteInsideFolder={handleDeleteInsideFolder}
@@ -484,6 +532,14 @@ export const App: React.FC = () => {
           shortcut={contextMenu.shortcut}
           isInFolder={contextMenu.isInFolder}
           availableFolders={settings.shortcuts.filter((s) => s.isFolder)}
+          currentIconStyle={
+            contextMenu.shortcut.iconStyle && contextMenu.shortcut.iconStyle !== 'auto'
+              ? contextMenu.shortcut.iconStyle
+              : settings.iconStyle
+          }
+          onToggleIconStyle={() => {
+            handleToggleShortcutIconStyle(contextMenu.shortcut, contextMenu.isInFolder, contextMenu.folderId)
+          }}
           onMove={(direction) => {
             handleMoveShortcut(contextMenu.shortcut.id, direction)
           }}

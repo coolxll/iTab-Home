@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { ExternalLink, Edit3, Trash2, FolderMinus, FolderPlus, ArrowLeft, ArrowRight } from 'lucide-react'
+import { ExternalLink, Edit3, Trash2, FolderMinus, FolderPlus, ArrowLeft, ArrowRight, Palette } from 'lucide-react'
 import type { Shortcut } from '../types'
 
 interface ContextMenuProps {
@@ -8,6 +8,7 @@ interface ContextMenuProps {
   shortcut: Shortcut
   isInFolder?: boolean
   availableFolders?: Shortcut[]
+  currentIconStyle?: 'official' | 'optimized'
   onClose: () => void
   onOpen: () => void
   onEdit: () => void
@@ -16,6 +17,7 @@ interface ContextMenuProps {
   onMoveToFolder?: (folderId: string) => void
   onMoveOutOfFolder?: () => void
   onUngroupFolder?: () => void
+  onToggleIconStyle?: () => void
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
@@ -24,6 +26,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   shortcut,
   isInFolder,
   availableFolders,
+  currentIconStyle = 'official',
   onClose,
   onOpen,
   onEdit,
@@ -32,6 +35,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
   onMoveToFolder,
   onMoveOutOfFolder,
   onUngroupFolder,
+  onToggleIconStyle,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -84,6 +88,22 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         >
           <Edit3 className="w-4 h-4 text-amber-400" />
           <span>{shortcut.isFolder ? '重命名文件夹' : '编辑图标'}</span>
+        </button>
+      )}
+
+      {!shortcut.isSpecial && !shortcut.isFolder && onToggleIconStyle && (
+        <button
+          type="button"
+          onClick={() => {
+            onToggleIconStyle()
+            onClose()
+          }}
+          className="w-full flex items-center space-x-2.5 px-3 py-2 text-left hover:bg-white/10 text-white/90 hover:text-white transition-colors"
+        >
+          <Palette className="w-4 h-4 text-purple-400" />
+          <span>
+            {currentIconStyle === 'official' ? '换为优化版图标' : '换为官方版图标'}
+          </span>
         </button>
       )}
 

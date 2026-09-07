@@ -8,6 +8,7 @@ export interface Shortcut {
   isSpecial?: boolean
   isFolder?: boolean
   children?: Shortcut[] // Shortcuts inside folder
+  iconStyle?: 'auto' | 'official' | 'optimized' // Per-shortcut icon style override
 }
 
 export interface SearchEngine {
@@ -26,4 +27,5 @@ export interface UserSettings {
   searchEngineId: string
   showRealWidgets: boolean // Toggle Calendar & Anniversary widgets
   shortcuts: Shortcut[] // Unified desktop shortcuts & folders
+  iconStyle: 'official' | 'optimized' // Global desktop icon style: official brand vs optimized seamless
 }
