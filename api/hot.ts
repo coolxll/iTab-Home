@@ -91,9 +91,61 @@ async function fetchZhihu(limit: number): Promise<HotItem[]> {
     })
 }
 
+async function fetchV2ex(limit: number): Promise<HotItem[]> {
+  const res = await fetch('https://www.v2ex.com/api/topics/hot.json', {
+    headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/json' },
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) throw new Error(`v2ex upstream ${res.status}`)
+
+  const topics: any = await res.json()
+  if (!Array.isArray(topics)) throw new Error('v2ex: unexpected payload')
+
+  return topics
+    .filter((t) => t && t.title && t.url)
+    .slice(0, limit)
+    .map((t, i) => ({
+      rank: i + 1,
+      title: t.title as string,
+      url: t.url as string,
+      heat: typeof t.replies === 'number' ? `${t.replies} 回复` : undefined,
+      tag: t.node?.title || undefined,
+    }))
+}
+
+async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
+  // linux.do sits behind a Cloudflare browser challenge for JSON endpoints,
+  // but its Discourse RSS feed is served unchallenged and login-free.
+  const res = await fetch('https://linux.do/top.rss', {
+    headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/rss+xml,text/xml,*/*' },
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) throw new Error(`linuxdo upstream ${res.status}`)
+
+  const xml = await res.text()
+  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+  if (items.length === 0) throw new Error('linuxdo: empty feed')
+
+  const pick = (block: string, tag: string) =>
+    block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1]?.trim() || ''
+  const unescapeCdata = (s: string) =>
+    s.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '')
+
+  return items.slice(0, limit).map((m, i) => {
+    const block = m[1]
+    return {
+      rank: i + 1,
+      title: unescapeCdata(pick(block, 'title')),
+      url: pick(block, 'link') || 'https://linux.do/top',
+    }
+  })
+}
+
 const FETCHERS: Record<string, (limit: number) => Promise<HotItem[]>> = {
   weibo: fetchWeibo,
   zhihu: fetchZhihu,
+  v2ex: fetchV2ex,
+  linuxdo: fetchLinuxDo,
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {

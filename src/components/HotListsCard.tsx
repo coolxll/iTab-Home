@@ -18,9 +18,13 @@ interface SourceState {
 const SOURCES = [
   { id: 'weibo', label: '微博', dot: 'bg-[#FF8200]' },
   { id: 'zhihu', label: '知乎', dot: 'bg-[#0066FF]' },
+  { id: 'v2ex', label: 'V2EX', dot: 'bg-[#8E8E93]' },
+  { id: 'linuxdo', label: 'Linux.do', dot: 'bg-[#F59E0B]' },
 ] as const
 
 type SourceId = (typeof SOURCES)[number]['id']
+
+const SOURCE_IDS = SOURCES.map((s) => s.id).join(',')
 
 const FETCH_LIMIT = 15
 const COLLAPSED_COUNT = 3
@@ -34,6 +38,9 @@ const rankColor = (rank: number) =>
       : rank === 3
         ? 'text-[#FAA90E]'
         : 'text-white/40'
+
+/** Tags rendered as urgent red badges; everything else is a neutral node label. */
+const HOT_TAGS = new Set(['新', '热', '沸', '爆'])
 
 const HotRow: React.FC<{ item: HotItem; compact?: boolean }> = ({ item, compact }) => (
   <a
@@ -56,7 +63,13 @@ const HotRow: React.FC<{ item: HotItem; compact?: boolean }> = ({ item, compact 
       {item.title}
     </span>
     {item.tag && (
-      <span className="flex-shrink-0 text-[8.5px] font-bold px-1 rounded-sm bg-[#FE2D46]/90 text-white leading-[13px]">
+      <span
+        className={`flex-shrink-0 text-[8.5px] font-bold px-1 rounded-sm leading-[13px] ${
+          HOT_TAGS.has(item.tag)
+            ? 'bg-[#FE2D46]/90 text-white'
+            : 'bg-white/10 text-white/50'
+        }`}
+      >
         {item.tag}
       </span>
     )}
@@ -81,12 +94,14 @@ export const HotListsCard: React.FC<{ variant?: 'default' | 'sidebar' }> = ({
   const [state, setState] = useState<Record<SourceId, SourceState>>({
     weibo: { items: [], loading: true },
     zhihu: { items: [], loading: true },
+    v2ex: { items: [], loading: true },
+    linuxdo: { items: [], loading: true },
   })
   const [refreshing, setRefreshing] = useState(false)
 
   const load = async () => {
     try {
-      const res = await fetch(`/api/hot?sources=weibo,zhihu&limit=${FETCH_LIMIT}`)
+      const res = await fetch(`/api/hot?sources=${SOURCE_IDS}&limit=${FETCH_LIMIT}`)
       if (!res.ok) throw new Error(`http ${res.status}`)
       const data = await res.json()
       setState((prev) => {
