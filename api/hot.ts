@@ -114,37 +114,33 @@ async function fetchV2ex(limit: number): Promise<HotItem[]> {
 }
 
 async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
-  // linux.do sits behind a Cloudflare browser challenge that lets RSS feeds
-  // through on some networks only. Browser-like Accept headers maximize the
-  // chance of being treated as a legit feed reader from datacenter IPs.
-  const res = await fetch('https://linux.do/top.rss', {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
-      Accept: 'application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.5',
-      'Accept-Language': 'zh-CN,zh-Hans;q=0.9,en;q=0.8',
-      'Cache-Control': 'no-cache',
-    },
-    signal: AbortSignal.timeout(8000),
-  })
-  if (!res.ok) throw new Error(`linuxdo upstream ${res.status}`)
-
-  const xml = await res.text()
-  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
-  if (items.length === 0) throw new Error('linuxdo: empty feed')
-
-  const pick = (block: string, tag: string) =>
-    block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1]?.trim() || ''
-  const unescapeCdata = (s: string) =>
-    s.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '')
-
-  return items.slice(0, limit).map((m, i) => {
-    const block = m[1]
-    return {
-      rank: i + 1,
-      title: unescapeCdata(pick(block, 'title')),
-      url: pick(block, 'link') || 'https://linux.do/top',
+  // linux.do's JSON endpoints sit behind a Cloudflare browser challenge, and
+  // even its RSS feed 403s from Vercel's datacenter ASNs. Feedly's open
+  // stream API proxies the same Discourse top.rss feed from IPs that pass
+  // the challenge, with no API key required.
+  const res = await fetch(
+    `https://cloud.feedly.com/v3/streams/contents?streamId=${encodeURIComponent(
+      'feed/https://linux.do/top.rss'
+    )}&count=${Math.max(limit, 20)}`,
+    {
+      headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/json' },
+      signal: AbortSignal.timeout(8000),
     }
-  })
+  )
+  if (!res.ok) throw new Error(`linuxdo(feedly) upstream ${res.status}`)
+
+  const data: any = await res.json()
+  const items: any[] = data?.items
+  if (!Array.isArray(items) || items.length === 0) throw new Error('linuxdo: empty feed')
+
+  return items
+    .filter((it) => it && it.title)
+    .slice(0, limit)
+    .map((it, i) => ({
+      rank: i + 1,
+      title: it.title as string,
+      url: it.alternate?.[0]?.href || 'https://linux.do/top',
+    }))
 }
 
 const FETCHERS: Record<string, (limit: number) => Promise<HotItem[]>> = {
