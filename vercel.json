@@ -7,5 +7,6 @@
     "api/config.ts": {
       "includeFiles": "src/config/shortcuts.yaml"
     }
-  }
+  },
+  "regions": ["hkg1", "iad1"]
 }
