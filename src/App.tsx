@@ -4,6 +4,7 @@ import { SearchBar } from './components/SearchBar'
 import { CalendarCard } from './components/CalendarCard'
 import { AnniversaryCard } from './components/AnniversaryCard'
 import { IconItem } from './components/IconItem'
+import { HotListsCard } from './components/HotListsCard'
 import { FooterMotto } from './components/FooterMotto'
 import { SettingsModal } from './components/SettingsModal'
 import { AddShortcutModal } from './components/AddShortcutModal'
@@ -520,6 +521,9 @@ export const App: React.FC = () => {
             </div>
           </section>
         )}
+
+        {/* Daily hot lists (Weibo & Zhihu, login-free) */}
+        <HotListsCard />
 
         {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
         <div className="w-full my-auto py-2 flex flex-col items-center">
