@@ -8,5 +8,5 @@
       "includeFiles": "src/config/shortcuts.yaml"
     }
   },
-  "regions": ["hkg1", "iad1"]
+  "regions": ["iad1"]
 }
