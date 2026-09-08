@@ -11,8 +11,14 @@ import { EditShortcutModal } from './components/EditShortcutModal'
 import { FolderModal } from './components/FolderModal'
 import { ContextMenu } from './components/ContextMenu'
 import { GuideModal } from './components/GuideModal'
-import { hasStoredSettings, loadSettings, saveSettings } from './utils/storage'
-import { SlidersHorizontal, Check, Plus } from 'lucide-react'
+import {
+  hasStoredSettings,
+  loadRecentShortcutIds,
+  loadSettings,
+  saveRecentShortcutIds,
+  saveSettings,
+} from './utils/storage'
+import { SlidersHorizontal, Check, Plus, History } from 'lucide-react'
 import type { Shortcut, UserSettings } from './types'
 
 export const App: React.FC = () => {
@@ -23,6 +29,7 @@ export const App: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [addFolderTargetId, setAddFolderTargetId] = useState<string | null>(null)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [recentShortcutIds, setRecentShortcutIds] = useState<string[]>(loadRecentShortcutIds)
 
   // Edit / Management states
   const [isEditMode, setIsEditMode] = useState(false)
@@ -120,6 +127,31 @@ export const App: React.FC = () => {
   const handleSelectEngine = (engineId: string) => {
     handleUpdateSettings({ ...settings, searchEngineId: engineId })
   }
+
+  const handleOpenShortcut = (shortcut: Shortcut) => {
+    if (!shortcut.url) return
+
+    setRecentShortcutIds((current) => {
+      const next = [shortcut.id, ...current.filter((id) => id !== shortcut.id)].slice(0, 12)
+      saveRecentShortcutIds(next)
+      return next
+    })
+
+    window.open(shortcut.url, '_blank', 'noopener,noreferrer')
+  }
+
+  const availableApps = settings.shortcuts.flatMap((shortcut) =>
+    shortcut.isFolder ? (shortcut.children || []) : [shortcut]
+  )
+  const appsById = new Map(
+    availableApps
+      .filter((shortcut) => !shortcut.isFolder && !shortcut.isSpecial && shortcut.url)
+      .map((shortcut) => [shortcut.id, shortcut])
+  )
+  const recentShortcuts = recentShortcutIds
+    .map((id) => appsById.get(id))
+    .filter((shortcut): shortcut is Shortcut => Boolean(shortcut))
+    .slice(0, 6)
 
   // Delete a shortcut or folder on root
   const handleDeleteShortcut = (id: string) => {
@@ -466,6 +498,29 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {/* Recently opened apps stay directly accessible outside folders. */}
+        {recentShortcuts.length > 0 && (
+          <section className="w-full max-w-[720px] mt-5" aria-label="最近打开">
+            <div className="mx-2 rounded-3xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.16)] px-4 pt-3 pb-3">
+              <div className="flex items-center gap-1.5 mb-2 px-1 text-[11px] font-medium tracking-wide text-white/65">
+                <History className="w-3.5 h-3.5" />
+                <span>最近打开</span>
+              </div>
+              <div className="flex items-start justify-start sm:justify-center gap-2 sm:gap-4 overflow-x-auto pb-1">
+                {recentShortcuts.map((shortcut) => (
+                  <div key={shortcut.id} className="w-[72px] shrink-0 flex justify-center">
+                    <IconItem
+                      shortcut={shortcut}
+                      globalIconStyle={settings.iconStyle}
+                      onClick={() => handleOpenShortcut(shortcut)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
         <div className="w-full my-auto py-2 flex flex-col items-center">
           {/* Subtle management controls */}
@@ -527,6 +582,8 @@ export const App: React.FC = () => {
                 }
               } else if (shortcut.isFolder) {
                 handleSpecialClick = () => setActiveFolder(shortcut)
+              } else if (shortcut.url) {
+                handleSpecialClick = () => handleOpenShortcut(shortcut)
               }
 
               return (
@@ -574,6 +631,7 @@ export const App: React.FC = () => {
           setAddFolderTargetId(folderId)
           setIsAddOpen(true)
         }}
+        onOpenShortcut={handleOpenShortcut}
         onContextMenuInsideFolder={(e, item) => {
           if (activeFolder) {
             setContextMenu({
@@ -589,6 +647,7 @@ export const App: React.FC = () => {
 
       {/* Edit Shortcut Modal */}
       <EditShortcutModal
+        key={editingShortcut?.id || 'closed'}
         isOpen={!!editingShortcut}
         shortcut={editingShortcut}
         onClose={() => setEditingShortcut(null)}
@@ -645,7 +704,7 @@ export const App: React.FC = () => {
           onClose={() => setContextMenu(null)}
           onOpen={() => {
             if (contextMenu.shortcut.url) {
-              window.open(contextMenu.shortcut.url, '_blank')
+              handleOpenShortcut(contextMenu.shortcut)
             }
           }}
           onEdit={() => setEditingShortcut(contextMenu.shortcut)}

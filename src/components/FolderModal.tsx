@@ -12,6 +12,7 @@ interface FolderModalProps {
   onUpdateFolderTitle: (folderId: string, newTitle: string) => void
   onDeleteInsideFolder: (folderId: string, shortcutId: string) => void
   onAddInsideFolder: (folderId: string) => void
+  onOpenShortcut: (shortcut: Shortcut) => void
   onContextMenuInsideFolder: (e: React.MouseEvent, shortcut: Shortcut) => void
 }
 
@@ -24,6 +25,7 @@ export const FolderModal: React.FC<FolderModalProps> = ({
   onUpdateFolderTitle,
   onDeleteInsideFolder,
   onAddInsideFolder,
+  onOpenShortcut,
   onContextMenuInsideFolder,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -115,6 +117,7 @@ export const FolderModal: React.FC<FolderModalProps> = ({
                 size="large"
                 globalIconStyle={globalIconStyle}
                 isEditMode={isEditMode}
+                onClick={() => onOpenShortcut(item)}
                 onDelete={() => onDeleteInsideFolder(folder.id, item.id)}
               />
             </div>

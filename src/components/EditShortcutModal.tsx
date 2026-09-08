@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { X, Globe, Sparkles } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { VectorIcon } from './VectorIcon'
@@ -31,21 +31,13 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [selectedColor, setSelectedColor] = useState(COLOR_OPTIONS[0])
-  const [iconStyle, setIconStyle] = useState<'auto' | 'official' | 'optimized'>('auto')
-  const [customIcon, setCustomIcon] = useState<string>('')
-
-  useEffect(() => {
-    if (shortcut) {
-      setTitle(shortcut.title)
-      setUrl(shortcut.url || '')
-      setSelectedColor(shortcut.bgColor || COLOR_OPTIONS[0])
-      setIconStyle(shortcut.iconStyle || 'auto')
-      setCustomIcon(shortcut.icon || '')
-    }
-  }, [shortcut])
+  const [title, setTitle] = useState(shortcut?.title || '')
+  const [url, setUrl] = useState(shortcut?.url || '')
+  const [selectedColor, setSelectedColor] = useState(shortcut?.bgColor || COLOR_OPTIONS[0])
+  const [iconStyle, setIconStyle] = useState<'auto' | 'official' | 'optimized'>(
+    shortcut?.iconStyle || 'auto'
+  )
+  const [customIcon, setCustomIcon] = useState<string>(shortcut?.icon || '')
 
   if (!isOpen || !shortcut) return null
 

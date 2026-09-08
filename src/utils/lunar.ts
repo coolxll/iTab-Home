@@ -5,7 +5,7 @@ export function getLunarDateString(date: Date = new Date()): string {
     const solar = Solar.fromDate(date)
     const lunar = solar.getLunar()
     return `${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`
-  } catch (e) {
+  } catch {
     return '七月廿六'
   }
 }

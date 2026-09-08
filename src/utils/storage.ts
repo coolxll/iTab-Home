@@ -1,6 +1,8 @@
 import type { UserSettings } from '../types'
 
 const STORAGE_KEY = 'itab_home_settings_v11'
+const RECENT_SHORTCUTS_KEY = 'itab_home_recent_shortcuts_v1'
+const RECENT_SHORTCUTS_HISTORY_LIMIT = 12
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '',
@@ -51,5 +53,33 @@ export function clearSettings(): void {
     localStorage.removeItem(STORAGE_KEY)
   } catch (e) {
     console.error('Failed to clear settings from localStorage', e)
+  }
+}
+
+export function loadRecentShortcutIds(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_SHORTCUTS_KEY)
+    if (!raw) return []
+
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+
+    return parsed
+      .filter((id): id is string => typeof id === 'string' && id.length > 0)
+      .slice(0, RECENT_SHORTCUTS_HISTORY_LIMIT)
+  } catch (e) {
+    console.error('Failed to load recent shortcuts from localStorage', e)
+    return []
+  }
+}
+
+export function saveRecentShortcutIds(ids: string[]): void {
+  try {
+    localStorage.setItem(
+      RECENT_SHORTCUTS_KEY,
+      JSON.stringify(ids.slice(0, RECENT_SHORTCUTS_HISTORY_LIMIT))
+    )
+  } catch (e) {
+    console.error('Failed to save recent shortcuts to localStorage', e)
   }
 }
