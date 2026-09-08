@@ -49,6 +49,7 @@ export const KNOWN_VECTOR_ICONS = new Set([
   'vercel',
   'xueqiu',
   'manmanbuy',
+  'workbuddy',
 ])
 
 export function hasVectorIcon(name?: string): boolean {
@@ -84,6 +85,7 @@ export const POPULAR_ICON_OPTIONS = [
   { id: 'bilibili', label: 'Bilibili' },
   { id: 'linuxdo', label: 'Linux.do' },
   { id: 'v2ex', label: 'V2EX' },
+  { id: 'workbuddy', label: 'WorkBuddy' },
 ]
 
 export function inferVectorIcon(title?: string, url?: string): string | undefined {
@@ -128,6 +130,7 @@ export function inferVectorIcon(title?: string, url?: string): string | undefine
   if (text.includes('douban') || text.includes('豆瓣')) return 'douban'
   if (text.includes('xueqiu') || text.includes('雪球')) return 'xueqiu'
   if (text.includes('feedly')) return 'feedly'
+  if (text.includes('workbuddy') || text.includes('work buddy') || text.includes('codebuddy')) return 'workbuddy'
   if (text.includes('nga')) return 'nga'
 
   return undefined

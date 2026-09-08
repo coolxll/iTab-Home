@@ -684,6 +684,16 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
         </div>
       )
 
+    case 'workbuddy':
+      // Official WorkBuddy app icon is a self-contained SVG with its own
+      // rounded-corner gradient background — render it edge-to-edge for both
+      // variants so it looks like a native app icon at any size.
+      return (
+        <div className="w-full h-full flex items-center justify-center overflow-hidden">
+          <img src="/icons/workbuddy.svg" alt="WorkBuddy" className="w-full h-full object-cover" />
+        </div>
+      )
+
     default:
       return null
   }
