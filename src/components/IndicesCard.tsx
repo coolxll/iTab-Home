@@ -28,7 +28,9 @@ const formatPct = (n: number) => `${n > 0 ? '+' : ''}${n.toFixed(2)}%`
  * Compact strip of the three headline A-share indices. Data comes from
  * /api/indices (Tencent quote endpoint, login-free), refreshed every minute.
  */
-export const IndicesCard: React.FC = () => {
+export const IndicesCard: React.FC<{ variant?: 'default' | 'sidebar' }> = ({
+  variant = 'default',
+}) => {
   const [quotes, setQuotes] = useState<IndexQuote[]>([])
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
@@ -55,10 +57,16 @@ export const IndicesCard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const isSidebar = variant === 'sidebar'
+
   if (loading) {
     return (
-      <section className="w-full max-w-[720px] mt-4" aria-label="股市指数">
-        <div className="mx-2 rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl px-3 py-2 text-center text-[11px] text-white/35">
+      <section className={isSidebar ? 'w-full' : 'w-full max-w-[720px] mt-4'} aria-label="股市指数">
+        <div
+          className={`rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl px-3 py-2 text-center text-[11px] text-white/35 ${
+            isSidebar ? '' : 'mx-2'
+          }`}
+        >
           行情加载中…
         </div>
       </section>
@@ -68,8 +76,12 @@ export const IndicesCard: React.FC = () => {
   if (failed) return null
 
   return (
-    <section className="w-full max-w-[720px] mt-4" aria-label="股市指数">
-      <div className="mx-2 rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] px-2 py-1.5 grid grid-cols-3 divide-x divide-white/[0.07]">
+    <section className={isSidebar ? 'w-full' : 'w-full max-w-[720px] mt-4'} aria-label="股市指数">
+      <div
+        className={`rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] px-2 py-1.5 grid grid-cols-3 divide-x divide-white/[0.07] ${
+          isSidebar ? '' : 'mx-2'
+        }`}
+      >
         {quotes.map((q) => (
           <div
             key={q.code}
@@ -79,7 +91,11 @@ export const IndicesCard: React.FC = () => {
             <span className="text-[10.5px] text-white/50 tracking-wide leading-tight">
               {q.name}
             </span>
-            <span className={`text-[15px] font-semibold tabular-nums leading-snug ${trendColor(q.change)}`}>
+            <span
+              className={`font-semibold tabular-nums leading-snug ${trendColor(q.change)} ${
+                isSidebar ? 'text-[13px]' : 'text-[15px]'
+              }`}
+            >
               {formatPrice(q.price)}
             </span>
             <span className={`text-[10px] tabular-nums leading-tight ${trendColor(q.change)}`}>

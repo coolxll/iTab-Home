@@ -474,68 +474,69 @@ export const App: React.FC = () => {
       {/* Ambient background overlay (strictly no blur so 4K wallpapers remain razor sharp) */}
       <div className="fixed inset-0 bg-black/15 pointer-events-none z-0" />
 
-      {/* Main Content Area */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 py-6 w-full max-w-[1160px] mx-auto">
-        {/* Top Header: compact clock */}
-        <div className="w-full flex flex-col items-center pt-1 md:pt-2">
-          <HeaderClock />
-        </div>
-
-        {/* Real Dynamic Widgets Strip (Calendar & Anniversary only) */}
-        {settings.showRealWidgets && (
-          <div className="flex items-center justify-center gap-4 my-4 animate-in fade-in duration-300">
-            <div className="w-40">
-              <CalendarCard />
-            </div>
-            <div className="w-40">
-              <AnniversaryCard
-                birthDate={settings.birthDate}
-                onClick={() => setIsSettingsOpen(true)}
-              />
-            </div>
+      {/* Main Content Area: wide screens get a two-column layout — primary
+          column (clock / search / icon matrix) plus a 300px info sidebar on
+          the right; narrower screens fall back to the classic stacked column. */}
+      <div className="relative z-10 flex-1 flex flex-col lg:flex-row lg:items-stretch gap-6 px-4 lg:px-8 py-4 lg:py-6 w-full max-w-[1440px] mx-auto">
+        {/* Primary column */}
+        <div className="flex-1 min-w-0 flex flex-col items-center justify-start lg:justify-center order-2 lg:order-1">
+          {/* Compact clock */}
+          <div className="w-full flex flex-col items-center pt-1 lg:pt-0">
+            <HeaderClock />
           </div>
-        )}
 
-        {/* Recently opened apps stay directly accessible outside folders. */}
-        {recentShortcuts.length > 0 && (
-          <section className="w-full max-w-[720px] mt-5" aria-label="最近打开">
-            <div className="mx-2 rounded-3xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.16)] px-4 pt-3 pb-3">
-              <div className="flex items-center gap-1.5 mb-2 px-1 text-[11px] font-medium tracking-wide text-white/65">
-                <History className="w-3.5 h-3.5" />
-                <span>最近打开</span>
+          {/* Search bar (desktop: right under the clock; mobile: stays with the stacked flow) */}
+          <div className="w-full flex flex-col items-center mt-3 lg:mt-5">
+            <SearchBar
+              currentEngineId={settings.searchEngineId}
+              onSelectEngine={handleSelectEngine}
+            />
+          </div>
+
+          {/* Mobile-only widgets strip: keeps the classic stacked layout on small screens */}
+          {settings.showRealWidgets && (
+            <div className="flex lg:hidden items-center justify-center gap-4 my-4 animate-in fade-in duration-300">
+              <div className="w-40">
+                <CalendarCard />
               </div>
-              <div className="flex items-start justify-start sm:justify-center gap-2 sm:gap-4 overflow-x-auto pb-1">
-                {recentShortcuts.map((shortcut) => (
-                  <div key={shortcut.id} className="w-[72px] shrink-0 flex justify-center">
-                    <IconItem
-                      shortcut={shortcut}
-                      globalIconStyle={settings.iconStyle}
-                      onClick={() => handleOpenShortcut(shortcut)}
-                    />
-                  </div>
-                ))}
+              <div className="w-40">
+                <AnniversaryCard
+                  birthDate={settings.birthDate}
+                  onClick={() => setIsSettingsOpen(true)}
+                />
               </div>
             </div>
-          </section>
-        )}
+          )}
 
-        {/* A-share headline indices */}
-        <IndicesCard />
+          {/* Mobile-only info widgets (sidebar takes over on lg+) */}
+          <div className="lg:hidden w-full flex flex-col items-center">
+            {recentShortcuts.length > 0 && (
+              <section className="w-full max-w-[720px] mt-4" aria-label="最近打开">
+                <div className="mx-2 rounded-3xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.16)] px-4 pt-3 pb-3">
+                  <div className="flex items-center gap-1.5 mb-2 px-1 text-[11px] font-medium tracking-wide text-white/65">
+                    <History className="w-3.5 h-3.5" />
+                    <span>最近打开</span>
+                  </div>
+                  <div className="flex items-start justify-start sm:justify-center gap-2 sm:gap-4 overflow-x-auto pb-1">
+                    {recentShortcuts.map((shortcut) => (
+                      <div key={shortcut.id} className="w-[72px] shrink-0 flex justify-center">
+                        <IconItem
+                          shortcut={shortcut}
+                          globalIconStyle={settings.iconStyle}
+                          onClick={() => handleOpenShortcut(shortcut)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+            <IndicesCard />
+            <HotListsCard />
+          </div>
 
-        {/* Daily hot lists (Weibo & Zhihu, login-free) */}
-        <HotListsCard />
-
-        {/* Search sits below the hot lists — still handy but no longer
-            dominating the top of the page */}
-        <div className="w-full flex flex-col items-center mt-4">
-          <SearchBar
-            currentEngineId={settings.searchEngineId}
-            onSelectEngine={handleSelectEngine}
-          />
-        </div>
-
-        {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
-        <div className="w-full my-auto py-2 flex flex-col items-center">
+          {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
+          <div className="w-full mt-4 lg:mt-8 py-2 flex flex-col items-center">
           {/* Subtle management controls */}
           <div className="w-full max-w-[1060px] flex items-center justify-end mb-2 px-4 space-x-2">
             <button
@@ -625,10 +626,51 @@ export const App: React.FC = () => {
               )
             })}
           </div>
+          </div>
+
+          {/* Bottom Motto (primary column) */}
+          <FooterMotto />
         </div>
 
-        {/* Bottom Motto */}
-        <FooterMotto />
+        {/* Info sidebar (lg+ only) */}
+        <aside className="hidden lg:flex flex-col gap-4 w-[300px] shrink-0 order-1 lg:order-2 lg:sticky lg:top-6 self-start max-h-[calc(100vh-3rem)] overflow-y-auto pr-1 [scrollbar-width:thin]">
+          {settings.showRealWidgets && (
+            <div className="grid grid-cols-2 gap-3">
+              <CalendarCard compact />
+              <AnniversaryCard
+                birthDate={settings.birthDate}
+                onClick={() => setIsSettingsOpen(true)}
+                compact
+              />
+            </div>
+          )}
+
+          <IndicesCard variant="sidebar" />
+
+          <HotListsCard variant="sidebar" />
+
+          {recentShortcuts.length > 0 && (
+            <section className="w-full" aria-label="最近打开">
+              <div className="rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] px-3 pt-2.5 pb-2.5">
+                <div className="flex items-center gap-1.5 mb-2 px-1 text-[11px] font-medium tracking-wide text-white/65">
+                  <History className="w-3.5 h-3.5" />
+                  <span>最近打开</span>
+                </div>
+                <div className="grid grid-cols-4 gap-y-3 justify-items-center">
+                  {recentShortcuts.map((shortcut) => (
+                    <div key={shortcut.id} className="w-[64px] flex justify-center">
+                      <IconItem
+                        shortcut={shortcut}
+                        globalIconStyle={settings.iconStyle}
+                        onClick={() => handleOpenShortcut(shortcut)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </aside>
       </div>
 
       {/* Folder Popover Modal */}

@@ -4,11 +4,13 @@ import { getDaysAlive } from '../utils/lunar'
 interface AnniversaryCardProps {
   birthDate: string
   onClick?: () => void
+  compact?: boolean
 }
 
 export const AnniversaryCard: React.FC<AnniversaryCardProps> = ({
   birthDate,
   onClick,
+  compact = false,
 }) => {
   const days = getDaysAlive(birthDate)
 
@@ -17,7 +19,9 @@ export const AnniversaryCard: React.FC<AnniversaryCardProps> = ({
       {/* Card container with moon background */}
       <div
         onClick={onClick}
-        className="relative w-full h-[140px] rounded-2xl p-3.5 bg-black/60 backdrop-blur-xl border border-white/10 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card"
+        className={`relative w-full rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-xl text-white flex flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer group/card ${
+          compact ? 'h-[110px] p-3' : 'h-[140px] p-3.5'
+        }`}
       >
         {/* Moon image background with atmospheric glow */}
         <div
@@ -33,7 +37,7 @@ export const AnniversaryCard: React.FC<AnniversaryCardProps> = ({
 
         <div className="relative z-10 flex flex-col my-auto">
           <div className="flex items-baseline space-x-0.5">
-            <span className="text-3xl font-bold tracking-tight text-white drop-shadow-md">
+            <span className={`${compact ? 'text-2xl' : 'text-3xl'} font-bold tracking-tight text-white drop-shadow-md`}>
               {days}
             </span>
             <span className="text-sm font-medium text-white/90">天</span>

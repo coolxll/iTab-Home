@@ -69,11 +69,13 @@ const HotRow: React.FC<{ item: HotItem; compact?: boolean }> = ({ item, compact 
 )
 
 /**
- * Compact hot-list widget: shows the top 3 entries inline by default and
- * expands into a 3-column grid of the top 15 on demand, so the desktop only
- * gives up a few rows of vertical space.
+ * Compact hot-list widget with two presentations:
+ * - default (centered strip): top 3 inline, expandable to a 3-column grid of 15
+ * - sidebar: single-column scrollable list of 15, sized for the side rail
  */
-export const HotListsCard: React.FC = () => {
+export const HotListsCard: React.FC<{ variant?: 'default' | 'sidebar' }> = ({
+  variant = 'default',
+}) => {
   const [active, setActive] = useState<SourceId>('weibo')
   const [expanded, setExpanded] = useState(false)
   const [state, setState] = useState<Record<SourceId, SourceState>>({
@@ -128,10 +130,18 @@ export const HotListsCard: React.FC = () => {
 
   const current = state[active]
   const collapsed = current.items.slice(0, COLLAPSED_COUNT)
+  const isSidebar = variant === 'sidebar'
 
   return (
-    <section className="w-full max-w-[720px] mt-4" aria-label="每日热门">
-      <div className="mx-2 rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] px-3 pt-1.5 pb-1.5">
+    <section
+      className={isSidebar ? 'w-full' : 'w-full max-w-[720px] mt-4'}
+      aria-label="每日热门"
+    >
+      <div
+        className={`rounded-2xl border border-white/10 bg-black/20 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] px-3 pt-1.5 pb-1.5 ${
+          isSidebar ? '' : 'mx-2'
+        }`}
+      >
         {/* Header row: tabs + controls */}
         <div className="flex items-center justify-between px-1 pb-1">
           <div className="flex items-center gap-2.5">
@@ -159,15 +169,17 @@ export const HotListsCard: React.FC = () => {
             >
               <RefreshCw className={`w-3 h-3 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
-            <button
-              type="button"
-              onClick={() => setExpanded((v) => !v)}
-              title={expanded ? '收起' : `展开 Top ${FETCH_LIMIT}`}
-              className="flex items-center gap-0.5 px-1.5 py-1 rounded-md text-[10.5px] text-white/45 hover:text-white/85 hover:bg-white/10 transition-colors"
-            >
-              <span>{expanded ? '收起' : '展开'}</span>
-              {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            </button>
+            {!isSidebar && (
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                title={expanded ? '收起' : `展开 Top ${FETCH_LIMIT}`}
+                className="flex items-center gap-0.5 px-1.5 py-1 rounded-md text-[10.5px] text-white/45 hover:text-white/85 hover:bg-white/10 transition-colors"
+              >
+                <span>{expanded ? '收起' : '展开'}</span>
+                {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+            )}
           </div>
         </div>
 
@@ -176,6 +188,13 @@ export const HotListsCard: React.FC = () => {
           <div className="py-2 text-center text-[11px] text-white/35">加载中…</div>
         ) : current.items.length === 0 ? (
           <div className="py-2 text-center text-[11px] text-white/35">{current.error || '暂无数据'}</div>
+        ) : isSidebar ? (
+          /* Sidebar: full single-column scrollable list */
+          <div className="divide-y divide-white/[0.05] max-h-[300px] overflow-y-auto pr-0.5 [scrollbar-width:thin]">
+            {current.items.map((item) => (
+              <HotRow key={`${active}-${item.rank}-${item.title}`} item={item} />
+            ))}
+          </div>
         ) : expanded ? (
           /* Expanded: 3-column grid of the full list */
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-1 animate-in fade-in duration-200">
