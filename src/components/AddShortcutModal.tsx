@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { X, Globe, FolderPlus, Sparkles } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { VectorIcon } from './VectorIcon'
+import { FaviconPreview } from './FaviconPreview'
+import { FAVICON_ICON } from '../utils/favicon'
 import { hasVectorIcon, inferVectorIcon, POPULAR_ICON_OPTIONS } from '../utils/vectorIcons'
 
 interface AddShortcutModalProps {
@@ -41,6 +43,8 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
 
   const inferredIcon = inferVectorIcon(title, url)
   const effectiveIcon = customIcon || inferredIcon
+  const useFavicon = effectiveIcon === FAVICON_ICON
+  const previewIcon = useFavicon ? undefined : effectiveIcon
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -158,19 +162,27 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
                 <label className="text-xs font-medium text-white/70 flex items-center space-x-1">
                   <span>图标与预览</span>
                 </label>
-                {effectiveIcon && (
-                  <span className="text-[11px] text-sky-400 font-normal flex items-center space-x-1">
-                    <Sparkles className="w-3 h-3" />
-                    <span>{customIcon ? `已选: ${effectiveIcon}` : `已自动匹配: ${effectiveIcon}`}</span>
+                {useFavicon ? (
+                  <span className="text-[11px] text-emerald-400 font-normal">
+                    🌐 将使用网站原生 Favicon
                   </span>
+                ) : (
+                  effectiveIcon && (
+                    <span className="text-[11px] text-sky-400 font-normal flex items-center space-x-1">
+                      <Sparkles className="w-3 h-3" />
+                      <span>{customIcon ? `已选: ${effectiveIcon}` : `已自动匹配: ${effectiveIcon}`}</span>
+                    </span>
+                  )
                 )}
               </div>
 
               {/* Real-time Preview card */}
               <div className="flex items-center space-x-3 p-2.5 bg-white/5 border border-white/10 rounded-xl mb-2.5">
                 <div className="w-11 h-11 rounded-[16px] overflow-hidden flex items-center justify-center bg-white/10 flex-shrink-0 shadow-sm border border-white/10">
-                  {effectiveIcon && hasVectorIcon(effectiveIcon) ? (
-                    <VectorIcon name={effectiveIcon} variant="official" />
+                  {useFavicon ? (
+                    <FaviconPreview url={url} title={title} bgColor={selectedColor} />
+                  ) : previewIcon && hasVectorIcon(previewIcon) ? (
+                    <VectorIcon name={previewIcon} variant="official" />
                   ) : (
                     <div className={`w-full h-full ${selectedColor} flex items-center justify-center text-white font-bold text-xs`}>
                       {title ? title.slice(0, 2) : <Globe className="w-5 h-5 text-white/70" />}
@@ -178,9 +190,13 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
                   )}
                 </div>
                 <div className="text-xs text-white/60 leading-relaxed">
-                  {effectiveIcon ? (
+                  {useFavicon ? (
                     <p className="text-white/90">
-                      已绑定 <span className="text-sky-300 font-semibold">{effectiveIcon}</span> 官方高清图标，无网络依赖，秒级渲染。
+                      将实时抓取并展示该网站的 <span className="text-emerald-300 font-semibold">原生 Favicon</span>（预览即所得），不再使用内置图标。
+                    </p>
+                  ) : previewIcon ? (
+                    <p className="text-white/90">
+                      已绑定 <span className="text-sky-300 font-semibold">{previewIcon}</span> 官方高清图标，无网络依赖，秒级渲染。
                     </p>
                   ) : (
                     <p>
@@ -204,6 +220,17 @@ export const AddShortcutModal: React.FC<AddShortcutModalProps> = ({
                     }`}
                   >
                     ✨ 智能识别
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomIcon(FAVICON_ICON)}
+                    className={`px-2 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+                      customIcon === FAVICON_ICON
+                        ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300 shadow-xs'
+                        : 'border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                    }`}
+                  >
+                    🌐 网站 Favicon
                   </button>
                   {POPULAR_ICON_OPTIONS.map((item) => (
                     <button

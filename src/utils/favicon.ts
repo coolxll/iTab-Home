@@ -18,7 +18,20 @@ function isPrivateOrHomelab(hostname: string): boolean {
   )
 }
 
+/**
+ * Sentinel value for Shortcut.icon meaning: "use the website's own favicon".
+ * Lets users explicitly pin favicon mode instead of a built-in vector icon,
+ * even when smart recognition would match a known vector icon.
+ */
+export const FAVICON_ICON = 'favicon'
+
 export function getFaviconCandidates(url: string, localIcon?: string): string[] {
+  // A pinned / inferred vector icon is NOT a favicon fallback candidate:
+  // an <img> never fires onError for it, so it would masquerade as the site's
+  // favicon and block the real favicon fallback chain.
+  if (localIcon === FAVICON_ICON) {
+    localIcon = undefined
+  }
   if (!url || url.startsWith('#') || url.startsWith('chrome://')) {
     return localIcon ? [localIcon] : []
   }

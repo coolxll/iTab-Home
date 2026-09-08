@@ -147,12 +147,17 @@ export const IconItem: React.FC<IconItemProps> = ({
       }
     }
 
-    // 3. Known / Curated Vector Icons (Official brand vs Optimized seamless)
+    // 3. Explicitly pinned built-in Vector Icon (Official brand vs Optimized seamless)
     if (shortcut.icon && hasVectorIcon(shortcut.icon)) {
       return <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
     }
 
-    // 4. Custom Website Favicon / Apple-Touch-Icon (for custom URLs added by user)
+    // 4. Website Favicon / Apple-Touch-Icon.
+    //    Tried BEFORE the smart-recognized vector icon: the vector icon only
+    //    shows as a placeholder while the favicon is loading, and as the
+    //    fallback when every favicon candidate fails. This keeps the real
+    //    site favicon visible even when smart recognition matches, and lets
+    //    users pin favicon mode explicitly via icon: 'favicon'.
     const hasCandidate = Boolean(
       shortcut.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
     )
