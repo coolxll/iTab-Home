@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Settings, Lightbulb, Plus, Globe, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Shortcut } from '../types'
-import { getFaviconCandidates } from '../utils/favicon'
+import { getFaviconCandidates, isIconUrl } from '../utils/favicon'
 import { VectorIcon } from './VectorIcon'
 import { hasVectorIcon, inferVectorIcon } from '../utils/vectorIcons'
 
@@ -40,10 +40,12 @@ export const IconItem: React.FC<IconItemProps> = ({
       : globalIconStyle
 
   const effectiveIcon = shortcut.icon || inferVectorIcon(shortcut.title, shortcut.url)
+  const pinnedIconUrl = isIconUrl(shortcut.icon) ? shortcut.icon : null
   const candidates = getFaviconCandidates(shortcut.url || '', effectiveIcon)
   const [candidateIndex, setCandidateIndex] = useState(0)
   const [imgError, setImgError] = useState(false)
   const [imgLoaded, setImgLoaded] = useState(false)
+  const [pinnedFailed, setPinnedFailed] = useState(false)
   const [isDragOverTarget, setIsDragOverTarget] = useState(false)
   const dragCounter = useRef(0)
 
@@ -150,6 +152,22 @@ export const IconItem: React.FC<IconItemProps> = ({
     // 3. Explicitly pinned built-in Vector Icon (Official brand vs Optimized seamless)
     if (shortcut.icon && hasVectorIcon(shortcut.icon)) {
       return <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
+    }
+
+    // 3b. Pinned online high-res icon URL. Falls back to the favicon chain
+    //     below if the source stops working.
+    if (pinnedIconUrl && !pinnedFailed) {
+      return (
+        <div className="w-full h-full bg-white flex items-center justify-center relative overflow-hidden">
+          <img
+            src={pinnedIconUrl}
+            alt={shortcut.title}
+            onError={() => setPinnedFailed(true)}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      )
     }
 
     // 4. Website Favicon / Apple-Touch-Icon.

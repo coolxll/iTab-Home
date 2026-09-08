@@ -3,7 +3,8 @@ import { X, Globe, Sparkles } from 'lucide-react'
 import type { Shortcut } from '../types'
 import { VectorIcon } from './VectorIcon'
 import { FaviconPreview } from './FaviconPreview'
-import { FAVICON_ICON } from '../utils/favicon'
+import { OnlineIconPicker } from './OnlineIconPicker'
+import { FAVICON_ICON, isIconUrl } from '../utils/favicon'
 import { hasVectorIcon, inferVectorIcon, POPULAR_ICON_OPTIONS } from '../utils/vectorIcons'
 
 interface EditShortcutModalProps {
@@ -46,7 +47,8 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
   const inferredIcon = inferVectorIcon(title, url)
   const effectiveIcon = customIcon || inferredIcon
   const useFavicon = effectiveIcon === FAVICON_ICON
-  const previewIcon = useFavicon ? undefined : effectiveIcon
+  const useUrlIcon = isIconUrl(effectiveIcon)
+  const previewIcon = useFavicon || useUrlIcon ? undefined : effectiveIcon
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,6 +116,10 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                   <span className="text-[11px] text-emerald-400 font-normal">
                     🌐 将使用网站原生 Favicon
                   </span>
+                ) : useUrlIcon ? (
+                  <span className="text-[11px] text-emerald-400 font-normal">
+                    ✨ 已固定在线高清图标
+                  </span>
                 ) : (
                   effectiveIcon && (
                     <span className="text-[11px] text-sky-400 font-normal flex items-center space-x-1">
@@ -129,6 +135,10 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                 <div className="w-11 h-11 rounded-[16px] overflow-hidden flex items-center justify-center bg-white/10 flex-shrink-0 shadow-sm border border-white/10">
                   {useFavicon ? (
                     <FaviconPreview url={url} title={title} bgColor={selectedColor} />
+                  ) : useUrlIcon ? (
+                    <div className="w-full h-full bg-white flex items-center justify-center overflow-hidden">
+                      <img src={effectiveIcon} alt="已固定图标" className="w-full h-full object-cover" />
+                    </div>
                   ) : previewIcon && hasVectorIcon(previewIcon) ? (
                     <VectorIcon name={previewIcon} variant={iconStyle === 'optimized' ? 'optimized' : 'official'} />
                   ) : (
@@ -141,6 +151,10 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                   {useFavicon ? (
                     <p className="text-white/90">
                       将实时抓取并展示该网站的 <span className="text-emerald-300 font-semibold">原生 Favicon</span>（预览即所得），不再使用内置图标。
+                    </p>
+                  ) : useUrlIcon ? (
+                    <p className="text-white/90">
+                      已固定一个<span className="text-emerald-300 font-semibold">在线高清图标</span>，秒级加载；源挂了会自动回退到网站 Favicon。
                     </p>
                   ) : previewIcon ? (
                     <p className="text-white/90">
@@ -196,6 +210,17 @@ export const EditShortcutModal: React.FC<EditShortcutModalProps> = ({
                   ))}
                 </div>
               </div>
+
+              {/* Online high-res icon fetcher */}
+              {url.trim() && (
+                <div className="mb-2">
+                  <OnlineIconPicker
+                    pageUrl={url.trim()}
+                    pinnedIcon={effectiveIcon || ''}
+                    onPick={(iconUrl) => setCustomIcon(iconUrl)}
+                  />
+                </div>
+              )}
             </div>
           )}
 

@@ -25,6 +25,57 @@ function isPrivateOrHomelab(hostname: string): boolean {
  */
 export const FAVICON_ICON = 'favicon'
 
+/** True when Shortcut.icon holds a pinned online icon URL instead of an icon name. */
+export function isIconUrl(icon?: string): boolean {
+  return Boolean(icon && (icon.startsWith('http://') || icon.startsWith('https://')))
+}
+
+export interface OnlineIconCandidate {
+  url: string
+  label: string
+}
+
+/**
+ * High-resolution icon candidates from multiple third-party providers, used by
+ * the icon picker in the Add/Edit modals. Each provider has different coverage
+ * and quality per domain, so we surface them all and let the user pick the
+ * sharpest one. Private/homelab domains only get direct-origin candidates
+ * (external crawlers cannot reach them).
+ */
+export function getOnlineIconCandidates(pageUrl: string): OnlineIconCandidate[] {
+  try {
+    const fullUrl = pageUrl.startsWith('http') ? pageUrl : `https://${pageUrl}`
+    const parsed = new URL(fullUrl)
+    const host = parsed.hostname
+    const origin = parsed.origin
+    if (!host) return []
+
+    const candidates: OnlineIconCandidate[] = [
+      { url: `${origin}/apple-touch-icon.png`, label: 'Apple' },
+    ]
+
+    if (!isPrivateOrHomelab(host)) {
+      candidates.push(
+        // Clearbit Logo API: usually the highest-resolution brand logo available
+        { url: `https://logo.clearbit.com/${host}`, label: 'Clearbit' },
+        // Google favicon service at 128px
+        { url: `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(origin)}&size=128`, label: 'Google' },
+        // Unavatar aggregates multiple sources; fallback=false so failures are detectable
+        { url: `https://unavatar.io/${host}?fallback=false`, label: 'Unavatar' },
+        // icon.horse: high-quality icon CDN
+        { url: `https://icon.horse/icon/${host}`, label: 'Horse' },
+        // DuckDuckGo icons
+        { url: `https://icons.duckduckgo.com/ip3/${host}.ico`, label: 'DDG' },
+      )
+    }
+
+    candidates.push({ url: `${origin}/favicon.ico`, label: 'ICO' })
+    return candidates
+  } catch {
+    return []
+  }
+}
+
 export function getFaviconCandidates(url: string, localIcon?: string): string[] {
   // A pinned / inferred vector icon is NOT a favicon fallback candidate:
   // an <img> never fires onError for it, so it would masquerade as the site's
