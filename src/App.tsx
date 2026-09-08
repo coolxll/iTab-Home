@@ -475,13 +475,9 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 py-6 w-full max-w-[1160px] mx-auto">
-        {/* Top Header: Clock & Search */}
-        <div className="w-full flex flex-col items-center pt-2 md:pt-4 space-y-4">
+        {/* Top Header: compact clock */}
+        <div className="w-full flex flex-col items-center pt-1 md:pt-2">
           <HeaderClock />
-          <SearchBar
-            currentEngineId={settings.searchEngineId}
-            onSelectEngine={handleSelectEngine}
-          />
         </div>
 
         {/* Real Dynamic Widgets Strip (Calendar & Anniversary only) */}
@@ -524,6 +520,15 @@ export const App: React.FC = () => {
 
         {/* Daily hot lists (Weibo & Zhihu, login-free) */}
         <HotListsCard />
+
+        {/* Search sits below the hot lists — still handy but no longer
+            dominating the top of the page */}
+        <div className="w-full flex flex-col items-center mt-4">
+          <SearchBar
+            currentEngineId={settings.searchEngineId}
+            onSelectEngine={handleSelectEngine}
+          />
+        </div>
 
         {/* Desktop App Matrix (Shortcuts & Folders with Drag & Drop) */}
         <div className="w-full my-auto py-2 flex flex-col items-center">
