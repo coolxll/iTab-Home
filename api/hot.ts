@@ -114,10 +114,16 @@ async function fetchV2ex(limit: number): Promise<HotItem[]> {
 }
 
 async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
-  // linux.do sits behind a Cloudflare browser challenge for JSON endpoints,
-  // but its Discourse RSS feed is served unchallenged and login-free.
+  // linux.do sits behind a Cloudflare browser challenge that lets RSS feeds
+  // through on some networks only. Browser-like Accept headers maximize the
+  // chance of being treated as a legit feed reader from datacenter IPs.
   const res = await fetch('https://linux.do/top.rss', {
-    headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/rss+xml,text/xml,*/*' },
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
+      Accept: 'application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.5',
+      'Accept-Language': 'zh-CN,zh-Hans;q=0.9,en;q=0.8',
+      'Cache-Control': 'no-cache',
+    },
     signal: AbortSignal.timeout(8000),
   })
   if (!res.ok) throw new Error(`linuxdo upstream ${res.status}`)
