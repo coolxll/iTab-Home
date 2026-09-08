@@ -4,6 +4,7 @@ import { SearchBar } from './components/SearchBar'
 import { CalendarCard } from './components/CalendarCard'
 import { AnniversaryCard } from './components/AnniversaryCard'
 import { IconItem } from './components/IconItem'
+import { IndicesCard } from './components/IndicesCard'
 import { HotListsCard } from './components/HotListsCard'
 import { FooterMotto } from './components/FooterMotto'
 import { SettingsModal } from './components/SettingsModal'
@@ -517,6 +518,9 @@ export const App: React.FC = () => {
             </div>
           </section>
         )}
+
+        {/* A-share headline indices */}
+        <IndicesCard />
 
         {/* Daily hot lists (Weibo & Zhihu, login-free) */}
         <HotListsCard />
