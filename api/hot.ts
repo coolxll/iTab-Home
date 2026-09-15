@@ -116,11 +116,11 @@ async function fetchV2ex(limit: number): Promise<HotItem[]> {
 async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
   // linux.do's JSON endpoints sit behind a Cloudflare browser challenge, and
   // even its RSS feed 403s from Vercel's datacenter ASNs. Feedly's open
-  // stream API proxies the same Discourse top.rss feed from IPs that pass
+  // stream API proxies the same Discourse hot.rss feed from IPs that pass
   // the challenge, with no API key required.
   const res = await fetch(
     `https://cloud.feedly.com/v3/streams/contents?streamId=${encodeURIComponent(
-      'feed/https://linux.do/top.rss'
+      'feed/https://linux.do/hot.rss'
     )}&count=${Math.max(limit, 20)}`,
     {
       headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/json' },
@@ -139,7 +139,7 @@ async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
     .map((it, i) => ({
       rank: i + 1,
       title: it.title as string,
-      url: it.alternate?.[0]?.href || 'https://linux.do/top',
+      url: it.alternate?.[0]?.href || 'https://linux.do/hot',
     }))
 }
 
