@@ -113,34 +113,79 @@ async function fetchV2ex(limit: number): Promise<HotItem[]> {
     }))
 }
 
-async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
-  // linux.do's JSON endpoints sit behind a Cloudflare browser challenge, and
-  // even its RSS feed 403s from Vercel's datacenter ASNs. Feedly's open
-  // stream API proxies the same Discourse hot.rss feed from IPs that pass
-  // the challenge, with no API key required.
-  const res = await fetch(
-    `https://cloud.feedly.com/v3/streams/contents?streamId=${encodeURIComponent(
-      'feed/https://linux.do/hot.rss'
-    )}&count=${Math.max(limit, 20)}`,
-    {
-      headers: { 'User-Agent': UA_DESKTOP, Accept: 'application/json' },
-      signal: AbortSignal.timeout(8000),
+function parseRssItems(xml: string, limit: number, maxAgeDays = 30): HotItem[] {
+  const itemMatches = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)]
+  if (itemMatches.length === 0) return []
+
+  const pick = (block: string, tag: string) => {
+    const raw = block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`))?.[1]?.trim() || ''
+    return raw.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '').trim()
+  }
+
+  const now = Date.now()
+  const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000
+
+  const items: HotItem[] = []
+  for (const m of itemMatches) {
+    const block = m[1]
+    const title = pick(block, 'title')
+    const url = pick(block, 'link')
+    if (!title || !url) continue
+
+    const pubDateStr = pick(block, 'pubDate')
+    if (pubDateStr) {
+      const pubTime = Date.parse(pubDateStr)
+      // Skip old pinned topics from months/years ago
+      if (!isNaN(pubTime) && now - pubTime > maxAgeMs) {
+        continue
+      }
     }
-  )
-  if (!res.ok) throw new Error(`linuxdo(feedly) upstream ${res.status}`)
 
-  const data: any = await res.json()
-  const items: any[] = data?.items
-  if (!Array.isArray(items) || items.length === 0) throw new Error('linuxdo: empty feed')
-
+    const tag = pick(block, 'category') || undefined
+    items.push({
+      rank: items.length + 1,
+      title,
+      url,
+      tag,
+    })
+    if (items.length >= limit) break
+  }
   return items
-    .filter((it) => it && it.title)
-    .slice(0, limit)
-    .map((it, i) => ({
-      rank: i + 1,
-      title: it.title as string,
-      url: it.alternate?.[0]?.href || 'https://linux.do/hot',
-    }))
+}
+
+async function fetchLinuxDo(limit: number): Promise<HotItem[]> {
+  const headers = {
+    'User-Agent': UA_DESKTOP,
+    Accept: 'application/rss+xml, application/xml, text/xml, */*',
+  }
+
+  // 1. Try official direct RSS first (fast timeout in case datacenter ASN is blocked)
+  try {
+    const res = await fetch('https://linux.do/hot.rss', {
+      headers,
+      signal: AbortSignal.timeout(3500),
+    })
+    if (res.ok) {
+      const xml = await res.text()
+      const items = parseRssItems(xml, limit)
+      if (items.length > 0) return items
+    }
+  } catch {
+    // Cloudflare ASN block or timeout; proceed to mirror
+  }
+
+  // 2. Fallback to active community RSS mirror (no datacenter block, up-to-date)
+  const mirrorRes = await fetch('https://linuxdorss.longpink.com/top.xml', {
+    headers,
+    signal: AbortSignal.timeout(6000),
+  })
+  if (!mirrorRes.ok) throw new Error(`linuxdo upstream ${mirrorRes.status}`)
+
+  const mirrorXml = await mirrorRes.text()
+  const mirrorItems = parseRssItems(mirrorXml, limit)
+  if (mirrorItems.length === 0) throw new Error('linuxdo: empty feed')
+
+  return mirrorItems
 }
 
 const FETCHERS: Record<string, (limit: number) => Promise<HotItem[]>> = {
