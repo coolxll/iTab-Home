@@ -120,21 +120,23 @@ export const App: React.FC = () => {
   // Global keyboard shortcut listener for Raycast-like command palette
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // 1. Cmd+K (Mac) or Ctrl+K (Windows/Linux)
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      // 1. Cmd+K / Ctrl+K  OR  Cmd+J / Ctrl+J  (Cmd+K is captured by Chrome address bar, so Cmd+J is the reliable primary)
+      if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'k' || e.key.toLowerCase() === 'j')) {
         e.preventDefault()
         setIsCommandPaletteOpen((prev) => !prev)
         return
       }
 
-      // 2. '/' key when no input/textarea/editable element is focused
-      if (e.key === '/' && !isCommandPaletteOpen) {
+      // 2. '/' key or Space key when no input/textarea/editable/modal element is focused
+      if ((e.key === '/' || e.key === ' ') && !isCommandPaletteOpen) {
         const target = e.target as HTMLElement | null
         const isInput =
           target &&
           (target.tagName === 'INPUT' ||
             target.tagName === 'TEXTAREA' ||
-            target.isContentEditable)
+            target.tagName === 'SELECT' ||
+            target.isContentEditable ||
+            target.closest('[role="dialog"]'))
         if (!isInput) {
           e.preventDefault()
           setIsCommandPaletteOpen(true)
