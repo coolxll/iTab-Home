@@ -525,6 +525,7 @@ export const App: React.FC = () => {
               currentEngineId={settings.searchEngineId}
               onSelectEngine={handleSelectEngine}
               onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+              globalIconStyle={settings.iconStyle}
             />
           </div>
 

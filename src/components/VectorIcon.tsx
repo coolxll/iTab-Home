@@ -80,15 +80,19 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
       if (variant === 'official') {
         return (
           <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
-            <div className="w-full h-full bg-[#0084FF] rounded-[14px] flex items-center justify-center text-white font-bold text-xl select-none font-serif shadow-xs">
-              知
+            <div className="w-full h-full bg-[#0084FF] rounded-[14px] flex items-center justify-center p-2 shadow-xs">
+              <svg viewBox="0 0 95 91" className="w-full h-full fill-white">
+                <path d="M53.29 80.035l7.32.002 2.41 8.24 13.128-8.24h15.477v-67.98H53.29v67.978zm7.79-60.598h22.756v53.22h-8.73l-8.718 5.473-1.587-5.46-3.72-.012v-53.22zM46.818 43.162h-16.35c.545-8.467.687-16.12.687-22.955h15.987s.615-7.05-2.68-6.97H16.807c1.09-4.1 2.46-8.332 4.1-12.708 0 0-7.523 0-10.085 6.74-1.06 2.78-4.128 13.48-9.592 24.41 1.84-.2 7.927-.37 11.512-6.94.66-1.84.785-2.08 1.605-4.54h9.02c0 3.28-.374 20.9-.526 22.95H6.51c-3.67 0-4.863 7.38-4.863 7.38H22.14C20.765 66.11 13.385 79.24 0 89.62c6.403 1.828 12.784-.29 15.937-3.094 0 0 7.182-6.53 11.12-21.64L43.92 85.18s2.473-8.402-.388-12.496c-2.37-2.788-8.768-10.33-11.496-13.064l-4.57 3.627c1.363-4.368 2.183-8.61 2.46-12.71H49.19s-.027-7.38-2.372-7.38z" />
+              </svg>
             </div>
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-[#0066FF] flex items-center justify-center text-white font-bold text-2xl select-none font-serif">
-          知
+        <div className="w-full h-full bg-[#0084FF] flex items-center justify-center p-2.5">
+          <svg viewBox="0 0 95 91" className="w-full h-full fill-white">
+            <path d="M53.29 80.035l7.32.002 2.41 8.24 13.128-8.24h15.477v-67.98H53.29v67.978zm7.79-60.598h22.756v53.22h-8.73l-8.718 5.473-1.587-5.46-3.72-.012v-53.22zM46.818 43.162h-16.35c.545-8.467.687-16.12.687-22.955h15.987s.615-7.05-2.68-6.97H16.807c1.09-4.1 2.46-8.332 4.1-12.708 0 0-7.523 0-10.085 6.74-1.06 2.78-4.128 13.48-9.592 24.41 1.84-.2 7.927-.37 11.512-6.94.66-1.84.785-2.08 1.605-4.54h9.02c0 3.28-.374 20.9-.526 22.95H6.51c-3.67 0-4.863 7.38-4.863 7.38H22.14C20.765 66.11 13.385 79.24 0 89.62c6.403 1.828 12.784-.29 15.937-3.094 0 0 7.182-6.53 11.12-21.64L43.92 85.18s2.473-8.402-.388-12.496c-2.37-2.788-8.768-10.33-11.496-13.064l-4.57 3.627c1.363-4.368 2.183-8.61 2.46-12.71H49.19s-.027-7.38-2.372-7.38z" />
+          </svg>
         </div>
       )
 
@@ -698,28 +702,48 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
       if (variant === 'official') {
         return (
           <div className="w-full h-full bg-white flex items-center justify-center p-2">
-            <svg className="w-7 h-7" viewBox="0 0 234 344">
+            <svg viewBox="0 0 678 1024" className="w-full h-full" fill="none">
+              <path fill="url(#bing-a)" d="M0 778.3c14.6 123.8 223.8 143 236.8 79.9-.3-.4-.5-678.1-.5-678.1-3.6-46-26.2-72-61.6-96.5-33-22.7-74.4-50.4-96.9-66.4C14.2-28 .1 31.4 0 33.2c0 0 .3 746.4 0 745.1z" />
+              <path fill="url(#bing-b)" d="M236.8 832.8c-96.2 72.5-217 42.7-234.4-44-.8-4.2-2.4-10.4-2.4-10.4s.9 8.5 2 16.6c1.2 8.5 3.7 20.8 6.3 31.3 30 117.8 132.1 186 230.4 196.6C373.3 1034.8 497.4 931 599 855.8c6.3-6.2 15.4-16.2 18.1-20.1 66.2-95-13.6-197-72.5-193a59154 59154 0 0 0-307.7 190.1Z" />
+              <path fill="url(#bing-c)" fillRule="evenodd" d="M312.8 381c7.4 47 34.6 108.7 59.6 172.6 20.2 41.3 62 53.4 103 65.5 42.4 12.6 65.6 21 85.6 30.9 138.5 68.7 38.5 207.7 59.6 181.4 89-110.7 79.7-325.4-90-418.1-57.6-28.7-115.4-66.6-156.5-83.6-41-17-68.7 4.3-61.3 51.3z" clipRule="evenodd" />
               <defs>
-                <linearGradient id="bing-g1" x1="63" y1="51" x2="63" y2="331" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stopColor="#37BDFF" />
-                  <stop offset="1" stopColor="#2A7CEF" />
-                </linearGradient>
-                <linearGradient id="bing-g2" x1="170" y1="122" x2="170" y2="344" gradientUnits="userSpaceOnUse">
-                  <stop offset="0" stopColor="#39D2FF" />
-                  <stop offset="1" stopColor="#2155EA" />
+                <radialGradient id="bing-c" cx="0" cy="0" r="1" gradientTransform="matrix(-347 -399.3 287.3 -249.8 655 722)" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00CACC" />
+                  <stop offset="1" stopColor="#048FCE" />
+                </radialGradient>
+                <radialGradient id="bing-b" cx="0" cy="0" r="1" gradientTransform="matrix(526 -225.4 375.6 876.6 88.8 915.1)" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00BBEC" />
+                  <stop offset="1" stopColor="#2756A9" />
+                </radialGradient>
+                <linearGradient id="bing-a" x1="118.4" x2="118.4" y1="0" y2="884.4" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#00BBEC" />
+                  <stop offset="1" stopColor="#2756A9" />
                 </linearGradient>
               </defs>
-              <path fill="url(#bing-g1)" d="M0 51v230l89 50 38-17V82L89 51V0Z" />
-              <path fill="url(#bing-g2)" d="M127 122v116l-38 53L234 223l-60-35L127 164Z" opacity=".85" />
             </svg>
           </div>
         )
       }
       return (
-        <div className="w-full h-full bg-gradient-to-b from-[#37BDFF] to-[#2A7CEF] flex items-center justify-center text-white">
-          <svg className="w-7 h-7" viewBox="0 0 234 344">
-            <path fill="white" d="M0 51v230l89 50 38-17V82L89 51V0Z" />
-            <path fill="white" d="M127 122v116l-38 53L234 223l-60-35L127 164Z" opacity=".7" />
+        <div className="w-full h-full bg-[#0F172A] flex items-center justify-center p-2.5">
+          <svg viewBox="0 0 678 1024" className="w-full h-full" fill="none">
+            <path fill="url(#bing-opt-a)" d="M0 778.3c14.6 123.8 223.8 143 236.8 79.9-.3-.4-.5-678.1-.5-678.1-3.6-46-26.2-72-61.6-96.5-33-22.7-74.4-50.4-96.9-66.4C14.2-28 .1 31.4 0 33.2c0 0 .3 746.4 0 745.1z" />
+            <path fill="url(#bing-opt-b)" d="M236.8 832.8c-96.2 72.5-217 42.7-234.4-44-.8-4.2-2.4-10.4-2.4-10.4s.9 8.5 2 16.6c1.2 8.5 3.7 20.8 6.3 31.3 30 117.8 132.1 186 230.4 196.6C373.3 1034.8 497.4 931 599 855.8c6.3-6.2 15.4-16.2 18.1-20.1 66.2-95-13.6-197-72.5-193a59154 59154 0 0 0-307.7 190.1Z" />
+            <path fill="url(#bing-opt-c)" fillRule="evenodd" d="M312.8 381c7.4 47 34.6 108.7 59.6 172.6 20.2 41.3 62 53.4 103 65.5 42.4 12.6 65.6 21 85.6 30.9 138.5 68.7 38.5 207.7 59.6 181.4 89-110.7 79.7-325.4-90-418.1-57.6-28.7-115.4-66.6-156.5-83.6-41-17-68.7 4.3-61.3 51.3z" clipRule="evenodd" />
+            <defs>
+              <radialGradient id="bing-opt-c" cx="0" cy="0" r="1" gradientTransform="matrix(-347 -399.3 287.3 -249.8 655 722)" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#00CACC" />
+                <stop offset="1" stopColor="#048FCE" />
+              </radialGradient>
+              <radialGradient id="bing-opt-b" cx="0" cy="0" r="1" gradientTransform="matrix(526 -225.4 375.6 876.6 88.8 915.1)" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#00BBEC" />
+                <stop offset="1" stopColor="#2756A9" />
+              </radialGradient>
+              <linearGradient id="bing-opt-a" x1="118.4" x2="118.4" y1="0" y2="884.4" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#00BBEC" />
+                <stop offset="1" stopColor="#2756A9" />
+              </linearGradient>
+            </defs>
           </svg>
         </div>
       )

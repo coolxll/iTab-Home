@@ -3,18 +3,21 @@ import { Search, ChevronDown } from 'lucide-react'
 import { SEARCH_ENGINES } from '../data/defaults'
 import { VectorIcon } from './VectorIcon'
 import { hasVectorIcon } from '../utils/vectorIcons'
+import { FaviconPreview } from './FaviconPreview'
 import type { SearchEngine } from '../types'
 
 interface SearchBarProps {
   currentEngineId: string
   onSelectEngine: (id: string) => void
   onOpenCommandPalette?: () => void
+  globalIconStyle?: 'official' | 'optimized'
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   currentEngineId,
   onSelectEngine,
   onOpenCommandPalette,
+  globalIconStyle = 'official',
 }) => {
   const [query, setQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -44,13 +47,34 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   }
 
   const renderEngineIcon = (engine: SearchEngine) => {
+    // 1. If the engine matches a known VectorIcon (Bing, Google, Baidu, Bilibili, GitHub, Zhihu, Weibo),
+    // render with proportional 48px squircle downscaled to 20x20px with matching rounding,
+    // identical to the desktop icons below.
     if (hasVectorIcon(engine.icon)) {
       return (
-        <div className="w-[18px] h-[18px] rounded-[4px] overflow-hidden shrink-0">
-          <VectorIcon name={engine.icon} variant="official" />
+        <div className="w-5 h-5 rounded-[5px] overflow-hidden relative shrink-0 shadow-xs flex items-center justify-center">
+          <div
+            className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+            style={{
+              transform: 'scale(0.4166667)', // 20 / 48
+              transformOrigin: 'top left',
+            }}
+          >
+            <VectorIcon name={engine.icon} variant={globalIconStyle} />
+          </div>
         </div>
       )
     }
+
+    // 2. Fallback to FaviconPreview if URL is available
+    if (engine.url) {
+      return (
+        <div className="w-5 h-5 rounded-[5px] overflow-hidden relative shrink-0 shadow-xs">
+          <FaviconPreview url={engine.url} title={engine.name} />
+        </div>
+      )
+    }
+
     return <Search className="w-4 h-4 text-white" />
   }
 
@@ -65,7 +89,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center space-x-1 pl-1 pr-2 py-1 rounded-full text-white/90 hover:text-white hover:bg-white/10 transition-colors"
+            className="flex items-center space-x-1 pl-1 pr-2 py-1 rounded-full text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             {renderEngineIcon(currentEngine)}
             <ChevronDown className="w-3.5 h-3.5 opacity-70" />

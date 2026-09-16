@@ -99,8 +99,16 @@ const PaletteIcon: React.FC<{
 
   if (shortcut.icon && hasVectorIcon(shortcut.icon)) {
     return (
-      <div className="w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-        <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
+      <div className="w-7 h-7 rounded-lg overflow-hidden relative flex items-center justify-center shrink-0 shadow-sm">
+        <div
+          className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+          style={{
+            transform: 'scale(0.5833333)', // 28 / 48
+            transformOrigin: 'top left',
+          }}
+        >
+          <VectorIcon name={shortcut.icon} variant={effectiveVariant} />
+        </div>
       </div>
     )
   }
@@ -120,8 +128,16 @@ const PaletteIcon: React.FC<{
 
   if (effectiveIcon && hasVectorIcon(effectiveIcon)) {
     return (
-      <div className="w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center shrink-0 shadow-sm">
-        <VectorIcon name={effectiveIcon} variant={effectiveVariant} />
+      <div className="w-7 h-7 rounded-lg overflow-hidden relative flex items-center justify-center shrink-0 shadow-sm">
+        <div
+          className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+          style={{
+            transform: 'scale(0.5833333)', // 28 / 48
+            transformOrigin: 'top left',
+          }}
+        >
+          <VectorIcon name={effectiveIcon} variant={effectiveVariant} />
+        </div>
       </div>
     )
   }
@@ -509,9 +525,23 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
-                          <Globe className="w-4 h-4" />
-                        </div>
+                        {hasVectorIcon(currentEngine.icon) ? (
+                          <div className="w-7 h-7 rounded-lg overflow-hidden relative flex items-center justify-center shrink-0 shadow-sm">
+                            <div
+                              className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+                              style={{
+                                transform: 'scale(0.5833333)',
+                                transformOrigin: 'top left',
+                              }}
+                            >
+                              <VectorIcon name={currentEngine.icon} variant={globalIconStyle} />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+                            <Globe className="w-4 h-4" />
+                          </div>
+                        )}
                         <div className="truncate">
                           <span className="text-sm font-medium">在 {currentEngine.name} 中搜索 </span>
                           <span className="text-sm text-blue-400 font-medium">“{item.query}”</span>
