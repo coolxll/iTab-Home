@@ -694,6 +694,60 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
         </div>
       )
 
+    case 'bing':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-2">
+            <svg className="w-7 h-7" viewBox="0 0 234 344">
+              <defs>
+                <linearGradient id="bing-g1" x1="63" y1="51" x2="63" y2="331" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#37BDFF" />
+                  <stop offset="1" stopColor="#2A7CEF" />
+                </linearGradient>
+                <linearGradient id="bing-g2" x1="170" y1="122" x2="170" y2="344" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#39D2FF" />
+                  <stop offset="1" stopColor="#2155EA" />
+                </linearGradient>
+              </defs>
+              <path fill="url(#bing-g1)" d="M0 51v230l89 50 38-17V82L89 51V0Z" />
+              <path fill="url(#bing-g2)" d="M127 122v116l-38 53L234 223l-60-35L127 164Z" opacity=".85" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-gradient-to-b from-[#37BDFF] to-[#2A7CEF] flex items-center justify-center text-white">
+          <svg className="w-7 h-7" viewBox="0 0 234 344">
+            <path fill="white" d="M0 51v230l89 50 38-17V82L89 51V0Z" />
+            <path fill="white" d="M127 122v116l-38 53L234 223l-60-35L127 164Z" opacity=".7" />
+          </svg>
+        </div>
+      )
+
+    case 'baidu':
+      if (variant === 'official') {
+        return (
+          <div className="w-full h-full bg-white flex items-center justify-center p-1.5">
+            <svg className="w-full h-full" viewBox="0 0 1024 1024">
+              <path fill="#306CFF" d="M474.8 184.2c-8 57.6-43.2 108-43.2 108s-32 72.8 14.4 145.6c46.4 72.8 118.4 48 118.4 48s76-11.2 102.4-153.6c0 0 16.8-110.4-46.4-178.4-57.6-64-121.6-64-121.6-64s-72 6.4-123.2 102.4" />
+              <path fill="#306CFF" d="M282 432.2c57.6-11.2 81.6-80 81.6-80s34.4-84-16.8-152.8c-51.2-72.8-131.2-49.6-131.2-49.6s-80 17.6-88 108c0 0-12 100 51.2 164 0 0 40.8 22.4 103.2 10.4" />
+              <path fill="#306CFF" d="M668.4 432.2c34.4 11.2 86.4 0 86.4 0s91.2-22.4 104-113.6c0 0 22.4-90.4-45.6-152.8-68-62.4-136.8-11.2-136.8-11.2s-74.4 40-68.8 131.2c0 0 0 112.8 60.8 146.4" />
+              <path fill="#306CFF" d="M320.4 492.2c-51.2 16.8-120 68-137.6 136.8-22.4 85.6 40.8 156.8 40.8 156.8s73.6 100.8 208.8 51.2c134.4-51.2 134.4-120 228-136.8 94.4-16.8 104-113.6 63.2-176-40.8-62.4-114.4-68.8-177.6-40-62.4 28.8-126.4 45.6-157.6 28.8-33.6-16.8-16.8-37.6-68-20.8" />
+            </svg>
+          </div>
+        )
+      }
+      return (
+        <div className="w-full h-full bg-[#306CFF] flex items-center justify-center p-2">
+          <svg className="w-full h-full" viewBox="0 0 1024 1024">
+            <path fill="white" d="M474.8 184.2c-8 57.6-43.2 108-43.2 108s-32 72.8 14.4 145.6c46.4 72.8 118.4 48 118.4 48s76-11.2 102.4-153.6c0 0 16.8-110.4-46.4-178.4-57.6-64-121.6-64-121.6-64s-72 6.4-123.2 102.4" />
+            <path fill="white" d="M282 432.2c57.6-11.2 81.6-80 81.6-80s34.4-84-16.8-152.8c-51.2-72.8-131.2-49.6-131.2-49.6s-80 17.6-88 108c0 0-12 100 51.2 164 0 0 40.8 22.4 103.2 10.4" />
+            <path fill="white" d="M668.4 432.2c34.4 11.2 86.4 0 86.4 0s91.2-22.4 104-113.6c0 0 22.4-90.4-45.6-152.8-68-62.4-136.8-11.2-136.8-11.2s-74.4 40-68.8 131.2c0 0 0 112.8 60.8 146.4" />
+            <path fill="white" opacity=".85" d="M320.4 492.2c-51.2 16.8-120 68-137.6 136.8-22.4 85.6 40.8 156.8 40.8 156.8s73.6 100.8 208.8 51.2c134.4-51.2 134.4-120 228-136.8 94.4-16.8 104-113.6 63.2-176-40.8-62.4-114.4-68.8-177.6-40-62.4 28.8-126.4 45.6-157.6 28.8-33.6-16.8-16.8-37.6-68-20.8" />
+          </svg>
+        </div>
+      )
+
     default:
       return null
   }
