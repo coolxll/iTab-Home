@@ -20,6 +20,145 @@ interface IconItemProps {
   onDrop?: (e: React.DragEvent, shortcut: Shortcut) => void
 }
 
+interface FolderPreviewChildProps {
+  child: Shortcut
+  fallbackVariant: 'official' | 'optimized'
+}
+
+const FolderPreviewChild: React.FC<FolderPreviewChildProps> = ({
+  child,
+  fallbackVariant,
+}) => {
+  const childVariant =
+    child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : fallbackVariant
+
+  const childEffectiveIcon = child.icon || inferVectorIcon(child.title, child.url)
+  const pinnedIconUrl = isIconUrl(child.icon) ? child.icon : null
+  const [pinnedFailed, setPinnedFailed] = useState(false)
+
+  const candidates = getFaviconCandidates(child.url || '', childEffectiveIcon)
+  const [candidateIndex, setCandidateIndex] = useState(0)
+  const [imgError, setImgError] = useState(false)
+  const [imgLoaded, setImgLoaded] = useState(false)
+
+  const handleChildImgError = () => {
+    setImgLoaded(false)
+    if (candidateIndex + 1 < candidates.length) {
+      setCandidateIndex((prev) => prev + 1)
+    } else {
+      setImgError(true)
+    }
+  }
+
+  // 1. Built-in Special Tools
+  if (child.isSpecial) {
+    if (child.id === 'settings') {
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-zinc-600 via-zinc-700 to-zinc-800 flex items-center justify-center text-white">
+          <Settings className="w-6 h-6" />
+        </div>
+      )
+    }
+    if (child.id === 'guide') {
+      return (
+        <div className="w-full h-full bg-[#F59E0B] flex items-center justify-center text-white">
+          <Lightbulb className="w-6 h-6" />
+        </div>
+      )
+    }
+    if (child.id === 'add-shortcut') {
+      return (
+        <div className="w-full h-full bg-[#0091FF] flex items-center justify-center text-white">
+          <Plus className="w-6 h-6" />
+        </div>
+      )
+    }
+    if (child.icon && hasVectorIcon(child.icon)) {
+      return <VectorIcon name={child.icon} variant={childVariant} />
+    }
+  }
+
+  // 2. Explicitly pinned built-in Vector Icon
+  if (child.icon && hasVectorIcon(child.icon)) {
+    return <VectorIcon name={child.icon} variant={childVariant} />
+  }
+
+  // 3. Pinned online high-res icon URL (custom chosen by user)
+  if (pinnedIconUrl && !pinnedFailed) {
+    return (
+      <div className="w-full h-full bg-white flex items-center justify-center relative overflow-hidden">
+        <img
+          src={pinnedIconUrl}
+          alt={child.title}
+          onError={() => setPinnedFailed(true)}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+
+  // 4. Website Favicon / Apple-Touch-Icon
+  const hasCandidate = Boolean(
+    child.url && !imgError && candidates.length > 0 && candidateIndex < candidates.length
+  )
+  const fallbackVector =
+    childEffectiveIcon && hasVectorIcon(childEffectiveIcon)
+      ? <VectorIcon name={childEffectiveIcon} variant={childVariant} />
+      : null
+  const currentCandidate = hasCandidate ? candidates[candidateIndex] : null
+  const isAppleTouchIcon = currentCandidate?.includes('apple-touch-icon')
+
+  if (hasCandidate && currentCandidate) {
+    return (
+      <div
+        className={`w-full h-full ${
+          child.bgColor || 'bg-white'
+        } flex items-center justify-center relative overflow-hidden`}
+      >
+        {!imgLoaded && fallbackVector && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {fallbackVector}
+          </div>
+        )}
+        <img
+          src={currentCandidate}
+          alt={child.title}
+          onLoad={(e) => {
+            const img = e.currentTarget
+            if (img.naturalWidth > 1 && img.naturalHeight > 1) {
+              setImgLoaded(true)
+            } else {
+              handleChildImgError()
+            }
+          }}
+          onError={handleChildImgError}
+          className={`w-full h-full ${
+            isAppleTouchIcon ? 'object-cover' : 'object-contain p-2'
+          } transition-opacity duration-200 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+
+  // 5. Fallback vector
+  if (fallbackVector) {
+    return fallbackVector
+  }
+
+  // 6. Clean Fallback badge
+  return (
+    <div
+      className={`w-full h-full ${
+        child.bgColor || 'bg-gradient-to-br from-blue-500 to-indigo-600'
+      } flex items-center justify-center text-white font-bold text-lg select-none shadow-inner`}
+    >
+      {child.title ? child.title.slice(0, 2) : <Globe className="w-5 h-5 text-white/80" />}
+    </div>
+  )
+}
+
 export const IconItem: React.FC<IconItemProps> = ({
   shortcut,
   size = 'normal',
@@ -81,38 +220,22 @@ export const IconItem: React.FC<IconItemProps> = ({
 
       return (
         <div className="w-full h-full bg-white/20 hover:bg-white/30 backdrop-blur-md p-1.5 grid grid-cols-2 grid-rows-2 gap-1 transition-all rounded-[18px]">
-          {previews.map((child, idx) => {
-            const childVariant =
-              child.iconStyle && child.iconStyle !== 'auto' ? child.iconStyle : effectiveVariant
-            const childEffectiveIcon = child.icon || inferVectorIcon(child.title, child.url)
-
-            return (
+          {previews.map((child, idx) => (
+            <div
+              key={child.id || idx}
+              className="w-4 h-4 rounded-[4px] overflow-hidden relative shadow-[0_1px_2px_rgba(0,0,0,0.25)] bg-white/10 flex-shrink-0"
+            >
               <div
-                key={child.id || idx}
-                className="w-4 h-4 rounded-[4px] overflow-hidden relative shadow-[0_1px_2px_rgba(0,0,0,0.25)] bg-white/10 flex-shrink-0"
+                className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
+                style={{
+                  transform: 'scale(0.3333333)',
+                  transformOrigin: 'top left',
+                }}
               >
-                <div
-                  className="absolute top-0 left-0 w-12 h-12 pointer-events-none select-none"
-                  style={{
-                    transform: 'scale(0.3333333)',
-                    transformOrigin: 'top left',
-                  }}
-                >
-                  {childEffectiveIcon && hasVectorIcon(childEffectiveIcon) ? (
-                    <VectorIcon name={childEffectiveIcon} variant={childVariant} />
-                  ) : (
-                    <div
-                      className={`w-full h-full ${
-                        child.bgColor || 'bg-blue-600'
-                      } flex items-center justify-center text-lg font-bold text-white`}
-                    >
-                      {child.title ? child.title.slice(0, 2) : '•'}
-                    </div>
-                  )}
-                </div>
+                <FolderPreviewChild child={child} fallbackVariant={effectiveVariant} />
               </div>
-            )
-          })}
+            </div>
+          ))}
           {/* Fill empty slots */}
           {Array.from({ length: Math.max(0, 4 - previews.length) }).map((_, idx) => (
             <div key={`empty-${idx}`} className="w-4 h-4 rounded-[4px] bg-white/10" />
