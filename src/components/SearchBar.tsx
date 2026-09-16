@@ -6,12 +6,21 @@ import type { SearchEngine } from '../types'
 interface SearchBarProps {
   currentEngineId: string
   onSelectEngine: (id: string) => void
+  onOpenCommandPalette?: () => void
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ currentEngineId, onSelectEngine }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({
+  currentEngineId,
+  onSelectEngine,
+  onOpenCommandPalette,
+}) => {
   const [query, setQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const isMac =
+    typeof navigator !== 'undefined' &&
+    /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
 
   const currentEngine = SEARCH_ENGINES.find((e) => e.id === currentEngineId) || SEARCH_ENGINES[0]
 
@@ -154,6 +163,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({ currentEngineId, onSelectE
           placeholder={currentEngine.placeholder}
           className="flex-1 bg-transparent px-2.5 text-white placeholder-white/70 text-sm focus:outline-none"
         />
+
+        {/* Raycast Quick Launch Hint / Button */}
+        {onOpenCommandPalette && (
+          <button
+            type="button"
+            onClick={onOpenCommandPalette}
+            className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 mr-1 text-[11px] font-mono text-white/50 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 rounded-md transition-all active:scale-95 cursor-pointer"
+            title={`快捷启动图标 (${isMac ? '⌘K' : 'Ctrl+K'})`}
+          >
+            <span>{isMac ? '⌘K' : 'Ctrl K'}</span>
+          </button>
+        )}
 
         {/* Search icon button */}
         <button

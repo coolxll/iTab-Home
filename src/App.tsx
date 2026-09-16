@@ -13,6 +13,7 @@ import { EditShortcutModal } from './components/EditShortcutModal'
 import { FolderModal } from './components/FolderModal'
 import { ContextMenu } from './components/ContextMenu'
 import { GuideModal } from './components/GuideModal'
+import { CommandPalette } from './components/CommandPalette'
 import {
   hasStoredSettings,
   loadRecentShortcutIds,
@@ -31,6 +32,7 @@ export const App: React.FC = () => {
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [addFolderTargetId, setAddFolderTargetId] = useState<string | null>(null)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
   const [recentShortcutIds, setRecentShortcutIds] = useState<string[]>(loadRecentShortcutIds)
 
   // Edit / Management states
@@ -114,6 +116,36 @@ export const App: React.FC = () => {
       cancelled = true
     }
   }, [])
+
+  // Global keyboard shortcut listener for Raycast-like command palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 1. Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setIsCommandPaletteOpen((prev) => !prev)
+        return
+      }
+
+      // 2. '/' key when no input/textarea/editable element is focused
+      if (e.key === '/' && !isCommandPaletteOpen) {
+        const target = e.target as HTMLElement | null
+        const isInput =
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable)
+        if (!isInput) {
+          e.preventDefault()
+          setIsCommandPaletteOpen(true)
+          return
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isCommandPaletteOpen])
 
   const updateAndSaveShortcuts = (newShortcuts: Shortcut[]) => {
     const updated = { ...settings, shortcuts: newShortcuts }
@@ -490,6 +522,7 @@ export const App: React.FC = () => {
             <SearchBar
               currentEngineId={settings.searchEngineId}
               onSelectEngine={handleSelectEngine}
+              onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
             />
           </div>
 
@@ -732,6 +765,24 @@ export const App: React.FC = () => {
       <GuideModal
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
+      />
+
+      {/* Raycast-style Command Palette */}
+      <CommandPalette
+        key={isCommandPaletteOpen ? 'open' : 'closed'}
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        shortcuts={settings.shortcuts}
+        recentShortcutIds={recentShortcutIds}
+        globalIconStyle={settings.iconStyle}
+        currentEngineId={settings.searchEngineId}
+        onOpenShortcut={handleOpenShortcut}
+        onOpenFolder={(folder) => setActiveFolder(folder)}
+        onOpenSpecial={(id) => {
+          if (id === 'settings') setIsSettingsOpen(true)
+          if (id === 'guide') setIsGuideOpen(true)
+          if (id === 'add-shortcut') setIsAddOpen(true)
+        }}
       />
 
       {/* Right Click Context Menu */}
