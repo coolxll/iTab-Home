@@ -33,6 +33,27 @@ export function loadSettings(): UserSettings {
       parsed.wallpaper = '/wallpapers/default.jpg'
       parsed.wallpaperType = 'default'
     }
+
+    // Migrate qwen URL if pointing to legacy tongyi.aliyun.com
+    if (Array.isArray(parsed.shortcuts)) {
+      parsed.shortcuts = parsed.shortcuts.map((item: any) => {
+        if (item.id === 'qwen' && item.url?.includes('tongyi.aliyun.com')) {
+          return { ...item, url: 'https://www.qianwen.com/' }
+        }
+        if (item.isFolder && Array.isArray(item.children)) {
+          return {
+            ...item,
+            children: item.children.map((child: any) => {
+              if (child.id === 'qwen' && child.url?.includes('tongyi.aliyun.com')) {
+                return { ...child, url: 'https://www.qianwen.com/' }
+              }
+              return child
+            }),
+          }
+        }
+        return item
+      })
+    }
     return { ...DEFAULT_SETTINGS, ...parsed }
   } catch (e) {
     console.error('Failed to load settings from localStorage', e)

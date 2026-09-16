@@ -143,7 +143,7 @@ const ALIAS_MAP: Record<string, string[]> = {
   网易云音乐: ['netease', 'music', 'yinyue', '163'],
   微信读书: ['weread', 'wechat', 'wx', 'du'],
   腾讯元宝: ['yuanbao', 'tencent', 'yb'],
-  通义千问: ['qwen', 'tongyi', 'ali', 'aliyun'],
+  通义千问: ['qwen', 'qianwen', 'tongyi', 'ali', 'aliyun'],
   百度: ['baidu', 'bd'],
   淘宝: ['taobao', 'tb'],
   京东: ['jd', 'jingdong'],

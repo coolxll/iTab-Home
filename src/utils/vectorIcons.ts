@@ -96,7 +96,7 @@ export function inferVectorIcon(title?: string, url?: string): string | undefine
   if (text.includes('chatgpt') || text.includes('openai')) return 'chatgpt'
   if (text.includes('claude') || text.includes('anthropic')) return 'claude'
   if (text.includes('kimi') || text.includes('moonshot')) return 'kimi'
-  if (text.includes('qwen') || text.includes('tongyi') || text.includes('通义') || text.includes('千问')) return 'qwen'
+  if (text.includes('qwen') || text.includes('qianwen') || text.includes('tongyi') || text.includes('通义') || text.includes('千问')) return 'qwen'
   if (text.includes('yuanbao') || text.includes('元宝')) return 'yuanbao'
   if (text.includes('perplexity')) return 'perplexity'
   if (text.includes('metaso') || text.includes('秘塔')) return 'metaso'

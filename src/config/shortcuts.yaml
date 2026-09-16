@@ -50,7 +50,7 @@ shortcuts:
         icon: kimi
       - id: qwen
         title: 通义千问
-        url: https://tongyi.aliyun.com
+        url: https://www.qianwen.com/
         icon: qwen
       - id: yuanbao
         title: 腾讯元宝
