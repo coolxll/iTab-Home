@@ -16,13 +16,6 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     placeholder: '在 Google 上搜索',
   },
   {
-    id: 'baidu',
-    name: '百度',
-    icon: 'baidu',
-    url: 'https://www.baidu.com/s?wd=',
-    placeholder: '百度一下，你就知道',
-  },
-  {
     id: 'bilibili',
     name: 'B站',
     icon: 'bilibili',
