@@ -184,7 +184,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const listRef = useRef<HTMLDivElement>(null)
 
   const currentEngine =
-    SEARCH_ENGINES.find((e) => e.id === currentEngineId) || SEARCH_ENGINES[0]
+    SEARCH_ENGINES.find(
+      (e) => e.id === currentEngineId || (e.id === 'custom-search' && currentEngineId === 'gen-search')
+    ) || SEARCH_ENGINES[0]
 
   // Focus input when opened
   useEffect(() => {
@@ -371,6 +373,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   // Action executor
   const executeItem = (item: (typeof selectableItems)[number]) => {
     if ('type' in item && item.type === 'web-search') {
+      if (currentEngine.id === 'custom-search' || currentEngine.id === 'gen-search') {
+        onClose()
+        const trigger = document.getElementById('searchWidgetTrigger')
+        if (trigger) trigger.click()
+        return
+      }
       const searchUrl = `${currentEngine.url}${encodeURIComponent(item.query)}`
       window.open(searchUrl, '_blank', 'noopener,noreferrer')
       onClose()

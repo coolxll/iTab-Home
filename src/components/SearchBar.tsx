@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Search, ChevronDown } from 'lucide-react'
+import { Search, ChevronDown, Sparkles } from 'lucide-react'
 import { SEARCH_ENGINES } from '../data/defaults'
 import { VectorIcon } from './VectorIcon'
 import { hasVectorIcon } from '../utils/vectorIcons'
@@ -27,7 +27,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     typeof navigator !== 'undefined' &&
     /Mac|iPod|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
 
-  const currentEngine = SEARCH_ENGINES.find((e) => e.id === currentEngineId) || SEARCH_ENGINES[0]
+  const currentEngine =
+    SEARCH_ENGINES.find((e) => e.id === currentEngineId || (e.id === 'custom-search' && currentEngineId === 'gen-search')) ||
+    SEARCH_ENGINES[0]
+
+  const isCustomSearch = currentEngine.id === 'custom-search' || currentEngine.id === 'gen-search'
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -41,6 +45,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
+    if (isCustomSearch) {
+      const trigger = document.getElementById('searchWidgetTrigger')
+      if (trigger) {
+        trigger.click()
+      }
+      return
+    }
     if (!query.trim()) return
     const targetUrl = `${currentEngine.url}${encodeURIComponent(query.trim())}`
     window.open(targetUrl, '_blank')
@@ -97,25 +108,42 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
           {/* Engine dropdown menu */}
           {isDropdownOpen && (
-            <div className="absolute top-12 left-0 w-36 bg-black/75 backdrop-blur-2xl border border-white/20 rounded-xl shadow-2xl py-1 z-50 text-sm animate-in fade-in duration-200">
-              {SEARCH_ENGINES.map((eng) => (
-                <button
-                  key={eng.id}
-                  type="button"
-                  onClick={() => {
-                    onSelectEngine(eng.id)
-                    setIsDropdownOpen(false)
-                  }}
-                  className={`w-full flex items-center space-x-2.5 px-3 py-2 text-left transition-colors ${
-                    eng.id === currentEngine.id
-                      ? 'bg-white/20 text-white font-medium'
-                      : 'text-white/80 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <div className="w-5 flex justify-center">{renderEngineIcon(eng)}</div>
-                  <span>{eng.name}</span>
-                </button>
-              ))}
+            <div className="absolute top-12 left-0 w-40 bg-black/75 backdrop-blur-2xl border border-white/20 rounded-xl shadow-2xl py-1 z-50 text-sm animate-in fade-in duration-200">
+              {SEARCH_ENGINES.map((eng) => {
+                const isCustom = eng.id === 'custom-search' || eng.id === 'gen-search'
+                const isSelected = eng.id === currentEngine.id || (isCustom && isCustomSearch)
+
+                return (
+                  <button
+                    key={eng.id}
+                    type="button"
+                    onClick={() => {
+                      onSelectEngine(eng.id)
+                      setIsDropdownOpen(false)
+                      if (isCustom) {
+                        setTimeout(() => {
+                          document.getElementById('searchWidgetTrigger')?.click()
+                        }, 50)
+                      }
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-left transition-colors ${
+                      isSelected
+                        ? 'bg-white/20 text-white font-medium'
+                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <div className="w-5 flex justify-center">{renderEngineIcon(eng)}</div>
+                      <span>{eng.name}</span>
+                    </div>
+                    {isCustom && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/20 font-medium">
+                        AI
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           )}
         </div>
@@ -125,8 +153,27 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onClick={() => {
+            if (isCustomSearch) {
+              document.getElementById('searchWidgetTrigger')?.click()
+            }
+          }}
+          onFocus={() => {
+            if (isCustomSearch) {
+              document.getElementById('searchWidgetTrigger')?.click()
+            }
+          }}
           placeholder={currentEngine.placeholder}
           className="flex-1 bg-transparent px-2.5 text-white placeholder-white/70 text-sm focus:outline-none"
+        />
+
+        {/* Persistent trigger element bound to gen-search-widget */}
+        <button
+          id="searchWidgetTrigger"
+          type="button"
+          className="sr-only pointer-events-none"
+          aria-hidden="true"
+          tabIndex={-1}
         />
 
         {/* Raycast Quick Launch Hint / Button */}
@@ -144,10 +191,14 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {/* Search icon button */}
         <button
           type="submit"
-          className="p-1.5 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all active:scale-95"
-          title="搜索"
+          className="p-1.5 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all active:scale-95 cursor-pointer"
+          title={isCustomSearch ? '启动自定义搜索' : '搜索'}
         >
-          <Search className="w-4 h-4" />
+          {isCustomSearch ? (
+            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
         </button>
       </form>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, RotateCcw, Download, Upload } from 'lucide-react'
+import { X, RotateCcw, Download, Upload, Sparkles } from 'lucide-react'
 import type { UserSettings } from '../types'
 import { DEFAULT_SETTINGS } from '../utils/storage'
 import YAML from 'yaml'
@@ -263,6 +263,69 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
               <div className="w-11 h-6 bg-white/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-500"></div>
             </label>
+          </div>
+
+          {/* Google Vertex AI Search Widget Settings */}
+          <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span className="text-xs font-semibold text-white/90">Google Vertex AI 自定义搜索</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const trigger = document.getElementById('searchWidgetTrigger')
+                  if (trigger) trigger.click()
+                }}
+                className="inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 rounded-lg text-xs transition-colors cursor-pointer"
+                title="测试启动已集成的 Google Vertex AI 搜索微件"
+              >
+                <span>立即测试</span>
+              </button>
+            </div>
+            <div className="text-[11px] text-white/50 leading-relaxed">
+              已无缝绑定到主页搜索栏左侧下拉引擎中的「自定义搜索」选项。
+            </div>
+
+            <div>
+              <label className="block text-[11px] text-white/60 mb-1">
+                Config ID (应用配置标识)
+              </label>
+              <input
+                type="text"
+                value={current.genSearchConfigId ?? '9dd24cf9-0860-4afb-97dd-3093c5eb8647'}
+                onChange={(e) =>
+                  setCurrent({
+                    ...current,
+                    genSearchConfigId: e.target.value,
+                  })
+                }
+                placeholder="9dd24cf9-0860-4afb-97dd-3093c5eb8647"
+                className="w-full px-3 py-1.5 bg-black/30 border border-white/15 rounded-xl text-white placeholder-white/30 text-xs font-mono focus:outline-none focus:border-amber-400"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] text-white/60 mb-1">
+                授权 Token (JWT / OAuth Token，私有知识库可选)
+              </label>
+              <input
+                type="password"
+                value={current.genSearchAuthToken ?? ''}
+                onChange={(e) =>
+                  setCurrent({
+                    ...current,
+                    genSearchAuthToken: e.target.value,
+                  })
+                }
+                placeholder="公开访问模式无需填写；若配置了 JWT/OAuth 鉴权请填入 Token"
+                className="w-full px-3 py-1.5 bg-black/30 border border-white/15 rounded-xl text-white placeholder-white/30 text-xs font-mono focus:outline-none focus:border-amber-400"
+              />
+              <div className="mt-1 text-[10px] text-white/40 leading-relaxed">
+                如遇 “Configuration is not authorized” 提示，请前往 Google Cloud Console 的 Agent Builder &gt; Integration 允许当前运行网域（如 localhost）。
+              </div>
+            </div>
           </div>
 
           {/* Backup and restore */}

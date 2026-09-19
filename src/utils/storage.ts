@@ -13,6 +13,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showRealWidgets: false,
   shortcuts: [],
   iconStyle: 'official',
+  genSearchConfigId: '9dd24cf9-0860-4afb-97dd-3093c5eb8647',
+  genSearchAuthToken: '',
 }
 
 export function hasStoredSettings(): boolean {

@@ -1,3 +1,5 @@
+import type * as React from 'react'
+
 export interface Shortcut {
   id: string
   title: string
@@ -28,4 +30,24 @@ export interface UserSettings {
   showRealWidgets: boolean // Toggle Calendar & Anniversary widgets
   shortcuts: Shortcut[] // Unified desktop shortcuts & folders
   iconStyle: 'official' | 'optimized' // Global desktop icon style: official brand vs optimized seamless
+  genSearchConfigId?: string // Google Cloud Vertex AI Search configId
+  genSearchAuthToken?: string // Optional JWT / OAuth authorization token
 }
+
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'gen-search-widget': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        configId?: string
+        triggerId?: string
+        anchorsTarget?: string
+        placeholder?: string
+        alwaysOpened?: boolean
+        location?: string
+        maxResults?: number
+        [key: string]: unknown
+      }
+    }
+  }
+}
+

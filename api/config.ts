@@ -41,6 +41,8 @@ function buildSettings(config: PrivateConfigFile): UserSettings {
     showRealWidgets: raw.showRealWidgets === true,
     shortcuts: config.shortcuts,
     iconStyle: raw.iconStyle === 'optimized' ? 'optimized' : 'official',
+    genSearchConfigId: stringSetting(raw, 'genSearchConfigId', '9dd24cf9-0860-4afb-97dd-3093c5eb8647'),
+    genSearchAuthToken: stringSetting(raw, 'genSearchAuthToken', ''),
   }
 }
 

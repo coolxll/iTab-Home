@@ -14,6 +14,7 @@ import { FolderModal } from './components/FolderModal'
 import { ContextMenu } from './components/ContextMenu'
 import { GuideModal } from './components/GuideModal'
 import { CommandPalette } from './components/CommandPalette'
+import { GenSearchWidget } from './components/GenSearchWidget'
 import {
   hasStoredSettings,
   loadRecentShortcutIds,
@@ -834,6 +835,12 @@ export const App: React.FC = () => {
           }}
         />
       )}
+
+      {/* Google Cloud Vertex AI Search Widget */}
+      <GenSearchWidget
+        configId={settings.genSearchConfigId}
+        authToken={settings.genSearchAuthToken}
+      />
     </div>
   )
 }

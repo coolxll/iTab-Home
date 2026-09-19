@@ -16,6 +16,13 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     placeholder: '在 Google 上搜索',
   },
   {
+    id: 'custom-search',
+    name: '自定义搜索',
+    icon: 'gemini',
+    url: '',
+    placeholder: '点击或按回车启动自定义搜索...',
+  },
+  {
     id: 'bilibili',
     name: 'B站',
     icon: 'bilibili',
