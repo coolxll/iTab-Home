@@ -150,6 +150,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
         {/* Search input field */}
         <input
+          id={isCustomSearch ? 'searchWidgetTrigger' : undefined}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -167,14 +168,16 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           className="flex-1 bg-transparent px-2.5 text-white placeholder-white/70 text-sm focus:outline-none"
         />
 
-        {/* Persistent trigger element bound to gen-search-widget */}
-        <button
-          id="searchWidgetTrigger"
-          type="button"
-          className="sr-only pointer-events-none"
-          aria-hidden="true"
-          tabIndex={-1}
-        />
+        {/* Fallback persistent trigger element when custom search is not currently active */}
+        {!isCustomSearch && (
+          <button
+            id="searchWidgetTrigger"
+            type="button"
+            className="sr-only pointer-events-none"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+        )}
 
         {/* Raycast Quick Launch Hint / Button */}
         {onOpenCommandPalette && (
