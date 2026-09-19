@@ -21,7 +21,7 @@ settings:
   city: 浦东新区
   wallpaper: /wallpapers/default.jpg
   wallpaperType: default
-  searchEngineId: bing
+  searchEngineId: custom-search
   showRealWidgets: false
   iconStyle: official
 

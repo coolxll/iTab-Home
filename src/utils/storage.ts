@@ -9,7 +9,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   city: '',
   wallpaper: '/wallpapers/default.jpg',
   wallpaperType: 'default',
-  searchEngineId: 'bing',
+  searchEngineId: 'custom-search',
   showRealWidgets: false,
   shortcuts: [],
   iconStyle: 'official',
@@ -34,6 +34,11 @@ export function loadSettings(): UserSettings {
     if (parsed.wallpaper && parsed.wallpaper.includes('original_screenshot')) {
       parsed.wallpaper = '/wallpapers/default.jpg'
       parsed.wallpaperType = 'default'
+    }
+
+    // Migrate legacy default search engine from bing or gen-search to custom-search
+    if (parsed.searchEngineId === 'bing' || parsed.searchEngineId === 'gen-search') {
+      parsed.searchEngineId = 'custom-search'
     }
 
     // Migrate qwen URL if pointing to legacy tongyi.aliyun.com

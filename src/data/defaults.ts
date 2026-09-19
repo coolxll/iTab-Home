@@ -2,6 +2,13 @@ import type { SearchEngine } from '../types'
 
 export const SEARCH_ENGINES: SearchEngine[] = [
   {
+    id: 'custom-search',
+    name: '自定义搜索',
+    icon: 'gemini',
+    url: '',
+    placeholder: '点击或按回车启动自定义搜索...',
+  },
+  {
     id: 'bing',
     name: '必应',
     icon: 'bing',
@@ -14,13 +21,6 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     icon: 'google',
     url: 'https://www.google.com/search?q=',
     placeholder: '在 Google 上搜索',
-  },
-  {
-    id: 'custom-search',
-    name: '自定义搜索',
-    icon: 'gemini',
-    url: '',
-    placeholder: '点击或按回车启动自定义搜索...',
   },
   {
     id: 'bilibili',

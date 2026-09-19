@@ -37,7 +37,7 @@ function buildSettings(config: PrivateConfigFile): UserSettings {
     city: stringSetting(raw, 'city'),
     wallpaper: stringSetting(raw, 'wallpaper', '/wallpapers/default.jpg'),
     wallpaperType,
-    searchEngineId: stringSetting(raw, 'searchEngineId', 'bing'),
+    searchEngineId: stringSetting(raw, 'searchEngineId', 'custom-search'),
     showRealWidgets: raw.showRealWidgets === true,
     shortcuts: config.shortcuts,
     iconStyle: raw.iconStyle === 'optimized' ? 'optimized' : 'official',
