@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { importPKCS8, SignJWT } from 'jose'
 
@@ -80,8 +82,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return
   }
 
-  // 2. Automated Service Account JSON credentials
-  const saJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+  // 2. Automated Service Account JSON credentials (env var or local service-account.json)
+  let saJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
+
+  if (!saJson) {
+    try {
+      const saFilePath = path.join(process.cwd(), 'service-account.json')
+      saJson = await readFile(saFilePath, 'utf8')
+    } catch {
+      // Local service account file not present
+    }
+  }
+
   if (saJson) {
     const token = await getAccessTokenFromServiceAccount(saJson)
     if (token) {

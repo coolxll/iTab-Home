@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+*service-account*.json
+gcp-key*.json
