@@ -35,6 +35,8 @@ export interface AiSearchResultItem {
   title: string
   url: string
   snippet: string
+  extractiveAnswers?: string[]
+  extractiveSegments?: string[]
 }
 
 export interface AiSearchResponse {

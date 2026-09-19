@@ -167,15 +167,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const searchUrl = `https://discoveryengine.googleapis.com/v1alpha/projects/${projectId}/locations/${location}/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`
 
   try {
-    const basePayload = {
+    const basePayload: Record<string, unknown> = {
       query: trimmedQuery,
       pageSize: 10,
       queryExpansionSpec: { condition: 'AUTO' },
       spellCorrectionSpec: { mode: 'AUTO' },
+      languageCode: 'en-US',
       userInfo: { timeZone: 'Asia/Singapore' },
+      contentSearchSpec: {
+        snippetSpec: {
+          returnSnippet: true,
+          maxSnippetCount: 5,
+        },
+        extractiveContentSpec: {
+          maxExtractiveAnswerCount: 3,
+          maxExtractiveSegmentCount: 5,
+          returnExtractiveSegmentScore: true,
+        },
+      },
     }
 
-    // Try request with AI summary generation
+    // Try request with AI summary and rich content specs
     let searchResp = await fetch(searchUrl, {
       method: 'POST',
       headers: {
@@ -191,9 +203,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     })
 
-    // If summarySpec is rejected by engine configuration, fallback to base query
+    // If summarySpec or contentSearchSpec is rejected by engine configuration, fallback gracefully
     if (!searchResp.ok && searchResp.status === 400) {
       const errClone = await searchResp.clone().text()
+      const fallbackPayload = {
+        query: trimmedQuery,
+        pageSize: 10,
+        queryExpansionSpec: { condition: 'AUTO' },
+        spellCorrectionSpec: { mode: 'AUTO' },
+        userInfo: { timeZone: 'Asia/Singapore' },
+      }
+
       if (errClone.toLowerCase().includes('summary') || errClone.toLowerCase().includes('summarization')) {
         searchResp = await fetch(searchUrl, {
           method: 'POST',
@@ -202,6 +222,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(basePayload),
+        })
+      }
+
+      // If still failing, retry with minimal standard payload
+      if (!searchResp.ok && searchResp.status === 400) {
+        searchResp = await fetch(searchUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fallbackPayload),
         })
       }
     }
@@ -230,19 +262,72 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const title = struct.title || struct.name || doc.name || '未命名文档'
       const url = struct.link || struct.uri || struct.url || ''
 
-      let snippet = ''
-      if (Array.isArray(struct.snippets) && struct.snippets.length > 0) {
-        snippet = struct.snippets[0].htmlSnippet || struct.snippets[0].snippet || ''
-      } else if (Array.isArray(struct.extractive_answers) && struct.extractive_answers.length > 0) {
-        snippet = struct.extractive_answers[0].content || ''
-      } else if (typeof struct.description === 'string') {
-        snippet = struct.description
+      // 1. Extractive answers (direct concise answers)
+      const extractiveAnswers: string[] = []
+      if (Array.isArray(struct.extractive_answers)) {
+        for (const ans of struct.extractive_answers) {
+          const text = stripHtml(ans.content || '')
+          if (text && !extractiveAnswers.includes(text)) {
+            extractiveAnswers.push(text)
+          }
+        }
       }
+
+      // 2. Extractive segments (rich, multi-sentence paragraphs)
+      const extractiveSegments: string[] = []
+      if (Array.isArray(struct.extractive_segments)) {
+        for (const seg of struct.extractive_segments) {
+          const text = stripHtml(seg.content || '')
+          if (text && !extractiveSegments.includes(text)) {
+            extractiveSegments.push(text)
+          }
+        }
+      }
+
+      // 3. Document snippets with keyword highlights
+      const snippets: string[] = []
+      if (Array.isArray(struct.snippets)) {
+        for (const snip of struct.snippets) {
+          const text = stripHtml(snip.htmlSnippet || snip.snippet || '')
+          if (text && !snippets.includes(text)) {
+            snippets.push(text)
+          }
+        }
+      }
+
+      // 4. Combine all available context into a rich, long preview
+      const contentParts: string[] = []
+      if (extractiveSegments.length > 0) {
+        contentParts.push(...extractiveSegments)
+      }
+      if (snippets.length > 0) {
+        for (const sn of snippets) {
+          if (!contentParts.some((p) => p.includes(sn) || sn.includes(p))) {
+            contentParts.push(sn)
+          }
+        }
+      }
+
+      if (contentParts.length === 0) {
+        if (typeof struct.description === 'string' && struct.description.trim()) {
+          contentParts.push(stripHtml(struct.description))
+        }
+        if (typeof struct.content === 'string' && struct.content.trim()) {
+          contentParts.push(stripHtml(struct.content))
+        }
+        if (typeof struct.body === 'string' && struct.body.trim()) {
+          contentParts.push(stripHtml(struct.body))
+        }
+      }
+
+      const snippet = contentParts.join('\n\n') || extractiveAnswers.join('\n') || ''
 
       return {
         title: stripHtml(title),
         url,
-        snippet: stripHtml(snippet),
+        snippet,
+        extractiveAnswers: extractiveAnswers.length > 0 ? extractiveAnswers : undefined,
+        extractiveSegments: extractiveSegments.length > 0 ? extractiveSegments : undefined,
       }
     })
 
