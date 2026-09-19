@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { X, RotateCcw, Download, Upload, Sparkles } from 'lucide-react'
 import type { UserSettings } from '../types'
 import { DEFAULT_SETTINGS } from '../utils/storage'
@@ -9,6 +9,7 @@ interface SettingsModalProps {
   onClose: () => void
   settings: UserSettings
   onSave: (settings: UserSettings) => void
+  onOpenAiSearch?: (query: string) => void
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -16,8 +17,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   settings,
   onSave,
+  onOpenAiSearch,
 }) => {
   const [current, setCurrent] = useState<UserSettings>(settings)
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrent(settings)
+    }
+  }, [isOpen, settings])
 
   if (!isOpen) return null
 
@@ -265,65 +273,47 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </label>
           </div>
 
-          {/* Google Vertex AI Search Widget Settings */}
+          {/* Google Vertex AI Search Settings */}
           <div className="p-4 bg-white/5 border border-white/10 rounded-2xl space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span className="text-xs font-semibold text-white/90">Google Vertex AI 自定义搜索</span>
+                <span className="text-xs font-semibold text-white/90">Google Vertex AI 智能搜索 (API 模式)</span>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  const trigger = document.getElementById('searchWidgetTrigger')
-                  if (trigger) trigger.click()
+                  onClose()
+                  onOpenAiSearch?.('探索知识库')
                 }}
                 className="inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 rounded-lg text-xs transition-colors cursor-pointer"
-                title="测试启动已集成的 Google Vertex AI 搜索微件"
+                title="测试启动 AI 智能搜索弹窗"
               >
                 <span>立即测试</span>
               </button>
             </div>
             <div className="text-[11px] text-white/50 leading-relaxed">
-              已无缝绑定到主页搜索栏左侧下拉引擎中的「自定义搜索」选项。
+              已切换为原生服务端 API 直连模式（无需域名白名单与验证码）。已绑定至首页搜索栏与快捷启动台「自定义搜索」。
             </div>
 
             <div>
               <label className="block text-[11px] text-white/60 mb-1">
-                Config ID (应用配置标识)
+                Data Store ID 或 Engine ID (可选)
               </label>
               <input
                 type="text"
-                value={current.genSearchConfigId ?? '9dd24cf9-0860-4afb-97dd-3093c5eb8647'}
+                value={current.vertexAiDataStoreId ?? ''}
                 onChange={(e) =>
                   setCurrent({
                     ...current,
-                    genSearchConfigId: e.target.value,
+                    vertexAiDataStoreId: e.target.value,
                   })
                 }
-                placeholder="9dd24cf9-0860-4afb-97dd-3093c5eb8647"
-                className="w-full px-3 py-1.5 bg-black/30 border border-white/15 rounded-xl text-white placeholder-white/30 text-xs font-mono focus:outline-none focus:border-amber-400"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] text-white/60 mb-1">
-                授权 Token (JWT / OAuth Token，私有知识库可选)
-              </label>
-              <input
-                type="password"
-                value={current.genSearchAuthToken ?? ''}
-                onChange={(e) =>
-                  setCurrent({
-                    ...current,
-                    genSearchAuthToken: e.target.value,
-                  })
-                }
-                placeholder="公开访问模式无需填写；若配置了 JWT/OAuth 鉴权请填入 Token"
+                placeholder="留空则自动从 Service Account 检测可用的 DataStore"
                 className="w-full px-3 py-1.5 bg-black/30 border border-white/15 rounded-xl text-white placeholder-white/30 text-xs font-mono focus:outline-none focus:border-amber-400"
               />
               <div className="mt-1 text-[10px] text-white/40 leading-relaxed">
-                如遇 “Configuration is not authorized” 提示，请前往 Google Cloud Console 的 Agent Builder &gt; Integration 允许当前运行网域（如 localhost）。
+                凭证由 Vercel 环境变量 <code className="text-amber-300/80">GOOGLE_SERVICE_ACCOUNT_KEY</code> 提供，敏感私钥安全保存在服务端。
               </div>
             </div>
           </div>

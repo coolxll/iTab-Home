@@ -14,7 +14,7 @@ import { FolderModal } from './components/FolderModal'
 import { ContextMenu } from './components/ContextMenu'
 import { GuideModal } from './components/GuideModal'
 import { CommandPalette } from './components/CommandPalette'
-import { GenSearchWidget } from './components/GenSearchWidget'
+import { AiSearchModal } from './components/AiSearchModal'
 import {
   hasStoredSettings,
   loadRecentShortcutIds,
@@ -34,7 +34,14 @@ export const App: React.FC = () => {
   const [addFolderTargetId, setAddFolderTargetId] = useState<string | null>(null)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false)
+  const [isAiSearchOpen, setIsAiSearchOpen] = useState(false)
+  const [aiSearchQuery, setAiSearchQuery] = useState('')
   const [recentShortcutIds, setRecentShortcutIds] = useState<string[]>(loadRecentShortcutIds)
+
+  const handleOpenAiSearch = (query: string = '') => {
+    setAiSearchQuery(query)
+    setIsAiSearchOpen(true)
+  }
 
   // Edit / Management states
   const [isEditMode, setIsEditMode] = useState(false)
@@ -526,6 +533,7 @@ export const App: React.FC = () => {
               currentEngineId={settings.searchEngineId}
               onSelectEngine={handleSelectEngine}
               onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+              onOpenAiSearch={handleOpenAiSearch}
               globalIconStyle={settings.iconStyle}
             />
           </div>
@@ -763,6 +771,7 @@ export const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onSave={handleUpdateSettings}
+        onOpenAiSearch={handleOpenAiSearch}
       />
 
       {/* Guide Modal */}
@@ -787,6 +796,7 @@ export const App: React.FC = () => {
           if (id === 'guide') setIsGuideOpen(true)
           if (id === 'add-shortcut') setIsAddOpen(true)
         }}
+        onOpenAiSearch={handleOpenAiSearch}
       />
 
       {/* Right Click Context Menu */}
@@ -836,10 +846,11 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* Google Cloud Vertex AI Search Widget */}
-      <GenSearchWidget
-        configId={settings.genSearchConfigId}
-        authToken={settings.genSearchAuthToken}
+      {/* Google Cloud Vertex AI Native Search Modal */}
+      <AiSearchModal
+        isOpen={isAiSearchOpen}
+        initialQuery={aiSearchQuery}
+        onClose={() => setIsAiSearchOpen(false)}
       />
     </div>
   )

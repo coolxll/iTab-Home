@@ -43,6 +43,7 @@ interface CommandPaletteProps {
   onOpenShortcut: (shortcut: Shortcut) => void
   onOpenFolder: (folder: Shortcut) => void
   onOpenSpecial: (id: string) => void
+  onOpenAiSearch?: (query: string) => void
 }
 
 /**
@@ -177,6 +178,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onOpenShortcut,
   onOpenFolder,
   onOpenSpecial,
+  onOpenAiSearch,
 }) => {
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -375,8 +377,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     if ('type' in item && item.type === 'web-search') {
       if (currentEngine.id === 'custom-search' || currentEngine.id === 'gen-search') {
         onClose()
-        const trigger = document.getElementById('searchWidgetTrigger')
-        if (trigger) trigger.click()
+        onOpenAiSearch?.(item.query)
         return
       }
       const searchUrl = `${currentEngine.url}${encodeURIComponent(item.query)}`

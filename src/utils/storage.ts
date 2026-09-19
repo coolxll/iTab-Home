@@ -13,8 +13,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   showRealWidgets: false,
   shortcuts: [],
   iconStyle: 'official',
-  genSearchConfigId: '9dd24cf9-0860-4afb-97dd-3093c5eb8647',
-  genSearchAuthToken: '',
+  vertexAiDataStoreId: '',
 }
 
 export function hasStoredSettings(): boolean {
@@ -36,8 +35,8 @@ export function loadSettings(): UserSettings {
       parsed.wallpaperType = 'default'
     }
 
-    // Migrate legacy default search engine from bing or gen-search to custom-search
-    if (parsed.searchEngineId === 'bing' || parsed.searchEngineId === 'gen-search') {
+    // Migrate legacy identifier gen-search to custom-search
+    if (parsed.searchEngineId === 'gen-search') {
       parsed.searchEngineId = 'custom-search'
     }
 

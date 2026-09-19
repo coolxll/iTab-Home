@@ -10,6 +10,7 @@ interface SearchBarProps {
   currentEngineId: string
   onSelectEngine: (id: string) => void
   onOpenCommandPalette?: () => void
+  onOpenAiSearch?: (query: string) => void
   globalIconStyle?: 'official' | 'optimized'
 }
 
@@ -17,6 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   currentEngineId,
   onSelectEngine,
   onOpenCommandPalette,
+  onOpenAiSearch,
   globalIconStyle = 'official',
 }) => {
   const [query, setQuery] = useState('')
@@ -46,10 +48,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (isCustomSearch) {
-      const trigger = document.getElementById('searchWidgetTrigger')
-      if (trigger) {
-        trigger.click()
-      }
+      onOpenAiSearch?.(query)
       return
     }
     if (!query.trim()) return
@@ -120,11 +119,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                     onClick={() => {
                       onSelectEngine(eng.id)
                       setIsDropdownOpen(false)
-                      if (isCustom) {
-                        setTimeout(() => {
-                          document.getElementById('searchWidgetTrigger')?.click()
-                        }, 50)
-                      }
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 text-left transition-colors ${
                       isSelected
@@ -150,34 +144,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
         {/* Search input field */}
         <input
-          id={isCustomSearch ? 'searchWidgetTrigger' : undefined}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onClick={() => {
-            if (isCustomSearch) {
-              document.getElementById('searchWidgetTrigger')?.click()
-            }
-          }}
-          onFocus={() => {
-            if (isCustomSearch) {
-              document.getElementById('searchWidgetTrigger')?.click()
-            }
-          }}
           placeholder={currentEngine.placeholder}
           className="flex-1 bg-transparent px-2.5 text-white placeholder-white/70 text-sm focus:outline-none"
         />
-
-        {/* Fallback persistent trigger element when custom search is not currently active */}
-        {!isCustomSearch && (
-          <button
-            id="searchWidgetTrigger"
-            type="button"
-            className="sr-only pointer-events-none"
-            aria-hidden="true"
-            tabIndex={-1}
-          />
-        )}
 
         {/* Raycast Quick Launch Hint / Button */}
         {onOpenCommandPalette && (
@@ -195,7 +167,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         <button
           type="submit"
           className="p-1.5 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all active:scale-95 cursor-pointer"
-          title={isCustomSearch ? '启动自定义搜索' : '搜索'}
+          title={isCustomSearch ? '启动 AI 智能搜索' : '搜索'}
         >
           {isCustomSearch ? (
             <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />

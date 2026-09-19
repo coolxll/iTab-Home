@@ -6,7 +6,7 @@ export const SEARCH_ENGINES: SearchEngine[] = [
     name: '自定义搜索',
     icon: 'gemini',
     url: '',
-    placeholder: '点击或按回车启动自定义搜索...',
+    placeholder: '输入问题，AI 即刻检索与解答...',
   },
   {
     id: 'bing',
