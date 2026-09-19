@@ -108,6 +108,95 @@ function cleanText(html: string): string {
   return decodeHtmlEntities(stripped).replace(/\s+/g, ' ').trim()
 }
 
+/**
+ * Normalizes text for similarity/containment comparisons:
+ * removes whitespace, punctuation, and converts to lowercase.
+ */
+function normalizeForComparison(str: string): string {
+  return str.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase()
+}
+
+/**
+ * Splits text into individual sentences while preserving ending punctuation.
+ */
+function splitIntoSentences(text: string): string[] {
+  if (!text) return []
+  return text
+    .replace(/([。！？\n]+)/g, '$1\u0001')
+    .replace(/([.!?]+)([\s\u3000]+|$)/g, '$1\u0001')
+    .split('\u0001')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+}
+
+/**
+ * Merges multiple candidate text blocks into a single coherent preview,
+ * deduplicating at the sentence level so no identical or near-identical
+ * statements repeat across meta tags, snippets, or extractive segments.
+ */
+function mergeAndDeduplicate(candidates: string[]): string {
+  const sentences: string[] = []
+  let totalLength = 0
+
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== 'string') continue
+    const candidateSentences = splitIntoSentences(candidate)
+
+    for (const sent of candidateSentences) {
+      if (totalLength >= 900) break
+
+      const normSent = normalizeForComparison(sent)
+      if (!normSent) continue
+      if (normSent.length < 3 && sentences.length > 0) continue
+
+      let isDuplicate = false
+      for (let i = 0; i < sentences.length; i++) {
+        const existing = sentences[i]
+        const normExisting = normalizeForComparison(existing)
+
+        if (normExisting === normSent) {
+          isDuplicate = true
+          break
+        }
+
+        if (normExisting.includes(normSent)) {
+          isDuplicate = true
+          break
+        }
+
+        if (normSent.includes(normExisting)) {
+          totalLength += sent.length - sentences[i].length
+          sentences[i] = sent
+          isDuplicate = true
+          break
+        }
+      }
+
+      if (!isDuplicate) {
+        sentences.push(sent)
+        totalLength += sent.length
+      }
+    }
+    if (totalLength >= 900) break
+  }
+
+  let merged = ''
+  for (const s of sentences) {
+    if (!merged) {
+      merged = s
+    } else {
+      const lastChar = merged.slice(-1)
+      if (/[。！？\n]/.test(lastChar)) {
+        merged += s
+      } else {
+        merged += ' ' + s
+      }
+    }
+  }
+
+  return merged
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'private, no-store')
 
@@ -351,42 +440,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      // 5. Build rich snippet
-      const contentParts: string[] = []
+      // 5. Build rich deduplicated snippet
+      const candidateBlocks = [
+        metaDescription,
+        ...extractiveSegments,
+        ...snippets,
+        ...extractiveAnswers,
+      ]
 
-      // If we have an article meta-description (e.g. Zhihu summary), put it first!
-      if (metaDescription) {
-        contentParts.push(metaDescription)
+      if (typeof struct.content === 'string' && struct.content.trim()) {
+        candidateBlocks.push(cleanText(struct.content).slice(0, 500))
+      }
+      if (typeof struct.body === 'string' && struct.body.trim()) {
+        candidateBlocks.push(cleanText(struct.body).slice(0, 500))
       }
 
-      // Then add extractive segments
-      if (extractiveSegments.length > 0) {
-        for (const seg of extractiveSegments) {
-          if (!contentParts.some((p) => p.includes(seg) || seg.includes(p))) {
-            contentParts.push(seg)
-          }
-        }
-      }
-
-      // Then add keyword snippets
-      if (snippets.length > 0) {
-        for (const sn of snippets) {
-          if (!contentParts.some((p) => p.includes(sn) || sn.includes(p))) {
-            contentParts.push(sn)
-          }
-        }
-      }
-
-      if (contentParts.length === 0) {
-        if (typeof struct.content === 'string' && struct.content.trim()) {
-          contentParts.push(cleanText(struct.content))
-        }
-        if (typeof struct.body === 'string' && struct.body.trim()) {
-          contentParts.push(cleanText(struct.body))
-        }
-      }
-
-      const snippet = contentParts.join('\n\n') || extractiveAnswers.join('\n') || ''
+      const snippet =
+        mergeAndDeduplicate(candidateBlocks) ||
+        cleanText(struct.description || doc.description || '')
 
       return {
         title,

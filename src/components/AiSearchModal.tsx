@@ -12,7 +12,6 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  BookOpen,
 } from 'lucide-react'
 import type { AiSearchResponse, AiSearchResultItem } from '../types'
 
@@ -319,48 +318,15 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                         </div>
                       </div>
 
-                      {/* Extractive Key Answers (if available) */}
-                      {res.extractiveAnswers && res.extractiveAnswers.length > 0 && (
-                        <div className="p-2.5 rounded-lg bg-amber-500/10 border-l-2 border-amber-400 text-amber-100 text-xs space-y-1">
-                          <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-300">
-                            <Sparkles className="w-3 h-3" />
-                            <span>核心要点</span>
-                          </div>
-                          {res.extractiveAnswers.map((ans, aIdx) => (
-                            <p key={aIdx} className="leading-relaxed font-medium">
-                              {ans}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Meta Description / Article Abstract (if available) */}
-                      {res.metaDescription && (
-                        <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 text-xs text-white/90 space-y-1">
-                          <div className="text-[11px] font-semibold text-amber-300/90 flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-                            <span>导读摘要</span>
-                          </div>
-                          <p className="leading-relaxed whitespace-pre-line text-white/85">
-                            {res.metaDescription}
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Rich Preview Snippet / Matched paragraphs */}
-                      {res.snippet && (
+                      {/* Unified Preview Snippet */}
+                      {displayText && (
                         <div>
-                          {res.metaDescription && (
-                            <div className="text-[10px] font-medium text-white/40 mb-1 flex items-center gap-1">
-                              <span>检索匹配上下文：</span>
-                            </div>
-                          )}
                           <p
                             className={`text-xs text-white/80 leading-relaxed whitespace-pre-line ${
-                              isExpanded ? '' : 'line-clamp-5 sm:line-clamp-8'
+                              isExpanded ? '' : 'line-clamp-4 sm:line-clamp-6'
                             }`}
                           >
-                            {res.snippet}
+                            {displayText}
                           </p>
 
                           {isLongText && (
