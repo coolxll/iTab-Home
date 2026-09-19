@@ -89,8 +89,23 @@ async function getAccessToken(creds: ServiceAccountCredentials): Promise<string 
   }
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>?/gm, '').trim()
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&amp;/gi, '&')
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+}
+
+function cleanText(html: string): string {
+  if (!html || typeof html !== 'string') return ''
+  const stripped = html.replace(/<[^>]*>?/gm, ' ')
+  return decodeHtmlEntities(stripped).replace(/\s+/g, ' ').trim()
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -167,17 +182,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const searchUrl = `https://discoveryengine.googleapis.com/v1alpha/projects/${projectId}/locations/${location}/collections/default_collection/engines/${engineId}/servingConfigs/default_search:search`
 
   try {
-    const basePayload: Record<string, unknown> = {
+    // Priority 1: Full payload with summarySpec inside contentSearchSpec
+    const fullPayload = {
       query: trimmedQuery,
       pageSize: 10,
       queryExpansionSpec: { condition: 'AUTO' },
       spellCorrectionSpec: { mode: 'AUTO' },
-      languageCode: 'en-US',
       userInfo: { timeZone: 'Asia/Singapore' },
       contentSearchSpec: {
         snippetSpec: {
           returnSnippet: true,
           maxSnippetCount: 5,
+        },
+        summarySpec: {
+          summaryResultCount: 5,
+          includeCitations: true,
+          ignoreNonSummarySeekingQuery: false,
         },
         extractiveContentSpec: {
           maxExtractiveAnswerCount: 3,
@@ -187,55 +207,61 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     }
 
-    // Try request with AI summary and rich content specs
+    // Priority 2: Snippet payload (if engine is Basic website search that rejects summarySpec/extractiveContentSpec)
+    const snippetOnlyPayload = {
+      query: trimmedQuery,
+      pageSize: 10,
+      queryExpansionSpec: { condition: 'AUTO' },
+      spellCorrectionSpec: { mode: 'AUTO' },
+      userInfo: { timeZone: 'Asia/Singapore' },
+      contentSearchSpec: {
+        snippetSpec: {
+          returnSnippet: true,
+          maxSnippetCount: 5,
+        },
+      },
+    }
+
+    // Priority 3: Bare query payload
+    const barePayload = {
+      query: trimmedQuery,
+      pageSize: 10,
+      queryExpansionSpec: { condition: 'AUTO' },
+      spellCorrectionSpec: { mode: 'AUTO' },
+      userInfo: { timeZone: 'Asia/Singapore' },
+    }
+
     let searchResp = await fetch(searchUrl, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        ...basePayload,
-        summarySpec: {
-          summaryResultCount: 3,
-          includeCitations: true,
-        },
-      }),
+      body: JSON.stringify(fullPayload),
     })
 
-    // If summarySpec or contentSearchSpec is rejected by engine configuration, fallback gracefully
     if (!searchResp.ok && searchResp.status === 400) {
-      const errClone = await searchResp.clone().text()
-      const fallbackPayload = {
-        query: trimmedQuery,
-        pageSize: 10,
-        queryExpansionSpec: { condition: 'AUTO' },
-        spellCorrectionSpec: { mode: 'AUTO' },
-        userInfo: { timeZone: 'Asia/Singapore' },
-      }
+      console.warn('Full payload returned 400, falling back to snippetOnlyPayload')
+      searchResp = await fetch(searchUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(snippetOnlyPayload),
+      })
+    }
 
-      if (errClone.toLowerCase().includes('summary') || errClone.toLowerCase().includes('summarization')) {
-        searchResp = await fetch(searchUrl, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(basePayload),
-        })
-      }
-
-      // If still failing, retry with minimal standard payload
-      if (!searchResp.ok && searchResp.status === 400) {
-        searchResp = await fetch(searchUrl, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(fallbackPayload),
-        })
-      }
+    if (!searchResp.ok && searchResp.status === 400) {
+      console.warn('Snippet payload returned 400, falling back to barePayload')
+      searchResp = await fetch(searchUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(barePayload),
+      })
     }
 
     if (!searchResp.ok) {
@@ -259,47 +285,90 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const doc = item.document || {}
       const struct = doc.derivedStructData || doc.structData || {}
 
-      const title = struct.title || struct.name || doc.name || '未命名文档'
+      const title = cleanText(struct.title || struct.name || doc.name || '未命名文档')
       const url = struct.link || struct.uri || struct.url || ''
 
-      // 1. Extractive answers (direct concise answers)
+      // 1. Extract meta description from pagemap metatags (contains og:description, description, etc.)
+      let metaDescription = ''
+      if (struct.pagemap && typeof struct.pagemap === 'object') {
+        const metatags = Array.isArray(struct.pagemap.metatags)
+          ? struct.pagemap.metatags
+          : struct.pagemap.metatags ? [struct.pagemap.metatags] : []
+
+        for (const meta of metatags) {
+          if (meta && typeof meta === 'object') {
+            const desc =
+              meta['og:description'] ||
+              meta['description'] ||
+              meta['twitter:description'] ||
+              meta['summary'] ||
+              meta['article:abstract']
+            if (typeof desc === 'string' && desc.trim().length > metaDescription.length) {
+              metaDescription = cleanText(desc)
+            }
+          }
+        }
+      }
+
+      if (!metaDescription) {
+        if (typeof struct.description === 'string' && struct.description.trim()) {
+          metaDescription = cleanText(struct.description)
+        } else if (typeof doc.description === 'string' && doc.description.trim()) {
+          metaDescription = cleanText(doc.description)
+        }
+      }
+
+      // 2. Extractive answers (direct concise answers)
       const extractiveAnswers: string[] = []
       if (Array.isArray(struct.extractive_answers)) {
         for (const ans of struct.extractive_answers) {
-          const text = stripHtml(ans.content || '')
+          const text = cleanText(ans.content || '')
           if (text && !extractiveAnswers.includes(text)) {
             extractiveAnswers.push(text)
           }
         }
       }
 
-      // 2. Extractive segments (rich, multi-sentence paragraphs)
+      // 3. Extractive segments (rich, multi-sentence paragraphs)
       const extractiveSegments: string[] = []
       if (Array.isArray(struct.extractive_segments)) {
         for (const seg of struct.extractive_segments) {
-          const text = stripHtml(seg.content || '')
+          const text = cleanText(seg.content || '')
           if (text && !extractiveSegments.includes(text)) {
             extractiveSegments.push(text)
           }
         }
       }
 
-      // 3. Document snippets with keyword highlights
+      // 4. Document snippets with keyword highlights
       const snippets: string[] = []
       if (Array.isArray(struct.snippets)) {
         for (const snip of struct.snippets) {
-          const text = stripHtml(snip.htmlSnippet || snip.snippet || '')
+          const text = cleanText(snip.htmlSnippet || snip.snippet || '')
           if (text && !snippets.includes(text)) {
             snippets.push(text)
           }
         }
       }
 
-      // 4. Combine all available context into a rich, long preview
+      // 5. Build rich snippet
       const contentParts: string[] = []
-      if (extractiveSegments.length > 0) {
-        contentParts.push(...extractiveSegments)
+
+      // If we have an article meta-description (e.g. Zhihu summary), put it first!
+      if (metaDescription) {
+        contentParts.push(metaDescription)
       }
+
+      // Then add extractive segments
+      if (extractiveSegments.length > 0) {
+        for (const seg of extractiveSegments) {
+          if (!contentParts.some((p) => p.includes(seg) || seg.includes(p))) {
+            contentParts.push(seg)
+          }
+        }
+      }
+
+      // Then add keyword snippets
       if (snippets.length > 0) {
         for (const sn of snippets) {
           if (!contentParts.some((p) => p.includes(sn) || sn.includes(p))) {
@@ -309,23 +378,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (contentParts.length === 0) {
-        if (typeof struct.description === 'string' && struct.description.trim()) {
-          contentParts.push(stripHtml(struct.description))
-        }
         if (typeof struct.content === 'string' && struct.content.trim()) {
-          contentParts.push(stripHtml(struct.content))
+          contentParts.push(cleanText(struct.content))
         }
         if (typeof struct.body === 'string' && struct.body.trim()) {
-          contentParts.push(stripHtml(struct.body))
+          contentParts.push(cleanText(struct.body))
         }
       }
 
       const snippet = contentParts.join('\n\n') || extractiveAnswers.join('\n') || ''
 
       return {
-        title: stripHtml(title),
+        title,
         url,
         snippet,
+        metaDescription: metaDescription || undefined,
         extractiveAnswers: extractiveAnswers.length > 0 ? extractiveAnswers : undefined,
         extractiveSegments: extractiveSegments.length > 0 ? extractiveSegments : undefined,
       }

@@ -12,6 +12,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  BookOpen,
 } from 'lucide-react'
 import type { AiSearchResponse, AiSearchResultItem } from '../types'
 
@@ -272,12 +273,13 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                 {results.map((res, index) => {
                   const host = getHostname(res.url)
                   const isExpanded = expandedIndices.has(index)
-                  const isLongText = Boolean(res.snippet && res.snippet.length > 180)
+                  const displayText = res.snippet || res.metaDescription || ''
+                  const isLongText = Boolean(displayText && displayText.length > 140)
 
                   return (
                     <div
                       key={index}
-                      className="p-4 rounded-xl bg-white/5 hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/30 transition-all duration-200 space-y-2.5"
+                      className="p-4 rounded-xl bg-white/5 hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/30 transition-all duration-200 space-y-3"
                     >
                       {/* Card Header: Title Link + Domain + Copy Button */}
                       <div className="flex items-start justify-between gap-3">
@@ -294,10 +296,10 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                         </a>
 
                         <div className="flex items-center gap-1.5 shrink-0">
-                          {res.snippet && (
+                          {displayText && (
                             <button
                               type="button"
-                              onClick={(e) => handleCopy(res.snippet, index, e)}
+                              onClick={(e) => handleCopy(displayText, index, e)}
                               className="px-2 py-1 bg-white/5 hover:bg-white/15 text-white/50 hover:text-white rounded-md text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
                               title="复制预览文本"
                             >
@@ -322,7 +324,7 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                         <div className="p-2.5 rounded-lg bg-amber-500/10 border-l-2 border-amber-400 text-amber-100 text-xs space-y-1">
                           <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-300">
                             <Sparkles className="w-3 h-3" />
-                            <span>核心摘要</span>
+                            <span>核心要点</span>
                           </div>
                           {res.extractiveAnswers.map((ans, aIdx) => (
                             <p key={aIdx} className="leading-relaxed font-medium">
@@ -332,12 +334,30 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                         </div>
                       )}
 
-                      {/* Rich Preview Snippet */}
+                      {/* Meta Description / Article Abstract (if available) */}
+                      {res.metaDescription && (
+                        <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 text-xs text-white/90 space-y-1">
+                          <div className="text-[11px] font-semibold text-amber-300/90 flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                            <span>导读摘要</span>
+                          </div>
+                          <p className="leading-relaxed whitespace-pre-line text-white/85">
+                            {res.metaDescription}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Rich Preview Snippet / Matched paragraphs */}
                       {res.snippet && (
                         <div>
+                          {res.metaDescription && (
+                            <div className="text-[10px] font-medium text-white/40 mb-1 flex items-center gap-1">
+                              <span>检索匹配上下文：</span>
+                            </div>
+                          )}
                           <p
                             className={`text-xs text-white/80 leading-relaxed whitespace-pre-line ${
-                              isExpanded ? '' : 'line-clamp-4 sm:line-clamp-6'
+                              isExpanded ? '' : 'line-clamp-5 sm:line-clamp-8'
                             }`}
                           >
                             {res.snippet}
@@ -349,7 +369,7 @@ export const AiSearchModal: React.FC<AiSearchModalProps> = ({
                               onClick={() => toggleExpand(index)}
                               className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-amber-400/90 hover:text-amber-300 transition-colors cursor-pointer font-medium"
                             >
-                              <span>{isExpanded ? '收起预览' : `展开阅读全文 (${res.snippet.length} 字)`}</span>
+                              <span>{isExpanded ? '收起预览' : `展开阅读全文 (${displayText.length} 字)`}</span>
                               {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                             </button>
                           )}
