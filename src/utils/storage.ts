@@ -1,4 +1,4 @@
-import type { UserSettings } from '../types'
+import type { UserSettings, Shortcut } from '../types'
 
 const STORAGE_KEY = 'itab_home_settings_v11'
 const RECENT_SHORTCUTS_KEY = 'itab_home_recent_shortcuts_v1'
@@ -22,6 +22,76 @@ export function hasStoredSettings(): boolean {
   } catch {
     return false
   }
+}
+
+export function normalizeUrl(rawUrl?: string): string {
+  if (!rawUrl) return ''
+  try {
+    let clean = rawUrl.trim()
+    if (!/^https?:\/\//i.test(clean)) {
+      clean = `https://${clean}`
+    }
+    const parsed = new URL(clean)
+    const pathname = parsed.pathname.replace(/\/+$/, '')
+    return `${parsed.protocol.toLowerCase()}//${parsed.host.toLowerCase()}${pathname}${parsed.search}`
+  } catch {
+    return rawUrl.trim().toLowerCase().replace(/\/+$/, '')
+  }
+}
+
+export function deduplicateShortcuts(shortcuts: Shortcut[]): Shortcut[] {
+  if (!Array.isArray(shortcuts)) return []
+
+  const seenUrls = new Set<string>()
+  const seenIds = new Set<string>()
+
+  function processItem(item: Shortcut): Shortcut | null {
+    if (!item || typeof item !== 'object') return null
+
+    if (item.isFolder) {
+      const processedChildren: Shortcut[] = []
+      if (Array.isArray(item.children)) {
+        for (const child of item.children) {
+          const res = processItem(child)
+          if (res) processedChildren.push(res)
+        }
+      }
+      return { ...item, children: processedChildren }
+    }
+
+    if (item.isSpecial) {
+      if (item.id && seenIds.has(item.id)) return null
+      if (item.id) seenIds.add(item.id)
+      return item
+    }
+
+    const normUrl = normalizeUrl(item.url)
+    if (normUrl) {
+      if (seenUrls.has(normUrl)) {
+        return null
+      }
+      seenUrls.add(normUrl)
+    }
+
+    if (item.id) {
+      if (seenIds.has(item.id)) {
+        return null
+      }
+      seenIds.add(item.id)
+    }
+
+    return item
+  }
+
+  const result: Shortcut[] = []
+  for (const s of shortcuts) {
+    const processed = processItem(s)
+    if (processed) {
+      result.push(processed)
+    }
+  }
+
+  return result
 }
 
 export function loadSettings(): UserSettings {
@@ -59,6 +129,7 @@ export function loadSettings(): UserSettings {
         }
         return item
       })
+      parsed.shortcuts = deduplicateShortcuts(parsed.shortcuts)
     }
     return { ...DEFAULT_SETTINGS, ...parsed }
   } catch (e) {
@@ -69,7 +140,11 @@ export function loadSettings(): UserSettings {
 
 export function saveSettings(settings: UserSettings): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+    const cleaned = {
+      ...settings,
+      shortcuts: deduplicateShortcuts(settings.shortcuts),
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned))
   } catch (e) {
     console.error('Failed to save settings to localStorage', e)
   }

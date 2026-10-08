@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { X, RotateCcw, Download, Upload, Sparkles } from 'lucide-react'
 import type { UserSettings } from '../types'
-import { DEFAULT_SETTINGS } from '../utils/storage'
+import { DEFAULT_SETTINGS, deduplicateShortcuts } from '../utils/storage'
 import YAML from 'yaml'
 
 interface SettingsModalProps {
@@ -75,11 +75,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         // Try parsing YAML first (which also handles JSON)
         const parsed = YAML.parse(content)
         if (parsed && Array.isArray(parsed.shortcuts)) {
-          setCurrent({ ...current, shortcuts: parsed.shortcuts })
-          alert('shortcuts.yaml 图标布局导入成功！点击保存即可生效。')
+          setCurrent({ ...current, shortcuts: deduplicateShortcuts(parsed.shortcuts) })
+          alert('shortcuts.yaml 图标布局导入成功！已自动去重。点击保存即可生效。')
         } else if (parsed && typeof parsed === 'object') {
-          setCurrent({ ...DEFAULT_SETTINGS, ...parsed })
-          alert('配置导入成功！点击保存即可生效。')
+          const rawShortcuts = Array.isArray(parsed.shortcuts) ? parsed.shortcuts : DEFAULT_SETTINGS.shortcuts
+          setCurrent({
+            ...DEFAULT_SETTINGS,
+            ...parsed,
+            shortcuts: deduplicateShortcuts(rawShortcuts),
+          })
+          alert('配置导入成功！已自动去重。点击保存即可生效。')
         } else {
           throw new Error('Invalid format')
         }

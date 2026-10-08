@@ -9,7 +9,7 @@
 # - icon: 矢量图标名称 (如 chatgpt, claude, google, bilibili, github 等)
 # - url: 点击跳转的外链地址
 # - bgColor: 背景色或 Tailwind 样式
-# - iconStyle: 可选覆盖 'official' (官方版) | 'optimized' (优化版)
+# - iconStyle: 可选覆盖 official (官方版) | optimized (优化版)
 # - children: 当 isFolder 为 true 时，内部包含的子快捷图标列表
 # ==============================================================================
 
@@ -25,217 +25,238 @@ settings:
   showRealWidgets: false
   iconStyle: official
 
-# 桌面根节点布局（7 个专属分类文件夹 + 1 个设置管理入口 = 8 槽位完美对称）
+# 桌面根节点布局
 shortcuts:
-  # 1. AI 智能工具
   - id: folder-ai
     title: AI
     isFolder: true
     children:
-      - id: chatgpt
-        title: ChatGPT
-        url: https://chatgpt.com
-        icon: chatgpt
-      - id: claude
-        title: Claude
-        url: https://claude.ai
-        icon: claude
-      - id: deepseek
-        title: DeepSeek
-        url: https://chat.deepseek.com
-        icon: deepseek
-      - id: kimi
-        title: Kimi
-        url: https://kimi.moonshot.cn
-        icon: kimi
-      - id: qwen
-        title: 通义千问
-        url: https://www.qianwen.com/
-        icon: qwen
-      - id: yuanbao
-        title: 腾讯元宝
-        url: https://yuanbao.tencent.com
-        icon: yuanbao
-      - id: perplexity
-        title: Perplexity
-        url: https://www.perplexity.ai
-        icon: perplexity
-      - id: metaso
-        title: 秘塔AI
-        url: https://metaso.cn
-        icon: metaso
-
-  # 2. Google 全家桶
+    - id: chatgpt
+      title: ChatGPT
+      url: https://chatgpt.com
+      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fchatgpt.com&size=128
+      bgColor: bg-blue-500
+      iconStyle: auto
+    - id: claude
+      title: Claude
+      url: https://claude.ai
+      icon: claude
+    - id: deepseek
+      title: DeepSeek
+      url: https://chat.deepseek.com
+      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fchat.deepseek.com&size=128
+      bgColor: bg-blue-500
+      iconStyle: auto
+    - id: kimi
+      title: Kimi
+      url: https://kimi.moonshot.cn
+      icon: kimi
+    - id: qwen
+      title: 通义千问
+      url: https://www.qianwen.com/
+      icon: qwen
+      iconStyle: official
+    - id: yuanbao
+      title: 腾讯元宝
+      url: https://yuanbao.tencent.com
+      icon: yuanbao
+    - id: perplexity
+      title: Perplexity
+      url: https://www.perplexity.ai
+      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.perplexity.ai&size=128
+      bgColor: bg-blue-500
+      iconStyle: auto
+    - id: metaso
+      title: 秘塔AI
+      url: https://metaso.cn
+      icon: metaso
+    - id: custom-1788855135560
+      title: Workbuddy Usage
+      url: https://www.workbuddy.cn/profile/usage
+      icon: https://icon.horse/icon/www.workbuddy.cn
+      bgColor: bg-teal-500
+      iconStyle: official
+    - id: custom-1790218635154
+      title: 千问录音
+      url: https://www.qianwen.com/record
+      icon: qwen
+      bgColor: bg-blue-500
+      iconStyle: official
+    - id: custom-1790218726249
+      title: 通义听悟
+      url: https://tingwu.aliyun.com/
+      icon: https://unavatar.io/tingwu.aliyun.com?fallback=false
+      bgColor: bg-blue-500
   - id: folder-google
     title: Google全家桶
     isFolder: true
     children:
-      - id: google
-        title: Google
-        url: https://www.google.com
-        icon: google
-      - id: gmail
-        title: GMail
-        url: https://mail.google.com
-        icon: gmail
-      - id: google-drive
-        title: Google Drive
-        url: https://drive.google.com
-        icon: google-drive
-      - id: chrome-store
-        title: 网上应用店
-        url: https://chromewebstore.google.com
-        icon: chrome-store
-      - id: aistudio
-        title: AI Studio
-        url: https://aistudio.google.com
-        icon: aistudio
-
-  # 3. 开发者工具
-  - id: folder-dev
-    title: 开发者工具
-    isFolder: true
-    children:
-      - id: cloudflare
-        title: Cloudflare
-        url: https://dash.cloudflare.com
-        icon: cloudflare
-      - id: github
-        title: GitHub
-        url: https://github.com
-        icon: github
-      - id: vercel
-        title: Vercel
-        url: https://vercel.com
-        icon: vercel
-
-  # 4. 视频网站
+    - id: google
+      title: Google
+      url: https://www.google.com
+      icon: google
+    - id: gmail
+      title: GMail
+      url: https://mail.google.com
+      icon: gmail
+    - id: google-drive
+      title: Google Drive
+      url: https://drive.google.com
+      icon: google-drive
+    - id: chrome-store
+      title: 网上应用店
+      url: https://chromewebstore.google.com
+      icon: chrome-store
+    - id: aistudio
+      title: AI Studio
+      url: https://aistudio.google.com
+      icon: aistudio
+      iconStyle: official
   - id: folder-video
     title: 视频网站
     isFolder: true
     children:
-      - id: youtube
-        title: YouTube
-        url: https://www.youtube.com
-        icon: youtube
-      - id: bilibili
-        title: 哔哩哔哩
-        url: https://www.bilibili.com
-        icon: bilibili
-
-  # 5. 社交媒体
+    - id: youtube
+      title: YouTube
+      url: https://www.youtube.com
+      icon: youtube
+      iconStyle: official
+    - id: bilibili
+      title: 哔哩哔哩
+      url: https://www.bilibili.com
+      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.bilibili.com&size=128
+      iconStyle: optimized
+      bgColor: bg-blue-500
   - id: folder-social
     title: 社交媒体
     isFolder: true
     children:
-      - id: xiaohongshu
-        title: 小红书
-        url: https://www.xiaohongshu.com
-        icon: xiaohongshu
-      - id: weibo
-        title: 微博
-        url: https://weibo.com
-        icon: weibo
-      - id: twitter
-        title: X
-        url: https://x.com
-        icon: twitter
-      - id: zhihu
-        title: 知乎
-        url: https://www.zhihu.com
-        icon: zhihu
-      - id: douban
-        title: 豆瓣
-        url: https://www.douban.com
-        icon: douban
-
-  # 6. 论坛资讯
+    - id: xiaohongshu
+      title: 小红书
+      url: https://www.xiaohongshu.com
+      icon: xiaohongshu
+      iconStyle: optimized
+    - id: weibo
+      title: 微博
+      url: https://weibo.com
+      icon: weibo
+      iconStyle: optimized
+    - id: twitter
+      title: X
+      url: https://x.com
+      icon: twitter
+    - id: zhihu
+      title: 知乎
+      url: https://www.zhihu.com
+      icon: zhihu
+      iconStyle: optimized
+    - id: douban
+      title: 豆瓣
+      url: https://www.douban.com
+      icon: douban
+      iconStyle: optimized
   - id: folder-forum
     title: 论坛资讯
     isFolder: true
     children:
-      - id: feedly
-        title: Feedly
-        url: https://feedly.com
-        icon: feedly
-      - id: xueqiu
-        title: 雪球
-        url: https://xueqiu.com
-        icon: xueqiu
-      - id: linuxdo
-        title: Linux.do
-        url: https://linux.do
-        icon: linuxdo
-      - id: v2ex
-        title: V2EX
-        url: https://www.v2ex.com
-        icon: v2ex
-      - id: nga
-        title: NGA
-        url: https://bbs.nga.cn
-        icon: nga
-      - id: smzdm
-        title: 什么值得买
-        url: https://www.smzdm.com
-        icon: smzdm
-      - id: manmanbuy
-        title: 慢慢买
-        url: https://www.manmanbuy.com
-        icon: manmanbuy
-
-  # 7. Homelab 私有云与监控
+    - id: feedly
+      title: Feedly
+      url: https://feedly.com
+      icon: feedly
+      iconStyle: optimized
+    - id: xueqiu
+      title: 雪球
+      url: https://xueqiu.com
+      icon: xueqiu
+      iconStyle: optimized
+    - id: linuxdo
+      title: Linux.do
+      url: https://linux.do
+      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Flinux.do&size=128
+      iconStyle: official
+      bgColor: bg-blue-500
+    - id: v2ex
+      title: V2EX
+      url: https://www.v2ex.com
+      icon: v2ex
+      iconStyle: optimized
+    - id: nga
+      title: NGA
+      url: https://bbs.nga.cn
+      icon: nga
+      iconStyle: official
+    - id: smzdm
+      title: 什么值得买
+      url: https://www.smzdm.com
+      icon: smzdm
+      iconStyle: optimized
+    - id: manmanbuy
+      title: 慢慢买
+      url: https://www.manmanbuy.com
+      icon: manmanbuy
+      iconStyle: optimized
   - id: folder-homelab
     title: Homelab
     isFolder: true
     children:
-      - id: homepage
-        title: Homepage
-        url: https://nav.229929605.xyz
-        icon: homepage
-      - id: tinyauth
-        title: TinyAuth SSO
-        url: https://auth.229929605.xyz
-        icon: tinyauth
-      - id: rn-proxy
-        title: RN PROXY API
-        url: https://cpa.229929605.xyz/management.html
-        icon: rn-proxy
-      - id: cpa-keeper
-        title: CPA Keeper
-        url: https://cpa.229929605.xyz/keeper/
-        icon: cpa-keeper
-      - id: cli-proxy
-        title: CLI Proxy API
-        url: https://claude.229929605.xyz/management.html
-        icon: cli-proxy
-      - id: cpa-usage
-        title: CPA USAGE
-        url: https://claude.229929605.xyz/keeper/
-        icon: cpa-usage
-      - id: codex-usage
-        title: Codex Usage
-        url: https://cpa.229929605.xyz/keeper/
-        icon: codex-usage
-      - id: beszel
-        title: Beszel 监控
-        url: https://beszel.229929605.xyz
-        icon: beszel
-      - id: komodo
-        title: Komodo 控制面
-        url: https://komodo.229929605.xyz
-        icon: komodo
-      - id: sublink
-        title: SublinkPro
-        url: https://sublink.229929605.xyz
-        icon: sublinkpro
-      - id: xui
-        title: 3x-ui 节点
-        url: https://xui.229929605.xyz
-        icon: 3x-ui
-
-  # 8. 设置 (管理入口，构成 8 槽位完美对称)
+    - id: homepage
+      title: Homepage
+      url: https://nav.229929605.xyz
+      icon: homepage
+    - id: tinyauth
+      title: TinyAuth SSO
+      url: https://auth.229929605.xyz
+      icon: tinyauth
+    - id: rn-proxy
+      title: RN PROXY API
+      url: https://cpa.229929605.xyz/management.html
+      icon: rn-proxy
+    - id: cpa-keeper
+      title: CPA Keeper
+      url: https://cpa.229929605.xyz/keeper/
+      icon: cpa-keeper
+    - id: cli-proxy
+      title: CLI Proxy API
+      url: https://claude.229929605.xyz/management.html
+      icon: cli-proxy
+    - id: cpa-usage
+      title: CPA USAGE
+      url: https://claude.229929605.xyz/keeper/
+      icon: cpa-usage
+    - id: beszel
+      title: Beszel 监控
+      url: https://beszel.229929605.xyz
+      icon: beszel
+    - id: komodo
+      title: Komodo 控制面
+      url: https://komodo.229929605.xyz
+      icon: komodo
+    - id: sublink
+      title: SublinkPro
+      url: https://sublink.229929605.xyz
+      icon: sublinkpro
+    - id: xui
+      title: 3x-ui 节点
+      url: https://xui.229929605.xyz
+      icon: 3x-ui
+  - id: folder-dev
+    title: 开发者工具
+    isFolder: true
+    children:
+    - id: cloudflare
+      title: Cloudflare
+      url: https://dash.cloudflare.com
+      icon: cloudflare
+    - id: github
+      title: GitHub
+      url: https://github.com
+      icon: github
+    - id: vercel
+      title: Vercel
+      url: https://vercel.com
+      icon: vercel
   - id: settings
     title: 设置
-    url: "#settings"
+    url: '#settings'
     icon: settings
     isSpecial: true

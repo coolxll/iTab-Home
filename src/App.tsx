@@ -21,6 +21,8 @@ import {
   loadSettings,
   saveRecentShortcutIds,
   saveSettings,
+  deduplicateShortcuts,
+  normalizeUrl,
 } from './utils/storage'
 import { SlidersHorizontal, Check, Plus, History } from 'lucide-react'
 import type { Shortcut, UserSettings } from './types'
@@ -158,7 +160,8 @@ export const App: React.FC = () => {
   }, [isCommandPaletteOpen])
 
   const updateAndSaveShortcuts = (newShortcuts: Shortcut[]) => {
-    const updated = { ...settings, shortcuts: newShortcuts }
+    const cleanedShortcuts = deduplicateShortcuts(newShortcuts)
+    const updated = { ...settings, shortcuts: cleanedShortcuts }
     setSettings(updated)
     saveSettings(updated)
   }
@@ -306,6 +309,31 @@ export const App: React.FC = () => {
 
   // Add new shortcut or folder
   const handleAdd = (newShortcut: Shortcut) => {
+    if (!newShortcut.isFolder && newShortcut.url) {
+      const targetUrl = normalizeUrl(newShortcut.url)
+      let existingName = ''
+      const isDuplicate = settings.shortcuts.some((item) => {
+        if (item.isFolder && item.children) {
+          const match = item.children.find((c) => normalizeUrl(c.url) === targetUrl)
+          if (match) {
+            existingName = `${item.title} / ${match.title}`
+            return true
+          }
+          return false
+        }
+        if (normalizeUrl(item.url) === targetUrl) {
+          existingName = item.title
+          return true
+        }
+        return false
+      })
+
+      if (isDuplicate) {
+        alert(`该站点已存在（${existingName}），已自动避免重复添加。`)
+        return
+      }
+    }
+
     if (addFolderTargetId) {
       // Add inside the specific folder
       const next = settings.shortcuts.map((folder) => {
