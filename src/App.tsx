@@ -198,7 +198,7 @@ export const App: React.FC = () => {
   const recentShortcuts = recentShortcutIds
     .map((id) => appsById.get(id))
     .filter((shortcut): shortcut is Shortcut => Boolean(shortcut))
-    .slice(0, 6)
+    .slice(0, 8)
 
   // Delete a shortcut or folder on root
   const handleDeleteShortcut = (id: string) => {
