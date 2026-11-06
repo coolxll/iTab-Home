@@ -246,7 +246,7 @@ shortcuts:
     - id: dingtalk-checkin
       title: 我的打卡
       url: dingtalk://dingtalkclient/page/link?url=http%3A%2F%2Fdffl-hr.dongfangfuli.com%2FKYDD%2FDingDing%2FOAuthCorp.ashx%3FAppKey%3D6%26ssoUrl%3DIndex.html%2523%252Fjump%253Fpath%253D1.6559.1392%2526sid%253D5A6E0A7E19FFE5C76C2DC0ECC490890F%2526title%253D%2525E6%252588%252591%2525E7%25259A%252584%2525E6%252589%252593%2525E5%25258D%2525A1&pc_slide=true
-      icon: https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128
+      icon: dingtalk
       bgColor: bg-blue-500
       iconStyle: auto
     - id: cloudflare

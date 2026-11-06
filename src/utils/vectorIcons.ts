@@ -28,6 +28,7 @@ export const KNOWN_VECTOR_ICONS = new Set([
   'weibo',
   'coze',
   'douban',
+  'dingtalk',
   '10jqka',
   'doubao',
   'xiaohongshu',
@@ -130,6 +131,7 @@ export function inferVectorIcon(title?: string, url?: string): string | undefine
   if (text.includes('weibo') || text.includes('微博')) return 'weibo'
   if (text.includes('xiaohongshu') || text.includes('小红书')) return 'xiaohongshu'
   if (text.includes('douban') || text.includes('豆瓣')) return 'douban'
+  if (text.includes('dingtalk') || text.includes('dingding') || text.includes('钉钉')) return 'dingtalk'
   if (text.includes('xueqiu') || text.includes('雪球')) return 'xueqiu'
   if (text.includes('feedly')) return 'feedly'
   if (text.includes('workbuddy') || text.includes('work buddy') || text.includes('codebuddy')) return 'workbuddy'

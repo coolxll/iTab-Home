@@ -5,13 +5,16 @@ const RECENT_SHORTCUTS_KEY = 'itab_home_recent_shortcuts_v1'
 const RECENT_SHORTCUTS_HISTORY_LIMIT = 12
 const DINGTALK_CHECKIN_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_v1'
 const DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_folder_v2'
+const DINGTALK_CHECKIN_ICON_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_icon_v3'
 const DEVELOPER_TOOLS_FOLDER_ID = 'folder-dev'
+const DINGTALK_CHECKIN_LEGACY_ICON =
+  'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128'
 
 const DINGTALK_CHECKIN_SHORTCUT: Shortcut = {
   id: 'dingtalk-checkin',
   title: '我的打卡',
   url: 'dingtalk://dingtalkclient/page/link?url=http%3A%2F%2Fdffl-hr.dongfangfuli.com%2FKYDD%2FDingDing%2FOAuthCorp.ashx%3FAppKey%3D6%26ssoUrl%3DIndex.html%2523%252Fjump%253Fpath%253D1.6559.1392%2526sid%253D5A6E0A7E19FFE5C76C2DC0ECC490890F%2526title%253D%2525E6%252588%252591%2525E7%25259A%252584%2525E6%252589%252593%2525E5%25258D%2525A1&pc_slide=true',
-  icon: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128',
+  icon: 'dingtalk',
   bgColor: 'bg-blue-500',
   iconStyle: 'auto',
 }
@@ -70,6 +73,33 @@ function addShortcutToFolder(
     }
     return item
   })
+}
+
+function migrateDingTalkCheckinIcon(shortcuts: Shortcut[]): {
+  shortcuts: Shortcut[]
+  migrated: boolean
+} {
+  let migrated = false
+
+  const nextShortcuts = shortcuts.map((shortcut) => {
+    if (shortcut.id === DINGTALK_CHECKIN_SHORTCUT.id) {
+      if (shortcut.icon !== DINGTALK_CHECKIN_LEGACY_ICON) return shortcut
+      migrated = true
+      return { ...shortcut, icon: DINGTALK_CHECKIN_SHORTCUT.icon }
+    }
+
+    if (shortcut.isFolder && Array.isArray(shortcut.children)) {
+      const childResult = migrateDingTalkCheckinIcon(shortcut.children)
+      if (childResult.migrated) {
+        migrated = true
+        return { ...shortcut, children: childResult.shortcuts }
+      }
+    }
+
+    return shortcut
+  })
+
+  return { shortcuts: nextShortcuts, migrated }
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -205,6 +235,7 @@ export function loadSettings(): UserSettings {
     let shouldPersistMigrations = false
     const needsCheckinMigration = !localStorage.getItem(DINGTALK_CHECKIN_MIGRATION_KEY)
     const needsFolderMigration = !localStorage.getItem(DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY)
+    const needsIconMigration = !localStorage.getItem(DINGTALK_CHECKIN_ICON_MIGRATION_KEY)
 
     if (needsCheckinMigration) {
       if (!Array.isArray(settings.shortcuts)) {
@@ -249,6 +280,18 @@ export function loadSettings(): UserSettings {
       }
     }
 
+    if (needsIconMigration) {
+      if (!Array.isArray(settings.shortcuts)) {
+        settings.shortcuts = []
+      }
+
+      const iconMigration = migrateDingTalkCheckinIcon(settings.shortcuts)
+      settings.shortcuts = iconMigration.shortcuts
+      if (iconMigration.migrated) {
+        shouldPersistMigrations = true
+      }
+    }
+
     if (shouldPersistMigrations) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     }
@@ -265,6 +308,13 @@ export function loadSettings(): UserSettings {
       )
     ) {
       localStorage.setItem(DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY, '1')
+    }
+
+    if (
+      needsIconMigration &&
+      findShortcutById(settings.shortcuts, DINGTALK_CHECKIN_SHORTCUT.id)
+    ) {
+      localStorage.setItem(DINGTALK_CHECKIN_ICON_MIGRATION_KEY, '1')
     }
 
     return settings
