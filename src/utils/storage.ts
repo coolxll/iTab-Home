@@ -6,7 +6,9 @@ const RECENT_SHORTCUTS_HISTORY_LIMIT = 12
 const DINGTALK_CHECKIN_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_v1'
 const DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_folder_v2'
 const DINGTALK_CHECKIN_ICON_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_icon_v3'
+const EMBY_METAINFO_MIGRATION_KEY = 'itab_home_migration_emby_metainfo_v1'
 const DEVELOPER_TOOLS_FOLDER_ID = 'folder-dev'
+const HOMELAB_FOLDER_ID = 'folder-homelab'
 const DINGTALK_CHECKIN_LEGACY_ICON =
   'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128'
 
@@ -17,6 +19,13 @@ const DINGTALK_CHECKIN_SHORTCUT: Shortcut = {
   icon: 'dingtalk',
   bgColor: 'bg-blue-500',
   iconStyle: 'auto',
+}
+
+const EMBY_METAINFO_SHORTCUT: Shortcut = {
+  id: 'emby-metainfo',
+  title: 'EmbyMetaInfo',
+  url: 'https://linglongr9000p.tail945737.ts.net/',
+  icon: 'emby',
 }
 
 function findShortcutById(shortcuts: Shortcut[], id: string): Shortcut | undefined {
@@ -236,6 +245,7 @@ export function loadSettings(): UserSettings {
     const needsCheckinMigration = !localStorage.getItem(DINGTALK_CHECKIN_MIGRATION_KEY)
     const needsFolderMigration = !localStorage.getItem(DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY)
     const needsIconMigration = !localStorage.getItem(DINGTALK_CHECKIN_ICON_MIGRATION_KEY)
+    const needsEmbyMetaInfoMigration = !localStorage.getItem(EMBY_METAINFO_MIGRATION_KEY)
 
     if (needsCheckinMigration) {
       if (!Array.isArray(settings.shortcuts)) {
@@ -292,6 +302,40 @@ export function loadSettings(): UserSettings {
       }
     }
 
+    if (needsEmbyMetaInfoMigration) {
+      if (!Array.isArray(settings.shortcuts)) {
+        settings.shortcuts = []
+      }
+
+      if (!findShortcutById(settings.shortcuts, EMBY_METAINFO_SHORTCUT.id)) {
+        const hasHomelabFolder = settings.shortcuts.some(
+          (shortcut: Shortcut) =>
+            shortcut.id === HOMELAB_FOLDER_ID && shortcut.isFolder
+        )
+
+        if (hasHomelabFolder) {
+          settings.shortcuts = addShortcutToFolder(
+            settings.shortcuts,
+            HOMELAB_FOLDER_ID,
+            EMBY_METAINFO_SHORTCUT
+          )
+        } else {
+          const specialIndex = settings.shortcuts.findIndex(
+            (item: Shortcut) => item.isSpecial
+          )
+          if (specialIndex >= 0) {
+            settings.shortcuts.splice(specialIndex, 0, EMBY_METAINFO_SHORTCUT)
+          } else {
+            settings.shortcuts.push(EMBY_METAINFO_SHORTCUT)
+          }
+        }
+
+        settings.shortcuts = deduplicateShortcuts(settings.shortcuts)
+      }
+
+      shouldPersistMigrations = true
+    }
+
     if (shouldPersistMigrations) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     }
@@ -315,6 +359,10 @@ export function loadSettings(): UserSettings {
       findShortcutById(settings.shortcuts, DINGTALK_CHECKIN_SHORTCUT.id)
     ) {
       localStorage.setItem(DINGTALK_CHECKIN_ICON_MIGRATION_KEY, '1')
+    }
+
+    if (needsEmbyMetaInfoMigration) {
+      localStorage.setItem(EMBY_METAINFO_MIGRATION_KEY, '1')
     }
 
     return settings

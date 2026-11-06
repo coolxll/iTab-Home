@@ -199,6 +199,10 @@ shortcuts:
     title: Homelab
     isFolder: true
     children:
+    - id: emby-metainfo
+      title: EmbyMetaInfo
+      url: https://linglongr9000p.tail945737.ts.net/
+      icon: emby
     - id: homepage
       title: Homepage
       url: https://nav.229929605.xyz

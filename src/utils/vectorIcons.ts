@@ -50,6 +50,7 @@ export const KNOWN_VECTOR_ICONS = new Set([
   'vercel',
   'xueqiu',
   'manmanbuy',
+  'emby',
   'workbuddy',
   'bing',
   'baidu',
@@ -89,6 +90,7 @@ export const POPULAR_ICON_OPTIONS = [
   { id: 'linuxdo', label: 'Linux.do' },
   { id: 'v2ex', label: 'V2EX' },
   { id: 'workbuddy', label: 'WorkBuddy' },
+  { id: 'emby', label: 'Emby' },
 ]
 
 export function inferVectorIcon(title?: string, url?: string): string | undefined {
@@ -135,6 +137,7 @@ export function inferVectorIcon(title?: string, url?: string): string | undefine
   if (text.includes('xueqiu') || text.includes('雪球')) return 'xueqiu'
   if (text.includes('feedly')) return 'feedly'
   if (text.includes('workbuddy') || text.includes('work buddy') || text.includes('codebuddy')) return 'workbuddy'
+  if (text.includes('emby')) return 'emby'
   if (text.includes('nga')) return 'nga'
   if (text.includes('bing') || text.includes('必应')) return 'bing'
   if (text.includes('baidu') || text.includes('百度')) return 'baidu'

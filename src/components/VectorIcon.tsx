@@ -756,6 +756,13 @@ export const VectorIcon: React.FC<VectorIconProps> = ({ name, variant = 'officia
         </div>
       )
 
+    case 'emby':
+      return (
+        <div className="w-full h-full bg-white flex items-center justify-center overflow-hidden">
+          <img src="/icons/emby.png" alt="Emby" className="w-full h-full object-contain" />
+        </div>
+      )
+
     case 'bing':
       if (variant === 'official') {
         return (
