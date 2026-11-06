@@ -184,6 +184,11 @@ export const App: React.FC = () => {
       return next
     })
 
+    if (!/^https?:\/\//i.test(shortcut.url)) {
+      window.location.assign(shortcut.url)
+      return
+    }
+
     window.open(shortcut.url, '_blank', 'noopener,noreferrer')
   }
 
