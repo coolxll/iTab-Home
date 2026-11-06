@@ -4,6 +4,8 @@ const STORAGE_KEY = 'itab_home_settings_v11'
 const RECENT_SHORTCUTS_KEY = 'itab_home_recent_shortcuts_v1'
 const RECENT_SHORTCUTS_HISTORY_LIMIT = 12
 const DINGTALK_CHECKIN_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_v1'
+const DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_folder_v2'
+const DEVELOPER_TOOLS_FOLDER_ID = 'folder-dev'
 
 const DINGTALK_CHECKIN_SHORTCUT: Shortcut = {
   id: 'dingtalk-checkin',
@@ -12,6 +14,62 @@ const DINGTALK_CHECKIN_SHORTCUT: Shortcut = {
   icon: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128',
   bgColor: 'bg-blue-500',
   iconStyle: 'auto',
+}
+
+function findShortcutById(shortcuts: Shortcut[], id: string): Shortcut | undefined {
+  for (const shortcut of shortcuts) {
+    if (shortcut.id === id) return shortcut
+    if (shortcut.isFolder && Array.isArray(shortcut.children)) {
+      const child = findShortcutById(shortcut.children, id)
+      if (child) return child
+    }
+  }
+  return undefined
+}
+
+function removeShortcutById(
+  shortcuts: Shortcut[],
+  id: string
+): { shortcuts: Shortcut[]; removed?: Shortcut } {
+  let removed: Shortcut | undefined
+  const remaining: Shortcut[] = []
+
+  for (const shortcut of shortcuts) {
+    if (shortcut.id === id) {
+      removed ??= shortcut
+      continue
+    }
+
+    if (shortcut.isFolder && Array.isArray(shortcut.children)) {
+      const result = removeShortcutById(shortcut.children, id)
+      removed ??= result.removed
+      remaining.push({ ...shortcut, children: result.shortcuts })
+      continue
+    }
+
+    remaining.push(shortcut)
+  }
+
+  return { shortcuts: remaining, removed }
+}
+
+function addShortcutToFolder(
+  shortcuts: Shortcut[],
+  folderId: string,
+  shortcut: Shortcut
+): Shortcut[] {
+  return shortcuts.map((item) => {
+    if (item.id === folderId && item.isFolder) {
+      return { ...item, children: [shortcut, ...(item.children || [])] }
+    }
+    if (item.isFolder && Array.isArray(item.children)) {
+      return {
+        ...item,
+        children: addShortcutToFolder(item.children, folderId, shortcut),
+      }
+    }
+    return item
+  })
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -144,12 +202,16 @@ export function loadSettings(): UserSettings {
 
     const settings = { ...DEFAULT_SETTINGS, ...parsed }
 
-    if (!localStorage.getItem(DINGTALK_CHECKIN_MIGRATION_KEY)) {
+    let shouldPersistMigrations = false
+    const needsCheckinMigration = !localStorage.getItem(DINGTALK_CHECKIN_MIGRATION_KEY)
+    const needsFolderMigration = !localStorage.getItem(DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY)
+
+    if (needsCheckinMigration) {
       if (!Array.isArray(settings.shortcuts)) {
         settings.shortcuts = []
       }
 
-      if (!settings.shortcuts.some((item: Shortcut) => item.id === DINGTALK_CHECKIN_SHORTCUT.id)) {
+      if (!findShortcutById(settings.shortcuts, DINGTALK_CHECKIN_SHORTCUT.id)) {
         const specialIndex = settings.shortcuts.findIndex((item: Shortcut) => item.isSpecial)
         if (specialIndex >= 0) {
           settings.shortcuts.splice(specialIndex, 0, DINGTALK_CHECKIN_SHORTCUT)
@@ -159,8 +221,50 @@ export function loadSettings(): UserSettings {
       }
 
       settings.shortcuts = deduplicateShortcuts(settings.shortcuts)
+      shouldPersistMigrations = true
+    }
+
+    if (needsFolderMigration) {
+      if (!Array.isArray(settings.shortcuts)) {
+        settings.shortcuts = []
+      }
+
+      const developerTools = settings.shortcuts.find(
+        (shortcut: Shortcut) =>
+          shortcut.id === DEVELOPER_TOOLS_FOLDER_ID && shortcut.isFolder
+      )
+
+      if (developerTools) {
+        const checkinShortcut =
+          findShortcutById(settings.shortcuts, DINGTALK_CHECKIN_SHORTCUT.id) ||
+          DINGTALK_CHECKIN_SHORTCUT
+        const withoutCheckin = removeShortcutById(settings.shortcuts, DINGTALK_CHECKIN_SHORTCUT.id)
+        settings.shortcuts = addShortcutToFolder(
+          withoutCheckin.shortcuts,
+          DEVELOPER_TOOLS_FOLDER_ID,
+          checkinShortcut
+        )
+        settings.shortcuts = deduplicateShortcuts(settings.shortcuts)
+        shouldPersistMigrations = true
+      }
+    }
+
+    if (shouldPersistMigrations) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+    }
+
+    if (needsCheckinMigration) {
       localStorage.setItem(DINGTALK_CHECKIN_MIGRATION_KEY, '1')
+    }
+
+    if (
+      needsFolderMigration &&
+      settings.shortcuts.some(
+        (shortcut: Shortcut) =>
+          shortcut.id === DEVELOPER_TOOLS_FOLDER_ID && shortcut.isFolder
+      )
+    ) {
+      localStorage.setItem(DINGTALK_CHECKIN_FOLDER_MIGRATION_KEY, '1')
     }
 
     return settings
