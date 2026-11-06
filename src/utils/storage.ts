@@ -3,6 +3,16 @@ import type { UserSettings, Shortcut } from '../types'
 const STORAGE_KEY = 'itab_home_settings_v11'
 const RECENT_SHORTCUTS_KEY = 'itab_home_recent_shortcuts_v1'
 const RECENT_SHORTCUTS_HISTORY_LIMIT = 12
+const DINGTALK_CHECKIN_MIGRATION_KEY = 'itab_home_migration_dingtalk_checkin_v1'
+
+const DINGTALK_CHECKIN_SHORTCUT: Shortcut = {
+  id: 'dingtalk-checkin',
+  title: '我的打卡',
+  url: 'dingtalk://dingtalkclient/page/link?url=http%3A%2F%2Fdffl-hr.dongfangfuli.com%2FKYDD%2FDingDing%2FOAuthCorp.ashx%3FAppKey%3D6%26ssoUrl%3DIndex.html%2523%252Fjump%253Fpath%253D1.6559.1392%2526sid%253D5A6E0A7E19FFE5C76C2DC0ECC490890F%2526title%253D%2525E6%252588%252591%2525E7%25259A%252584%2525E6%252589%252593%2525E5%25258D%2525A1&pc_slide=true',
+  icon: 'https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https%3A%2F%2Fwww.dingtalk.com&size=128',
+  bgColor: 'bg-blue-500',
+  iconStyle: 'auto',
+}
 
 export const DEFAULT_SETTINGS: UserSettings = {
   birthDate: '',
@@ -28,7 +38,7 @@ export function normalizeUrl(rawUrl?: string): string {
   if (!rawUrl) return ''
   try {
     let clean = rawUrl.trim()
-    if (!/^https?:\/\//i.test(clean)) {
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(clean)) {
       clean = `https://${clean}`
     }
     const parsed = new URL(clean)
@@ -131,7 +141,29 @@ export function loadSettings(): UserSettings {
       })
       parsed.shortcuts = deduplicateShortcuts(parsed.shortcuts)
     }
-    return { ...DEFAULT_SETTINGS, ...parsed }
+
+    const settings = { ...DEFAULT_SETTINGS, ...parsed }
+
+    if (!localStorage.getItem(DINGTALK_CHECKIN_MIGRATION_KEY)) {
+      if (!Array.isArray(settings.shortcuts)) {
+        settings.shortcuts = []
+      }
+
+      if (!settings.shortcuts.some((item: Shortcut) => item.id === DINGTALK_CHECKIN_SHORTCUT.id)) {
+        const specialIndex = settings.shortcuts.findIndex((item: Shortcut) => item.isSpecial)
+        if (specialIndex >= 0) {
+          settings.shortcuts.splice(specialIndex, 0, DINGTALK_CHECKIN_SHORTCUT)
+        } else {
+          settings.shortcuts.push(DINGTALK_CHECKIN_SHORTCUT)
+        }
+      }
+
+      settings.shortcuts = deduplicateShortcuts(settings.shortcuts)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
+      localStorage.setItem(DINGTALK_CHECKIN_MIGRATION_KEY, '1')
+    }
+
+    return settings
   } catch (e) {
     console.error('Failed to load settings from localStorage', e)
     return DEFAULT_SETTINGS
